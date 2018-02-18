@@ -12,9 +12,9 @@ import java.util.Date;
 
 @Entity
 @Table(name = "Comments")
-@Getter @Setter @NoArgsConstructor
+@NoArgsConstructor
 public class CommentModel implements Serializable {
-    private @Id @Setter(AccessLevel.PROTECTED) Long id;
+    private @Id Long id;
     private String text;
     private @Column(name = "created_at") Date createdAt;
     private @Column(name = "updated_at") Date updatedAt;
@@ -32,5 +32,61 @@ public class CommentModel implements Serializable {
 
     public CommentView view() {
         return new CommentView(this.id, this.text, this.createdAt);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Date getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(Date deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    public UserModel getUser() {
+        return user;
+    }
+
+    public void setUser(UserModel user) {
+        this.user = user;
+    }
+
+    public PostModel getPost() {
+        return post;
+    }
+
+    public void setPost(PostModel post) {
+        this.post = post;
     }
 }
