@@ -1,9 +1,6 @@
 package ru.woh.api.models;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import ru.woh.api.views.CommentView;
 
 import javax.persistence.*;

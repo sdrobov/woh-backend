@@ -1,8 +1,6 @@
 package ru.woh.api.models;
 
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import ru.woh.api.views.UserView;
 
 import javax.persistence.*;
