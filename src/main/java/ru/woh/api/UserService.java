@@ -17,13 +17,18 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     public UserModel getUser(HttpSession session) {
-        return (UserModel)session.getAttribute("user");
+        Integer userId = (Integer)session.getAttribute("user");
+        if (userId != null && userId > 0) {
+            return this.userRepository.findOne(Long.valueOf(userId));
+        }
+
+        return null;
     }
 
     public UserModel setUser(UserModel user, HttpSession session) {
-        session.setAttribute("user", user);
+        session.setAttribute("user", user.getId());
 
-        return this.getUser(session);
+        return user;
     }
 
     public UserModel authenticate(String login, String password) {

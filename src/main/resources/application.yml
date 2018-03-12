@@ -1,0 +1,34 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  datasource:
+    url: jdbc:mysql://localhost/woh
+    username: woh
+    password: qwerty
+    initialize: false
+  session:
+    store-type: mongo
+  data:
+    mongodb:
+      uri: mongodb://localhost/woh
+
+security:
+  basic:
+    enabled: false
+  sessions: always
+
+---
+
+spring:
+  profiles: container
+  datasource:
+    url: jdbc:mysql://${DATABASE_HOST}/${DATABASE_NAME}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+    initialize: true
+  data:
+    mongodb:
+      uri: mongodb://${MONGO_HOST}/${MONGO_DB}

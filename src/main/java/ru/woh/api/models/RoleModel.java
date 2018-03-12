@@ -10,7 +10,7 @@ import java.util.Set;
 @Table(name = "Roles")
 @NoArgsConstructor
 public class RoleModel implements Serializable {
-    private @Id Long id;
+    private @Id @GeneratedValue(strategy = GenerationType.AUTO) Long id;
     private String name;
 
     public Long getId() {

@@ -1,6 +1,8 @@
 package ru.woh.api.models;
 
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ResultCheckStyle;
+import org.hibernate.annotations.SQLDelete;
 import ru.woh.api.views.CommentView;
 
 import javax.persistence.*;
@@ -9,9 +11,10 @@ import java.util.Date;
 
 @Entity
 @Table(name = "Comments")
+@SQLDelete(sql = "UPDATE Comments SET deleted_at = NOW() WHERE id = ?", check = ResultCheckStyle.COUNT)
 @NoArgsConstructor
 public class CommentModel implements Serializable {
-    private @Id Long id;
+    private @Id @GeneratedValue(strategy = GenerationType.AUTO) Long id;
     private String text;
     private @Column(name = "created_at") Date createdAt;
     private @Column(name = "updated_at") Date updatedAt;
@@ -85,5 +88,20 @@ public class CommentModel implements Serializable {
 
     public void setPost(PostModel post) {
         this.post = post;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
+    }
+
+    @PreRemove
+    protected void onDelete() {
+        this.deletedAt = new Date();
     }
 }

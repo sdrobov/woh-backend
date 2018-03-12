@@ -13,7 +13,7 @@ import java.util.Set;
 @Table(name = "Posts")
 @NoArgsConstructor
 public class PostModel implements Serializable {
-    private @Id Long id;
+    private @Id @GeneratedValue(strategy = GenerationType.AUTO) Long id;
     private String title;
     private String text;
     private String source;
@@ -119,5 +119,15 @@ public class PostModel implements Serializable {
 
     public void setComments(Set<CommentModel> comments) {
         this.comments = comments;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
     }
 }

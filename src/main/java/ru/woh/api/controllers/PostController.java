@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.woh.api.models.PostModel;
 import ru.woh.api.models.PostRepository;
+import ru.woh.api.views.PostListView;
 import ru.woh.api.views.PostView;
-
-import java.util.List;
 
 @RestController
 public class PostController {
@@ -18,10 +17,10 @@ public class PostController {
     private PostRepository postRepository;
 
     @GetMapping("/")
-    public List<PostView> list(@RequestParam(value = "page", defaultValue = "0") Integer page) {
-        return this.postRepository.findAllApproved(new PageRequest(page, 100))
-            .map(PostModel::view)
-            .getContent();
+    public PostListView list(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+        return new PostListView(this.postRepository.findAllApproved(new PageRequest(page, 100))
+                .map(PostModel::view)
+                .getContent());
     }
 
     @GetMapping("/{id:[0-9]*}")

@@ -12,7 +12,7 @@ import java.util.Set;
 @Table(name = "Users")
 @NoArgsConstructor
 public class UserModel implements Serializable {
-    private @Id Long id;
+    private @Id @GeneratedValue(strategy = GenerationType.AUTO) Long id;
     private String email;
     private String password;
     private @Column(name = "created_at") Date createdAt;
@@ -140,5 +140,15 @@ public class UserModel implements Serializable {
 
     public void setComments(Set<CommentModel> comments) {
         this.comments = comments;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
     }
 }
