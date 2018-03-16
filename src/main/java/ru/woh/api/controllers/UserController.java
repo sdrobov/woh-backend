@@ -39,11 +39,11 @@ public class UserController {
 
     @PostMapping("/user/login")
     public UserView login(
-            @RequestParam(value = "login") String login,
+            @RequestParam(value = "email") String email,
             @RequestParam(value = "password") String password,
             HttpSession session
     ) {
-        UserModel user = this.userService.authenticate(login, password);
+        UserModel user = this.userService.authenticate(email, password);
         if (user == null) {
             throw new ForbiddenException();
         }
@@ -54,7 +54,7 @@ public class UserController {
 
     @PostMapping("/user/register")
     public ResponseEntity<UserView> register(
-            @RequestParam(value = "login") String login,
+            @RequestParam(value = "email") String email,
             @RequestParam(value = "password") String password,
             @RequestParam(value = "name", required = false, defaultValue = "") String name,
             HttpSession session,
@@ -67,13 +67,13 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.MOVED_TEMPORARILY);
         }
 
-        user = this.userService.authenticate(login, password);
+        user = this.userService.authenticate(email, password);
         if (user != null) {
             throw new UserAlreadyExists("user already exists");
         }
 
         user = new UserModel();
-        user.setEmail(login);
+        user.setEmail(email);
         user.setPassword(this.passwordEncoder.encode(password));
         user.setName(name);
 
