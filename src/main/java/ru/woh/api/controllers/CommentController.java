@@ -39,7 +39,7 @@ public class CommentController {
     }
 
     @PostMapping("/{id:[0-9]*}/comments")
-    public List<CommentView> add(@PathVariable("id") Long postId, @RequestParam(value = "comment") CommentView comment, HttpSession session) {
+    public List<CommentView> add(@PathVariable("id") Long postId, @RequestBody CommentView comment, HttpSession session) {
         UserModel user = this.userService.getUser(session);
         if (user == null) {
             throw new ForbiddenException();

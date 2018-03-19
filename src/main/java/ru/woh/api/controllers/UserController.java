@@ -1,5 +1,6 @@
 package ru.woh.api.controllers;
 
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,41 @@ public class UserController {
     @Autowired
     protected UserRepository userRepository;
 
+    @NoArgsConstructor
+    public static class LoginData {
+        protected String email;
+        protected String password;
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+    }
+
+    @NoArgsConstructor
+    public static class RegistrationData extends LoginData {
+        protected String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
     @GetMapping("/user")
     public UserView status(HttpSession session) {
         UserModel user = this.userService.getUser(session);
@@ -38,12 +74,8 @@ public class UserController {
     }
 
     @PostMapping("/user/login")
-    public UserView login(
-            @RequestParam(value = "email") String email,
-            @RequestParam(value = "password") String password,
-            HttpSession session
-    ) {
-        UserModel user = this.userService.authenticate(email, password);
+    public UserView login(@RequestBody LoginData loginData, HttpSession session) {
+        UserModel user = this.userService.authenticate(loginData.getEmail(), loginData.getPassword());
         if (user == null) {
             throw new ForbiddenException();
         }
@@ -53,13 +85,7 @@ public class UserController {
     }
 
     @PostMapping("/user/register")
-    public ResponseEntity<UserView> register(
-            @RequestParam(value = "email") String email,
-            @RequestParam(value = "password") String password,
-            @RequestParam(value = "name", required = false, defaultValue = "") String name,
-            HttpSession session,
-            HttpServletResponse response
-    ) {
+    public ResponseEntity<UserView> register(@RequestBody RegistrationData registrationData, HttpSession session, HttpServletResponse response) {
         UserModel user = this.userService.getUser(session);
         if (user != null) {
             response.addHeader("Location", "/");
@@ -67,15 +93,15 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.MOVED_TEMPORARILY);
         }
 
-        user = this.userService.authenticate(email, password);
+        user = this.userService.authenticate(registrationData.getEmail(), registrationData.getPassword());
         if (user != null) {
             throw new UserAlreadyExists("user already exists");
         }
 
         user = new UserModel();
-        user.setEmail(email);
-        user.setPassword(this.passwordEncoder.encode(password));
-        user.setName(name);
+        user.setEmail(registrationData.getEmail());
+        user.setPassword(this.passwordEncoder.encode(registrationData.getPassword()));
+        user.setName(registrationData.getName());
 
         user = this.userRepository.save(user);
 

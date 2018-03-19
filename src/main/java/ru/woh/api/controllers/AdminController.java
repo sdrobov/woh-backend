@@ -3,6 +3,7 @@ package ru.woh.api.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.woh.api.ForbiddenException;
 import ru.woh.api.NotFoundException;
@@ -24,7 +25,7 @@ public class AdminController {
     private UserService userService;
 
     @PostMapping("/{id:[0-9]*}")
-    public PostView save(@PathVariable("id") Long id, PostView post, HttpSession session) {
+    public PostView save(@PathVariable("id") Long id, @RequestBody PostView post, HttpSession session) {
         UserModel user = this.userService.getUser(session);
         if (user == null || !user.isModer()) {
             throw new ForbiddenException();
@@ -48,7 +49,7 @@ public class AdminController {
     }
 
     @PostMapping("/add")
-    public PostView add(PostView post, HttpSession session) {
+    public PostView add(@RequestBody PostView post, HttpSession session) {
         UserModel user = this.userService.getUser(session);
         if (user == null || !user.isModer()) {
             throw new ForbiddenException();
@@ -67,5 +68,20 @@ public class AdminController {
         postModel = this.postRepository.save(postModel);
 
         return postModel.view();
+    }
+
+    @PostMapping("/{id:[0-9]*}/delete")
+    public void delete(@PathVariable("id") Long id, HttpSession session) {
+        UserModel user = this.userService.getUser(session);
+        if (user == null || !user.isModer()) {
+            throw new ForbiddenException();
+        }
+
+        PostModel postModel = this.postRepository.findOne(id);
+        if (postModel == null) {
+            throw new NotFoundException();
+        }
+
+        this.postRepository.delete(id);
     }
 }
