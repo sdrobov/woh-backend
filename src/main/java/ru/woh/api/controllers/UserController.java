@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 import ru.woh.api.ForbiddenException;
 import ru.woh.api.UserAlreadyExists;
-import ru.woh.api.UserService;
 import ru.woh.api.models.UserModel;
 import ru.woh.api.models.UserRepository;
 import ru.woh.api.views.UserView;
@@ -18,10 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @RestController
-public class UserController {
-    @Autowired
-    protected UserService userService;
-
+public class UserController extends BaseRestController {
     @Autowired
     protected PasswordEncoder passwordEncoder;
 
@@ -65,12 +64,9 @@ public class UserController {
 
     @GetMapping("/user")
     public UserView status(HttpSession session) {
-        UserModel user = this.userService.getUser(session);
-        if (user == null) {
-            throw new ForbiddenException();
-        }
+        this.needAuth(session);
 
-        return user.view();
+        return this.getUser(session).view();
     }
 
     @PostMapping("/user/login")
@@ -110,11 +106,7 @@ public class UserController {
 
     @GetMapping("/user/logout")
     public RedirectView logout(HttpSession session) {
-        UserModel user = this.userService.getUser(session);
-        if (user == null) {
-            throw new ForbiddenException();
-        }
-
+        this.needAuth(session);
         this.userService.logout(session);
 
         return new RedirectView("/");

@@ -1,8 +1,6 @@
 package ru.woh.api.views;
 
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import ru.woh.api.models.CommentModel;
 
 import java.util.Date;
@@ -12,14 +10,14 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor
 public class PostView {
-    private long id;
-    private String title;
-    private String text;
-    private String source;
-    private Date createdAt;
-    private List<CommentView> comments;
+    protected Long id;
+    protected String title;
+    protected String text;
+    protected String source;
+    protected Date createdAt;
+    protected List<CommentView> comments;
 
-    public PostView(long id, String title, String text, String source, Date createdAt, Set<CommentModel> comments) {
+    public PostView(Long id, String title, String text, String source, Date createdAt, Set<CommentModel> comments) {
         this.id = id;
         this.title = title;
         this.text = text;
@@ -32,11 +30,11 @@ public class PostView {
             .collect(Collectors.toList());
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -3,9 +3,7 @@ package ru.woh.api.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
-import ru.woh.api.ForbiddenException;
 import ru.woh.api.NotFoundException;
-import ru.woh.api.UserService;
 import ru.woh.api.models.*;
 import ru.woh.api.views.CommentView;
 
@@ -13,17 +11,14 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
-public class CommentController {
+public class CommentController extends BaseRestController {
     private static final int MAX_COMMENTS = 100;
 
     @Autowired
-    private PostRepository postRepository;
+    protected PostRepository postRepository;
 
     @Autowired
-    private CommentRepository commentRepository;
-
-    @Autowired
-    private UserService userService;
+    protected CommentRepository commentRepository;
 
     @GetMapping("/{id:[0-9]*}/comments")
     public List<CommentView> list(@PathVariable("id") Long postId, @RequestParam(value = "page", defaultValue = "0") Integer page) {
@@ -40,10 +35,7 @@ public class CommentController {
 
     @PostMapping("/{id:[0-9]*}/comments")
     public List<CommentView> add(@PathVariable("id") Long postId, @RequestBody CommentView comment, HttpSession session) {
-        UserModel user = this.userService.getUser(session);
-        if (user == null) {
-            throw new ForbiddenException();
-        }
+        this.needAuth(session);
 
         PostModel post = this.postRepository.findOne(postId);
         if (post == null) {
@@ -52,7 +44,7 @@ public class CommentController {
 
         CommentModel newComment = CommentModel.fromView(comment);
         newComment.setPost(post);
-        newComment.setUser(user);
+        newComment.setUser(this.getUser(session));
         this.commentRepository.save(newComment);
 
         return this.commentRepository

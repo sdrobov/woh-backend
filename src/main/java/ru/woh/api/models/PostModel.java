@@ -1,6 +1,7 @@
 package ru.woh.api.models;
 
 import lombok.NoArgsConstructor;
+import ru.woh.api.views.AdminPostView;
 import ru.woh.api.views.PostView;
 
 import javax.persistence.*;
@@ -19,7 +20,6 @@ public class PostModel implements Serializable {
     private String source;
     private @Column(name = "created_at") Date createdAt;
     private @Column(name = "updated_at") Date updatedAt;
-    private @Column(name = "is_moderated") Boolean isModerated;
     private @Column(name = "is_allowed") Boolean isAllowed;
     private @Column(name = "moderated_at") Date moderatedAt;
     private @ManyToOne @JoinColumn(name = "moderator_id") UserModel moderator;
@@ -31,6 +31,10 @@ public class PostModel implements Serializable {
 
     public PostView view(Boolean withComments) {
         return new PostView(this.id, this.title, this.text, this.source, this.createdAt, withComments ? comments : Collections.<CommentModel>emptySet());
+    }
+
+    public AdminPostView adminView() {
+        return new AdminPostView(this.id, this.title, this.text, this.source, this.createdAt, Collections.<CommentModel>emptySet(), this.updatedAt, this.moderatedAt, this.moderator, this.isAllowed);
     }
 
     public Long getId() {
@@ -81,14 +85,6 @@ public class PostModel implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public Boolean getModerated() {
-        return isModerated;
-    }
-
-    public void setModerated(Boolean moderated) {
-        isModerated = moderated;
-    }
-
     public Boolean getAllowed() {
         return isAllowed;
     }
@@ -129,5 +125,17 @@ public class PostModel implements Serializable {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = new Date();
+    }
+
+    public void approve(UserModel moderator) {
+        this.isAllowed = true;
+        this.moderatedAt = new Date();
+        this.moderator = moderator;
+    }
+
+    public void dismiss(UserModel moderator) {
+        this.isAllowed = false;
+        this.moderatedAt = new Date();
+        this.moderator = moderator;
     }
 }

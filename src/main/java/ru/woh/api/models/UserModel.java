@@ -6,6 +6,7 @@ import ru.woh.api.views.UserView;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -31,11 +32,11 @@ public class UserModel implements Serializable {
     }
 
     public Boolean isAdmin() {
-        return this.role != null && this.role.getName() == "admin";
+        return Objects.equals(this.role.getName(), "admin");
     }
 
     public Boolean isModer() {
-        return (this.role != null && this.role.getName() == "moder") || this.isAdmin();
+        return Objects.equals(this.role.getName(), "moder") || this.isAdmin();
     }
 
     public Long getId() {
