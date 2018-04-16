@@ -17,8 +17,12 @@ import java.util.Date;
 
 @RestController
 public class AdminController extends BaseRestController {
+    protected final PostRepository postRepository;
+
     @Autowired
-    protected PostRepository postRepository;
+    public AdminController(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
     @PostMapping("/{id:[0-9]*}")
     public AdminPostView save(@PathVariable("id") Long id, @RequestBody PostView post, HttpSession session) {

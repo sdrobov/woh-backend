@@ -14,11 +14,15 @@ import java.util.List;
 public class CommentController extends BaseRestController {
     private static final int MAX_COMMENTS = 100;
 
-    @Autowired
-    protected PostRepository postRepository;
+    protected final PostRepository postRepository;
+
+    protected final CommentRepository commentRepository;
 
     @Autowired
-    protected CommentRepository commentRepository;
+    public CommentController(PostRepository postRepository, CommentRepository commentRepository) {
+        this.postRepository = postRepository;
+        this.commentRepository = commentRepository;
+    }
 
     @GetMapping("/{id:[0-9]*}/comments")
     public List<CommentView> list(@PathVariable("id") Long postId, @RequestParam(value = "page", defaultValue = "0") Integer page) {

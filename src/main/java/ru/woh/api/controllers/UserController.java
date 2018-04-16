@@ -21,11 +21,15 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 public class UserController extends BaseRestController {
-    @Autowired
-    protected PasswordEncoder passwordEncoder;
+    protected final PasswordEncoder passwordEncoder;
+
+    protected final UserRepository userRepository;
 
     @Autowired
-    protected UserRepository userRepository;
+    public UserController(PasswordEncoder passwordEncoder, UserRepository userRepository) {
+        this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
+    }
 
     @NoArgsConstructor
     public static class LoginData {
@@ -62,6 +66,23 @@ public class UserController extends BaseRestController {
         }
     }
 
+    @NoArgsConstructor
+    public static class UserExtView extends UserView {
+        protected String token;
+
+        public UserExtView(Long id, String email, String name, String avatar) {
+            super(id, email, name, avatar);
+        }
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
+    }
+
     @GetMapping("/user")
     public UserView status(HttpSession session) {
         this.needAuth(session);
@@ -70,14 +91,21 @@ public class UserController extends BaseRestController {
     }
 
     @PostMapping("/user/login")
-    public UserView login(@RequestBody LoginData loginData, HttpSession session) {
+    public UserExtView login(@RequestBody LoginData loginData, HttpSession session) {
         UserModel user = this.userService.authenticate(loginData.getEmail(), loginData.getPassword());
         if (user == null) {
             throw new ForbiddenException();
         }
-        this.userService.setUser(user, session);
 
-        return user.view();
+        String token = this.userService.setUser(user);
+        if (token == null) {
+            throw new ForbiddenException("cant save token");
+        }
+
+        UserExtView view = new UserExtView(user.getId(), user.getEmail(), user.getName(), user.getAvatar());
+        view.token = token;
+
+        return view;
     }
 
     @PostMapping("/user/register")

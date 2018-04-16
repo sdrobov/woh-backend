@@ -4,10 +4,10 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class UserView {
-    private Long id;
-    private String email;
-    private String name;
-    private String avatar;
+    protected Long id;
+    protected String email;
+    protected String name;
+    protected String avatar;
 
     public UserView(Long id, String email, String name, String avatar) {
         this.id = id;
