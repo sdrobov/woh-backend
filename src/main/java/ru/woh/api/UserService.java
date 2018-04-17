@@ -40,16 +40,11 @@ public class UserService {
 
     public UserModel getUser(HttpServletRequest request)
     {
-        String authorization = request.getHeader("Authorization");
-        if (authorization == null) {
-            return  null;
-        }
-
-        if (!authorization.toLowerCase().contains("bearer")) {
+        String token = this.getToken(request);
+        if (token == null) {
             return null;
         }
 
-        String token = authorization.split(" ")[1];
         UserToken userToken = this.userTokenRepository.findByToken(token);
         if (userToken == null) {
             return null;
@@ -96,5 +91,33 @@ public class UserService {
 
     public void logout(HttpSession session) {
         session.removeAttribute("user");
+    }
+
+    public void logout(HttpServletRequest request) {
+        String token = this.getToken(request);
+        if (token == null) {
+            return;
+        }
+
+        UserToken userToken = this.userTokenRepository.findByToken(token);
+        if (userToken == null) {
+            return;
+        }
+
+        this.userTokenRepository.delete(userToken);
+    }
+
+    protected String getToken(HttpServletRequest request)
+    {
+        String authorization = request.getHeader("Authorization");
+        if (authorization == null) {
+            return  null;
+        }
+
+        if (!authorization.toLowerCase().contains("bearer")) {
+            return null;
+        }
+
+        return authorization.split(" ")[1];
     }
 }

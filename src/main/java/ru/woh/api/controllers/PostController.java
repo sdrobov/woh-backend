@@ -12,7 +12,7 @@ import ru.woh.api.models.PostRepository;
 import ru.woh.api.views.PostListView;
 import ru.woh.api.views.PostView;
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class PostController extends BaseRestController {
@@ -20,10 +20,10 @@ public class PostController extends BaseRestController {
     private PostRepository postRepository;
 
     @GetMapping("/")
-    public PostListView list(@RequestParam(value = "page", defaultValue = "0") Integer page, HttpSession session) {
+    public PostListView list(@RequestParam(value = "page", defaultValue = "0") Integer page, HttpServletRequest request) {
         Boolean isModer = false;
         try {
-            this.needModer(session);
+            this.needModer(request);
             isModer = true;
         } catch (ForbiddenException e) {/* nop */}
         return new PostListView(this.postRepository.findAllApproved(new PageRequest(page, 100))
@@ -32,9 +32,9 @@ public class PostController extends BaseRestController {
     }
 
     @GetMapping("/{id:[0-9]*}")
-    public PostView one(@PathVariable("id") Long id, HttpSession session) {
+    public PostView one(@PathVariable("id") Long id, HttpServletRequest request) {
         try {
-            this.needModer(session);
+            this.needModer(request);
 
             return this.postRepository.findOne(id).adminView();
         } catch (ForbiddenException e) {/* nop */}

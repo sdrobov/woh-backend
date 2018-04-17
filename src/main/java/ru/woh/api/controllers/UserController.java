@@ -16,8 +16,8 @@ import ru.woh.api.models.UserModel;
 import ru.woh.api.models.UserRepository;
 import ru.woh.api.views.UserView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 @RestController
 public class UserController extends BaseRestController {
@@ -84,14 +84,14 @@ public class UserController extends BaseRestController {
     }
 
     @GetMapping("/user")
-    public UserView status(HttpSession session) {
-        this.needAuth(session);
+    public UserView status(HttpServletRequest request) {
+        this.needAuth(request);
 
-        return this.getUser(session).view();
+        return this.getUser(request).view();
     }
 
     @PostMapping("/user/login")
-    public UserExtView login(@RequestBody LoginData loginData, HttpSession session) {
+    public UserExtView login(@RequestBody LoginData loginData, HttpServletRequest request) {
         UserModel user = this.userService.authenticate(loginData.getEmail(), loginData.getPassword());
         if (user == null) {
             throw new ForbiddenException();
@@ -109,12 +109,12 @@ public class UserController extends BaseRestController {
     }
 
     @PostMapping("/user/register")
-    public ResponseEntity<UserView> register(@RequestBody RegistrationData registrationData, HttpSession session, HttpServletResponse response) {
-        UserModel user = this.userService.getUser(session);
+    public ResponseEntity<UserView> register(@RequestBody RegistrationData registrationData, HttpServletResponse response, HttpServletRequest request) {
+        UserModel user = this.userService.getUser(request);
         if (user != null) {
             response.addHeader("Location", "/");
 
-            return new ResponseEntity<>(HttpStatus.MOVED_TEMPORARILY);
+            return new ResponseEntity<>(HttpStatus.TEMPORARY_REDIRECT);
         }
 
         user = this.userService.authenticate(registrationData.getEmail(), registrationData.getPassword());
@@ -133,9 +133,9 @@ public class UserController extends BaseRestController {
     }
 
     @GetMapping("/user/logout")
-    public RedirectView logout(HttpSession session) {
-        this.needAuth(session);
-        this.userService.logout(session);
+    public RedirectView logout(HttpServletRequest request) {
+        this.needAuth(request);
+        this.userService.logout(request);
 
         return new RedirectView("/");
     }

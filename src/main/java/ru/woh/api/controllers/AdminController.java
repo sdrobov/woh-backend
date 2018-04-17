@@ -12,7 +12,7 @@ import ru.woh.api.models.UserModel;
 import ru.woh.api.views.AdminPostView;
 import ru.woh.api.views.PostView;
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 @RestController
@@ -25,9 +25,9 @@ public class AdminController extends BaseRestController {
     }
 
     @PostMapping("/{id:[0-9]*}")
-    public AdminPostView save(@PathVariable("id") Long id, @RequestBody PostView post, HttpSession session) {
-        this.needModer(session);
-        UserModel user = this.getUser(session);
+    public AdminPostView save(@PathVariable("id") Long id, @RequestBody PostView post, HttpServletRequest request) {
+        this.needModer(request);
+        UserModel user = this.getUser(request);
 
         PostModel postModel = this.postRepository.findOne(id);
         if (postModel == null) {
@@ -47,9 +47,9 @@ public class AdminController extends BaseRestController {
     }
 
     @PostMapping("/add")
-    public AdminPostView add(@RequestBody PostView post, HttpSession session) {
-        this.needModer(session);
-        UserModel user = this.getUser(session);
+    public AdminPostView add(@RequestBody PostView post, HttpServletRequest request) {
+        this.needModer(request);
+        UserModel user = this.getUser(request);
 
         PostModel postModel = new PostModel();
         postModel.setTitle(post.getTitle());
@@ -66,8 +66,8 @@ public class AdminController extends BaseRestController {
     }
 
     @PostMapping("/{id:[0-9]*}/delete")
-    public void delete(@PathVariable("id") Long id, HttpSession session) {
-        this.needModer(session);
+    public void delete(@PathVariable("id") Long id, HttpServletRequest request) {
+        this.needModer(request);
 
         PostModel postModel = this.postRepository.findOne(id);
         if (postModel == null) {
@@ -78,28 +78,28 @@ public class AdminController extends BaseRestController {
     }
 
     @PostMapping("/{id:[0-9]*}/approve")
-    public AdminPostView approve(@PathVariable("id") Long id, HttpSession session) {
-        this.needModer(session);
+    public AdminPostView approve(@PathVariable("id") Long id, HttpServletRequest request) {
+        this.needModer(request);
 
         PostModel postModel = this.postRepository.findOne(id);
         if (postModel == null) {
             throw new NotFoundException();
         }
-        postModel.approve(this.getUser(session));
+        postModel.approve(this.getUser(request));
         postModel = this.postRepository.save(postModel);
 
         return postModel.adminView();
     }
 
     @PostMapping("/{id:[0-9]*}/dismiss")
-    public AdminPostView dismiss(@PathVariable("id") Long id, HttpSession session) {
-        this.needModer(session);
+    public AdminPostView dismiss(@PathVariable("id") Long id, HttpServletRequest request) {
+        this.needModer(request);
 
         PostModel postModel = this.postRepository.findOne(id);
         if (postModel == null) {
             throw new NotFoundException();
         }
-        postModel.dismiss(this.getUser(session));
+        postModel.dismiss(this.getUser(request));
         postModel = this.postRepository.save(postModel);
 
         return postModel.adminView();

@@ -4,10 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import ru.woh.api.NotFoundException;
-import ru.woh.api.models.*;
+import ru.woh.api.models.CommentModel;
+import ru.woh.api.models.CommentRepository;
+import ru.woh.api.models.PostModel;
+import ru.woh.api.models.PostRepository;
 import ru.woh.api.views.CommentView;
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -38,8 +41,8 @@ public class CommentController extends BaseRestController {
     }
 
     @PostMapping("/{id:[0-9]*}/comments")
-    public List<CommentView> add(@PathVariable("id") Long postId, @RequestBody CommentView comment, HttpSession session) {
-        this.needAuth(session);
+    public List<CommentView> add(@PathVariable("id") Long postId, @RequestBody CommentView comment, HttpServletRequest request) {
+        this.needAuth(request);
 
         PostModel post = this.postRepository.findOne(postId);
         if (post == null) {
@@ -48,7 +51,7 @@ public class CommentController extends BaseRestController {
 
         CommentModel newComment = CommentModel.fromView(comment);
         newComment.setPost(post);
-        newComment.setUser(this.getUser(session));
+        newComment.setUser(this.getUser(request));
         this.commentRepository.save(newComment);
 
         return this.commentRepository

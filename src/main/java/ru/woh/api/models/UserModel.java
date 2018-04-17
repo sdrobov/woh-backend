@@ -32,10 +32,18 @@ public class UserModel implements Serializable {
     }
 
     public Boolean isAdmin() {
+        if (this.role == null) {
+            return false;
+        }
+
         return Objects.equals(this.role.getName(), "admin");
     }
 
     public Boolean isModer() {
+        if (this.role == null) {
+            return false;
+        }
+
         return Objects.equals(this.role.getName(), "moder") || this.isAdmin();
     }
 
