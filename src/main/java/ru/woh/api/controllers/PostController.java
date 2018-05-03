@@ -16,19 +16,27 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class PostController extends BaseRestController {
-    @Autowired
-    private PostRepository postRepository;
+    private final PostRepository postRepository;
+
+    @Autowired public PostController(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
     @GetMapping("/")
-    public PostListView list(@RequestParam(value = "page", defaultValue = "0") Integer page, HttpServletRequest request) {
+    public PostListView list(
+        @RequestParam(value = "page", defaultValue = "0") Integer page,
+        HttpServletRequest request
+    ) {
         Boolean isModer = false;
         try {
             this.needModer(request);
             isModer = true;
         } catch (ForbiddenException e) {/* nop */}
-        return new PostListView(this.postRepository.findAllApproved(new PageRequest(page, 100))
-                .map(isModer ? PostModel::adminView : PostModel::view)
-                .getContent());
+        return new PostListView((isModer
+            ? this.postRepository.findAll(new PageRequest(page, 100))
+            : this.postRepository.findAllApproved(new PageRequest(page, 100)))
+            .map(isModer ? PostModel::adminView : PostModel::view)
+            .getContent());
     }
 
     @GetMapping("/{id:[0-9]*}")

@@ -109,7 +109,11 @@ public class UserController extends BaseRestController {
     }
 
     @PostMapping("/user/register")
-    public ResponseEntity<UserView> register(@RequestBody RegistrationData registrationData, HttpServletResponse response, HttpServletRequest request) {
+    public ResponseEntity<UserView> register(
+        @RequestBody RegistrationData registrationData,
+        HttpServletResponse response,
+        HttpServletRequest request
+    ) {
         UserModel user = this.userService.getUser(request);
         if (user != null) {
             response.addHeader("Location", "/");

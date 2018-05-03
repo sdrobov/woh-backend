@@ -5,7 +5,6 @@ import ru.woh.api.views.AdminPostView;
 import ru.woh.api.views.PostView;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
@@ -13,8 +12,7 @@ import java.util.Set;
 @Entity
 @Table(name = "Posts")
 @NoArgsConstructor
-public class PostModel implements Serializable {
-    private @Id @GeneratedValue(strategy = GenerationType.AUTO) Long id;
+public class PostModel extends UndeletableEntity {
     private String title;
     private String text;
     private String source;
@@ -26,23 +24,33 @@ public class PostModel implements Serializable {
     private @OneToMany(mappedBy = "post", cascade = CascadeType.ALL) Set<CommentModel> comments;
 
     public PostView view() {
-        return new PostView(this.id, this.title, this.text, this.source, this.createdAt, comments);
+        return new PostView(this.Id, this.title, this.text, this.source, this.createdAt, comments);
     }
 
     public PostView view(Boolean withComments) {
-        return new PostView(this.id, this.title, this.text, this.source, this.createdAt, withComments ? comments : Collections.<CommentModel>emptySet());
+        return new PostView(
+            this.Id,
+            this.title,
+            this.text,
+            this.source,
+            this.createdAt,
+            withComments ? comments : Collections.<CommentModel>emptySet()
+        );
     }
 
     public AdminPostView adminView() {
-        return new AdminPostView(this.id, this.title, this.text, this.source, this.createdAt, Collections.<CommentModel>emptySet(), this.updatedAt, this.moderatedAt, this.moderator, this.isAllowed);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        return new AdminPostView(
+            this.Id,
+            this.title,
+            this.text,
+            this.source,
+            this.createdAt,
+            Collections.<CommentModel>emptySet(),
+            this.updatedAt,
+            this.moderatedAt,
+            this.moderator,
+            this.isAllowed
+        );
     }
 
     public String getTitle() {
@@ -125,6 +133,11 @@ public class PostModel implements Serializable {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = new Date();
+    }
+
+    @PreRemove
+    protected void onDelete() {
+        this.deletedAt = new Date();
     }
 
     public void approve(UserModel moderator) {
