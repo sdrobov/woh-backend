@@ -1,5 +1,8 @@
 package ru.woh.api.models;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.woh.api.views.TagView;
 
 import javax.persistence.*;
@@ -9,6 +12,9 @@ import java.util.Set;
 
 @Entity(name = "Tag")
 @Table(name = "Tags")
+@NoArgsConstructor
+@Getter
+@Setter
 public class TagModel implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,37 +37,5 @@ public class TagModel implements Serializable {
 
     public TagView view() {
         return new TagView(this.id, this.name);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Set<UserModel> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<UserModel> users) {
-        this.users = users;
-    }
-
-    public Set<PostModel> getPosts() {
-        return posts;
-    }
-
-    public void setPosts(Set<PostModel> posts) {
-        this.posts = posts;
     }
 }

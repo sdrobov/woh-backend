@@ -49,7 +49,7 @@ public class CommentController extends BaseRestController {
             throw new NotFoundException();
         }
 
-        CommentModel newComment = CommentModel.fromView(comment);
+        CommentModel newComment = comment.model();
         newComment.setPost(post);
         newComment.setUser(this.getUser(request));
         this.commentRepository.save(newComment);

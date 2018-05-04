@@ -1,5 +1,8 @@
 package ru.woh.api.views;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.woh.api.models.CommentModel;
 import ru.woh.api.models.TagModel;
 import ru.woh.api.models.UserModel;
@@ -7,6 +10,9 @@ import ru.woh.api.models.UserModel;
 import java.util.Date;
 import java.util.Set;
 
+@NoArgsConstructor
+@Getter
+@Setter
 public class AdminPostView extends PostView {
     protected Date updatedAt;
     protected Date moderatedAt;
@@ -25,45 +31,5 @@ public class AdminPostView extends PostView {
         this.moderator = moderator != null ? moderator.view() : null;
         this.isAllowed = isAllowed;
         this.isModerated = moderatedAt != null;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Date getModeratedAt() {
-        return moderatedAt;
-    }
-
-    public void setModeratedAt(Date moderatedAt) {
-        this.moderatedAt = moderatedAt;
-    }
-
-    public UserView getModerator() {
-        return moderator;
-    }
-
-    public void setModerator(UserView moderator) {
-        this.moderator = moderator;
-    }
-
-    public Boolean getAllowed() {
-        return isAllowed;
-    }
-
-    public void setAllowed(Boolean allowed) {
-        isAllowed = allowed;
-    }
-
-    public Boolean getModerated() {
-        return isModerated;
-    }
-
-    public void setModerated(Boolean moderated) {
-        isModerated = moderated;
     }
 }

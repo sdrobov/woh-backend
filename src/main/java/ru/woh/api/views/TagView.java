@@ -1,9 +1,13 @@
 package ru.woh.api.views;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.woh.api.models.TagModel;
 
 @NoArgsConstructor
+@Getter
+@Setter
 public class TagView {
     protected Long id;
     protected String name;
@@ -19,21 +23,5 @@ public class TagView {
         tag.setName(this.getName());
 
         return tag;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

@@ -66,7 +66,7 @@ public class AdminController extends BaseRestController {
         postModel.setCreatedAt(new Date());
         postModel.setModeratedAt(new Date());
         postModel.setModerator(user);
-        postModel.setAllowed(true);
+        postModel.setIsAllowed(true);
         postModel.setTags(
             post.getTags()
                 .stream()

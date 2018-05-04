@@ -1,6 +1,8 @@
 package ru.woh.api.models;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -9,6 +11,8 @@ import java.util.Set;
 @Entity
 @Table(name = "Roles")
 @NoArgsConstructor
+@Getter
+@Setter
 public class RoleModel implements Serializable {
     private @Id @GeneratedValue(strategy = GenerationType.AUTO) Long id;
     private String name;
