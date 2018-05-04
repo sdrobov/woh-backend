@@ -1,56 +1,103 @@
 package ru.woh.api.models;
 
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Loader;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import ru.woh.api.views.AdminPostView;
 import ru.woh.api.views.PostView;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
-@Entity
+@Entity(name = "Post")
 @Table(name = "Posts")
+@SQLDelete(sql = "UPDATE Posts SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@Loader(namedQuery = "findPostById")
+@NamedQuery(name = "findPostById", query = "SELECT p FROM Post p WHERE p.id = ?1 AND p.deletedAt IS NULL")
+@Where(clause = "deleted_at IS NULL")
 @NoArgsConstructor
-public class PostModel extends UndeletableEntity {
+public class PostModel implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
     private String title;
     private String text;
     private String source;
-    private @Column(name = "created_at") Date createdAt;
-    private @Column(name = "updated_at") Date updatedAt;
-    private @Column(name = "is_allowed") Boolean isAllowed;
-    private @Column(name = "moderated_at") Date moderatedAt;
-    private @ManyToOne @JoinColumn(name = "moderator_id") UserModel moderator;
-    private @OneToMany(mappedBy = "post", cascade = CascadeType.ALL) Set<CommentModel> comments;
+
+    @Column(name = "created_at")
+    @CreatedDate
+    private Date createdAt;
+
+    @Column(name = "updated_at")
+    @LastModifiedDate
+    private Date updatedAt;
+
+    @Column(name = "deleted_at") private Date deletedAt;
+    @Column(name = "is_allowed") private Boolean isAllowed;
+    @Column(name = "moderated_at") private Date moderatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "moderator_id")
+    @CreatedBy
+    private UserModel moderator;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL) private Set<CommentModel> comments = new HashSet<>();
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "TagsRefUsers",
+        joinColumns = {@JoinColumn(name = "user_id")},
+        inverseJoinColumns = {@JoinColumn(name = "tag_id")})
+    private Set<TagModel> tags = new HashSet<>();
+
+    private Long rating;
 
     public PostView view() {
-        return new PostView(this.Id, this.title, this.text, this.source, this.createdAt, comments);
+        return new PostView(this.id, this.title, this.text, this.source, this.createdAt, this.comments, this.tags);
     }
 
     public PostView view(Boolean withComments) {
         return new PostView(
-            this.Id,
+            this.id,
             this.title,
             this.text,
             this.source,
             this.createdAt,
-            withComments ? comments : Collections.<CommentModel>emptySet()
+            withComments ? this.comments : Collections.<CommentModel>emptySet(),
+            this.tags
         );
     }
 
     public AdminPostView adminView() {
         return new AdminPostView(
-            this.Id,
+            this.id,
             this.title,
             this.text,
             this.source,
             this.createdAt,
             Collections.<CommentModel>emptySet(),
+            this.tags,
             this.updatedAt,
             this.moderatedAt,
             this.moderator,
             this.isAllowed
         );
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -93,6 +140,14 @@ public class PostModel extends UndeletableEntity {
         this.updatedAt = updatedAt;
     }
 
+    public Date getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(Date deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
     public Boolean getAllowed() {
         return isAllowed;
     }
@@ -125,19 +180,20 @@ public class PostModel extends UndeletableEntity {
         this.comments = comments;
     }
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = new Date();
+    public Set<TagModel> getTags() {
+        return tags;
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = new Date();
+    public void setTags(Set<TagModel> tags) {
+        this.tags = tags;
     }
 
-    @PreRemove
-    protected void onDelete() {
-        this.deletedAt = new Date();
+    public Long getRating() {
+        return rating;
+    }
+
+    public void setRating(Long rating) {
+        this.rating = rating;
     }
 
     public void approve(UserModel moderator) {

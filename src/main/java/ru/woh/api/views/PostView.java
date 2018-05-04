@@ -2,6 +2,7 @@ package ru.woh.api.views;
 
 import lombok.NoArgsConstructor;
 import ru.woh.api.models.CommentModel;
+import ru.woh.api.models.TagModel;
 
 import java.util.Date;
 import java.util.List;
@@ -16,8 +17,9 @@ public class PostView {
     protected String source;
     protected Date createdAt;
     protected List<CommentView> comments;
+    protected List<TagView> tags;
 
-    public PostView(Long id, String title, String text, String source, Date createdAt, Set<CommentModel> comments) {
+    public PostView(Long id, String title, String text, String source, Date createdAt, Set<CommentModel> comments, Set<TagModel> tags) {
         this.id = id;
         this.title = title;
         this.text = text;
@@ -27,6 +29,10 @@ public class PostView {
             .stream()
             .limit(2)
             .map(CommentModel::view)
+            .collect(Collectors.toList());
+        this.tags = tags
+            .stream()
+            .map(TagModel::view)
             .collect(Collectors.toList());
     }
 
@@ -76,5 +82,13 @@ public class PostView {
 
     public void setComments(List<CommentView> comments) {
         this.comments = comments;
+    }
+
+    public List<TagView> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<TagView> tags) {
+        this.tags = tags;
     }
 }

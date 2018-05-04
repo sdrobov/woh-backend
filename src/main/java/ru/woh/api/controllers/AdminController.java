@@ -11,9 +11,11 @@ import ru.woh.api.models.PostRepository;
 import ru.woh.api.models.UserModel;
 import ru.woh.api.views.AdminPostView;
 import ru.woh.api.views.PostView;
+import ru.woh.api.views.TagView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @RestController
 public class AdminController extends BaseRestController {
@@ -31,7 +33,7 @@ public class AdminController extends BaseRestController {
 
         PostModel postModel = this.postRepository.findOne(id);
         if (postModel == null) {
-            throw new NotFoundException();
+            throw new NotFoundException(String.format("post #%d not found", id));
         }
 
         postModel.setTitle(post.getTitle());
@@ -40,6 +42,12 @@ public class AdminController extends BaseRestController {
         postModel.setModeratedAt(new Date());
         postModel.setUpdatedAt(new Date());
         postModel.setModerator(user);
+        postModel.setTags(
+            post.getTags()
+                .stream()
+                .map(TagView::model)
+                .collect(Collectors.toSet())
+        );
 
         postModel = this.postRepository.save(postModel);
 
@@ -59,6 +67,12 @@ public class AdminController extends BaseRestController {
         postModel.setModeratedAt(new Date());
         postModel.setModerator(user);
         postModel.setAllowed(true);
+        postModel.setTags(
+            post.getTags()
+                .stream()
+                .map(TagView::model)
+                .collect(Collectors.toSet())
+        );
 
         postModel = this.postRepository.save(postModel);
 
@@ -71,7 +85,7 @@ public class AdminController extends BaseRestController {
 
         PostModel postModel = this.postRepository.findOne(id);
         if (postModel == null) {
-            throw new NotFoundException();
+            throw new NotFoundException(String.format("post #%d not found", id));
         }
 
         this.postRepository.delete(postModel);
@@ -83,7 +97,7 @@ public class AdminController extends BaseRestController {
 
         PostModel postModel = this.postRepository.findOne(id);
         if (postModel == null) {
-            throw new NotFoundException();
+            throw new NotFoundException(String.format("post #%d not found", id));
         }
         postModel.approve(this.getUser(request));
         postModel = this.postRepository.save(postModel);
@@ -97,7 +111,7 @@ public class AdminController extends BaseRestController {
 
         PostModel postModel = this.postRepository.findOne(id);
         if (postModel == null) {
-            throw new NotFoundException();
+            throw new NotFoundException(String.format("post #%d not found", id));
         }
         postModel.dismiss(this.getUser(request));
         postModel = this.postRepository.save(postModel);

@@ -1,31 +1,62 @@
 package ru.woh.api.models;
 
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Loader;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import ru.woh.api.views.UserView;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-@Entity
+@Entity(name = "User")
 @Table(name = "Users")
+@SQLDelete(sql = "UPDATE Users SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@Loader(namedQuery = "findUserById")
+@NamedQuery(name = "findUserById", query = "SELECT u FROM User u WHERE u.id = ?1 AND u.deletedAt IS NULL")
+@Where(clause = "deleted_at IS NULL")
 @NoArgsConstructor
 public class UserModel implements Serializable {
-    private @Id @GeneratedValue(strategy = GenerationType.AUTO) Long id;
-    private String email;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @Column(unique = true) private String email;
     private String password;
-    private @Column(name = "created_at") Date createdAt;
-    private @Column(name = "updated_at") Date updatedAt;
+
+    @Column(name = "created_at")
+    @CreatedDate
+    private Date createdAt;
+
+    @Column(name = "updated_at")
+    @LastModifiedDate
+    private Date updatedAt;
+
+    @Column(name = "deleted_at") private Date deletedAt;
     private String name;
     private String avatar;
-    private String fb;
-    private String vk;
-    private String google;
-    private @ManyToOne @JoinColumn(name = "role_id") RoleModel role;
-    private @OneToMany(mappedBy = "moderator", cascade = CascadeType.ALL) Set<PostModel> moderatedPosts;
-    private @OneToMany(mappedBy = "user", cascade = CascadeType.ALL) Set<CommentModel> comments;
+    @Column(unique = true) private String fb;
+    @Column(unique = true) private String vk;
+    @Column(unique = true) private String google;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private RoleModel role;
+
+    @OneToMany(mappedBy = "moderator", cascade = CascadeType.ALL) private Set<PostModel> moderatedPosts = new HashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL) private Set<CommentModel> comments = new HashSet<>();
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "TagsRefUsers",
+        joinColumns = {@JoinColumn(name = "user_id")},
+        inverseJoinColumns = {@JoinColumn(name = "tag_id")})
+    private Set<TagModel> tags = new HashSet<>();
 
     public UserView view() {
         return new UserView(this.id, this.email, this.name, this.avatar);
@@ -85,6 +116,14 @@ public class UserModel implements Serializable {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Date getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(Date deletedAt) {
+        this.deletedAt = deletedAt;
     }
 
     public String getName() {
@@ -151,13 +190,11 @@ public class UserModel implements Serializable {
         this.comments = comments;
     }
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = new Date();
+    public Set<TagModel> getTags() {
+        return tags;
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = new Date();
+    public void setTags(Set<TagModel> tags) {
+        this.tags = tags;
     }
 }
