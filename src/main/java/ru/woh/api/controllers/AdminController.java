@@ -6,10 +6,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.woh.api.NotFoundException;
-import ru.woh.api.models.PostModel;
-import ru.woh.api.models.PostRepository;
-import ru.woh.api.models.UserModel;
+import ru.woh.api.models.*;
 import ru.woh.api.views.AdminPostView;
+import ru.woh.api.views.CommentView;
 import ru.woh.api.views.PostView;
 import ru.woh.api.views.TagView;
 
@@ -21,9 +20,12 @@ import java.util.stream.Collectors;
 public class AdminController extends BaseRestController {
     protected final PostRepository postRepository;
 
+    protected final CommentRepository commentRepository;
+
     @Autowired
-    public AdminController(PostRepository postRepository) {
+    public AdminController(PostRepository postRepository, CommentRepository commentRepository) {
         this.postRepository = postRepository;
+        this.commentRepository = commentRepository;
     }
 
     @PostMapping("/{id:[0-9]*}")
@@ -117,5 +119,34 @@ public class AdminController extends BaseRestController {
         postModel = this.postRepository.save(postModel);
 
         return postModel.adminView();
+    }
+
+    @PostMapping("/{id:[0-9]*}/comments/edit/")
+    public CommentView editComment(@RequestBody CommentView comment, HttpServletRequest request) {
+        this.needModer(request);
+
+        CommentModel commentModel = this.commentRepository.findOne(comment.getId());
+        if (commentModel == null) {
+            throw new NotFoundException(String.format("comment #%d not found", comment.getId()));
+        }
+
+        commentModel.setText(comment.getText());
+        commentModel.setUpdatedAt(new Date());
+
+        commentModel = this.commentRepository.save(commentModel);
+
+        return commentModel.view();
+    }
+
+    @PostMapping("/{postId:[0-9]*}/comments/delete/{id:[0-9]*}")
+    public void deleteComment(@PathVariable("id") Long id, HttpServletRequest request) {
+        this.needModer(request);
+
+        CommentModel commentModel = this.commentRepository.findOne(id);
+        if (commentModel == null) {
+            throw new NotFoundException(String.format("comment #%d not found", id));
+        }
+
+        this.commentRepository.delete(id);
     }
 }

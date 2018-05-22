@@ -1,29 +1,27 @@
 package ru.woh.api.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.woh.api.ForbiddenException;
 import ru.woh.api.NotFoundException;
+import ru.woh.api.PostService;
 import ru.woh.api.models.PostModel;
-import ru.woh.api.models.PostRepository;
 import ru.woh.api.views.PostListView;
 import ru.woh.api.views.PostView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.stream.Collectors;
 
 @RestController
 public class PostController extends BaseRestController {
-    private final PostRepository postRepository;
+    private final PostService postService;
     private static final int defaultPageSize = 100;
-    private static final Sort sort = new Sort(Sort.Direction.DESC, "createdAt");
 
-    @Autowired public PostController(PostRepository postRepository) {
-        this.postRepository = postRepository;
+    @Autowired public PostController(PostService postService) {
+        this.postService = postService;
     }
 
     @GetMapping("/")
@@ -36,20 +34,16 @@ public class PostController extends BaseRestController {
             this.needModer(request);
             isModer = true;
         } catch (ForbiddenException e) {/* nop */}
-        return new PostListView((isModer
-            ? this.postRepository.findAll(new PageRequest(page, PostController.defaultPageSize, PostController.sort))
-            : this.postRepository.findAllByIsAllowedTrue(new PageRequest(
-                page,
-                PostController.defaultPageSize,
-                PostController.sort
-            )))
+
+        return new PostListView(this.postService.list(page, PostController.defaultPageSize, isModer)
+            .stream()
             .map(isModer ? PostModel::adminView : PostModel::view)
-            .getContent());
+            .collect(Collectors.toList()));
     }
 
     @GetMapping("/{id:[0-9]*}")
     public PostView one(@PathVariable("id") Long id, HttpServletRequest request) {
-        PostModel post = this.postRepository.findOne(id);
+        PostModel post = this.postService.one(id);
         if (post == null) {
             throw new NotFoundException(String.format("post #%d not found", id));
         }

@@ -53,6 +53,6 @@ public class CommentModel implements Serializable {
     private Long rating;
 
     public CommentView view() {
-        return new CommentView(this.id, this.text, this.createdAt);
+        return new CommentView(this.id, this.text, this.createdAt, this.updatedAt, this.user);
     }
 }
