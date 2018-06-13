@@ -22,6 +22,7 @@ import ru.woh.api.views.UserView;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 
 @RestController
 public class UserController extends BaseRestController {
@@ -104,6 +105,12 @@ public class UserController extends BaseRestController {
         user.setEmail(registrationData.getEmail());
         user.setPassword(this.passwordEncoder.encode(registrationData.getPassword()));
         user.setName(registrationData.getName());
+        user.setToken(this.passwordEncoder.encode(String.format(
+            "%s%s%s",
+            user.getEmail(),
+            user.getPassword(),
+            (new Date()).toString()
+        )));
 
         user = this.userRepository.save(user);
 
