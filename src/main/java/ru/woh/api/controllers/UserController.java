@@ -1,6 +1,8 @@
 package ru.woh.api.controllers;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,18 +14,20 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 import ru.woh.api.ForbiddenException;
 import ru.woh.api.UserAlreadyExists;
+import ru.woh.api.models.RoleModel;
 import ru.woh.api.models.UserModel;
 import ru.woh.api.models.UserRepository;
 import ru.woh.api.views.UserView;
 
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
 public class UserController extends BaseRestController {
-    protected final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    protected final UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public UserController(PasswordEncoder passwordEncoder, UserRepository userRepository) {
@@ -32,58 +36,34 @@ public class UserController extends BaseRestController {
     }
 
     @NoArgsConstructor
+    @Getter
+    @Setter
     public static class LoginData {
         protected String email;
         protected String password;
-
-        public String getEmail() {
-            return email;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
     }
 
     @NoArgsConstructor
+    @Getter
+    @Setter
     public static class RegistrationData extends LoginData {
         protected String name;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
     }
 
     @NoArgsConstructor
+    @Getter
+    @Setter
     public static class UserExtView extends UserView {
         protected String token;
 
-        public UserExtView(Long id, String email, String name, String avatar) {
+        UserExtView(Long id, String email, String name, String avatar, String token) {
             super(id, email, name, avatar);
-        }
-
-        public String getToken() {
-            return token;
-        }
-
-        public void setToken(String token) {
             this.token = token;
         }
     }
 
     @GetMapping("/user")
+    @RolesAllowed({RoleModel.USER, RoleModel.MODER, RoleModel.ADMIN})
     public UserView status(HttpServletRequest request) {
         this.needAuth(request);
 
@@ -91,24 +71,18 @@ public class UserController extends BaseRestController {
     }
 
     @PostMapping("/user/login")
-    public UserExtView login(@RequestBody LoginData loginData, HttpServletRequest request) {
+    @RolesAllowed({RoleModel.ANONYMOUS})
+    public UserExtView login(@RequestBody LoginData loginData) {
         UserModel user = this.userService.authenticate(loginData.getEmail(), loginData.getPassword());
         if (user == null) {
             throw new ForbiddenException();
         }
 
-        String token = this.userService.setUser(user);
-        if (token == null) {
-            throw new ForbiddenException("cant save token");
-        }
-
-        UserExtView view = new UserExtView(user.getId(), user.getEmail(), user.getName(), user.getAvatar());
-        view.token = token;
-
-        return view;
+        return new UserExtView(user.getId(), user.getEmail(), user.getName(), user.getAvatar(), user.getToken());
     }
 
     @PostMapping("/user/register")
+    @RolesAllowed({RoleModel.ANONYMOUS})
     public ResponseEntity<UserView> register(
         @RequestBody RegistrationData registrationData,
         HttpServletResponse response,
@@ -137,6 +111,7 @@ public class UserController extends BaseRestController {
     }
 
     @GetMapping("/user/logout")
+    @RolesAllowed({RoleModel.USER, RoleModel.MODER, RoleModel.ADMIN})
     public RedirectView logout(HttpServletRequest request) {
         this.needAuth(request);
         this.userService.logout(request);

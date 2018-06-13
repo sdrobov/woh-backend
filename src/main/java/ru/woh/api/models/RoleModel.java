@@ -14,32 +14,18 @@ import java.util.Set;
 @Getter
 @Setter
 public class RoleModel implements Serializable {
+    public static final String ANONYMOUS = "ANONYMOUS";
+    public static final String USER = "USER";
+    public static final String MODER = "MODER";
+    public static final String ADMIN = "ADMIN";
+    public static final String PREFIX = "ROLE_%s";
+    public static final String ROLE_ANONYMOUS = String.format("%s%s", PREFIX, ANONYMOUS);
+    public static final String ROLE_USER = String.format("%s%s", PREFIX, USER);
+    public static final String ROLE_MODER = String.format("%s%s", PREFIX, MODER);
+    public static final String ROLE_ADMIN = String.format("%s%s", PREFIX, ADMIN);
+
     private @Id @GeneratedValue(strategy = GenerationType.AUTO) Long id;
     private String name;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Set<UserModel> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<UserModel> users) {
-        this.users = users;
-    }
 
     private @OneToMany(mappedBy = "role", cascade = CascadeType.ALL) Set<UserModel> users;
 }

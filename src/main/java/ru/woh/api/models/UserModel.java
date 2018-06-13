@@ -8,6 +8,9 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.AuthorityUtils;
 import ru.woh.api.views.UserView;
 
 import javax.persistence.*;
@@ -33,6 +36,7 @@ public class UserModel implements Serializable {
 
     @Column(unique = true) private String email;
     private String password;
+    @Column(unique = true) private String token;
 
     @Column(name = "created_at")
     @CreatedDate
@@ -53,7 +57,8 @@ public class UserModel implements Serializable {
     @JoinColumn(name = "role_id")
     private RoleModel role;
 
-    @OneToMany(mappedBy = "moderator", cascade = CascadeType.ALL) private Set<PostModel> moderatedPosts = new HashSet<>();
+    @OneToMany(mappedBy = "moderator",
+        cascade = CascadeType.ALL) private Set<PostModel> moderatedPosts = new HashSet<>();
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL) private Set<CommentModel> comments = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -62,23 +67,38 @@ public class UserModel implements Serializable {
         inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private Set<TagModel> tags = new HashSet<>();
 
+    public static AnonymousAuthenticationToken anonymousAuthenticationToken() {
+        return new AnonymousAuthenticationToken(
+            "key",
+            "anonymousUser",
+            AuthorityUtils.createAuthorityList(RoleModel.ROLE_ANONYMOUS)
+        );
+    }
+
     public UserView view() {
         return new UserView(this.id, this.email, this.name, this.avatar);
     }
 
     public Boolean isAdmin() {
-        if (this.role == null) {
-            return false;
-        }
-
-        return Objects.equals(this.role.getName(), "admin");
+        return Objects.equals(this.getRoleName(), RoleModel.ROLE_ADMIN);
     }
 
     public Boolean isModer() {
-        if (this.role == null) {
-            return false;
-        }
+        return Objects.equals(this.getRoleName(), RoleModel.ROLE_MODER) || this.isAdmin();
+    }
 
-        return Objects.equals(this.role.getName(), "moder") || this.isAdmin();
+    public UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken() {
+        return new UsernamePasswordAuthenticationToken(
+            this,
+            this.getToken(),
+            AuthorityUtils.createAuthorityList(this.getRoleName())
+        );
+    }
+
+    private String getRoleName() {
+        return this.getRole() != null ? String.format(
+            RoleModel.PREFIX,
+            this.getRole().getName().toUpperCase()
+        ) : RoleModel.ROLE_USER;
     }
 }

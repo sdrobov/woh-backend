@@ -8,17 +8,12 @@ spring:
     url: jdbc:mysql://localhost/woh
     username: woh
     password: qwerty
-    initialize: false
+    initialization-mode: never
   session:
-    store-type: mongo
+    store-type: mongodb
   data:
     mongodb:
       uri: mongodb://localhost/woh
-
-security:
-  basic:
-    enabled: false
-  sessions: always
 
 ---
 
@@ -28,7 +23,7 @@ spring:
     url: jdbc:mysql://${DATABASE_HOST}/${DATABASE_NAME}
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
-    initialize: true
+    initialization-mode: never
   data:
     mongodb:
       uri: mongodb://${MONGO_HOST}/${MONGO_DB}

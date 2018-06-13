@@ -20,8 +20,8 @@ public class PostService {
     public List<PostModel> list(Integer page, Integer limit, Boolean includeNotAllowed) {
         return (
             includeNotAllowed
-                ? this.postRepository.findAll(new PageRequest(page, limit, new Sort(Sort.Direction.DESC, "createdAt")))
-                : this.postRepository.findAllByIsAllowedTrue(new PageRequest(
+                ? this.postRepository.findAll(PageRequest.of(page, limit, new Sort(Sort.Direction.DESC, "createdAt")))
+                : this.postRepository.findAllByIsAllowedTrue(PageRequest.of(
                     page,
                     limit,
                     new Sort(Sort.Direction.DESC, "createdAt")
@@ -30,14 +30,14 @@ public class PostService {
     }
 
     public PostModel one(Long id) {
-        return this.postRepository.findOne(id);
+        return this.postRepository.findById(id).orElse(null);
     }
 
     public PostModel save(PostModel post) {
         return this.postRepository.save(post);
     }
 
-    public void delete(Long id) {
-        this.postRepository.delete(id);
+    public void delete(PostModel post) {
+        this.postRepository.delete(post);
     }
 }
