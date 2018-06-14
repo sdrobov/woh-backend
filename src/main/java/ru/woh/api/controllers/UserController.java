@@ -11,12 +11,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.view.RedirectView;
-import ru.woh.api.ForbiddenException;
-import ru.woh.api.UserAlreadyExists;
-import ru.woh.api.models.RoleModel;
-import ru.woh.api.models.UserModel;
-import ru.woh.api.models.UserRepository;
+import ru.woh.api.exceptions.BadRequestException;
+import ru.woh.api.exceptions.NotFoundException;
+import ru.woh.api.exceptions.UserAlreadyExistsException;
+import ru.woh.api.services.UserService;
+import ru.woh.api.models.Role;
+import ru.woh.api.models.User;
+import ru.woh.api.models.repositories.UserRepository;
 import ru.woh.api.views.UserView;
 
 import javax.annotation.security.RolesAllowed;
@@ -25,15 +26,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
 @RestController
-public class UserController extends BaseRestController {
+public class UserController {
     private final PasswordEncoder passwordEncoder;
-
     private final UserRepository userRepository;
+    private final UserService userService;
 
     @Autowired
-    public UserController(PasswordEncoder passwordEncoder, UserRepository userRepository) {
+    public UserController(PasswordEncoder passwordEncoder, UserRepository userRepository, UserService userService) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @NoArgsConstructor
@@ -64,44 +66,39 @@ public class UserController extends BaseRestController {
     }
 
     @GetMapping("/user")
-    @RolesAllowed({RoleModel.USER, RoleModel.MODER, RoleModel.ADMIN})
-    public UserView status(HttpServletRequest request) {
-        this.needAuth(request);
-
-        return this.getUser(request).view();
+    @RolesAllowed({Role.USER, Role.MODER, Role.ADMIN})
+    public UserView status() {
+        return this.userService.geCurrenttUser().view();
     }
 
     @PostMapping("/user/login")
-    @RolesAllowed({RoleModel.ANONYMOUS})
+    @RolesAllowed({Role.ANONYMOUS})
     public UserExtView login(@RequestBody LoginData loginData) {
-        UserModel user = this.userService.authenticate(loginData.getEmail(), loginData.getPassword());
-        if (user == null) {
-            throw new ForbiddenException();
-        }
+        User user = this.userService.authenticate(loginData.getEmail(), loginData.getPassword());
 
         return new UserExtView(user.getId(), user.getEmail(), user.getName(), user.getAvatar(), user.getToken());
     }
 
     @PostMapping("/user/register")
-    @RolesAllowed({RoleModel.ANONYMOUS})
+    @RolesAllowed({Role.ANONYMOUS})
     public ResponseEntity<UserView> register(
         @RequestBody RegistrationData registrationData,
         HttpServletResponse response,
         HttpServletRequest request
     ) {
-        UserModel user = this.userService.getUser(request);
+        User user = this.userService.findUserByAuthToken(request);
         if (user != null) {
-            response.addHeader("Location", "/");
-
-            return new ResponseEntity<>(HttpStatus.TEMPORARY_REDIRECT);
+            throw new BadRequestException("you are already authorized");
         }
 
-        user = this.userService.authenticate(registrationData.getEmail(), registrationData.getPassword());
-        if (user != null) {
-            throw new UserAlreadyExists("user already exists");
-        }
+        try {
+            user = this.userService.authenticate(registrationData.getEmail(), registrationData.getPassword());
+            if (user != null) {
+                throw new UserAlreadyExistsException("user already exists");
+            }
+        } catch (NotFoundException e) { /* nop */ }
 
-        user = new UserModel();
+        user = new User();
         user.setEmail(registrationData.getEmail());
         user.setPassword(this.passwordEncoder.encode(registrationData.getPassword()));
         user.setName(registrationData.getName());
@@ -115,14 +112,5 @@ public class UserController extends BaseRestController {
         user = this.userRepository.save(user);
 
         return new ResponseEntity<>(user.view(), HttpStatus.CREATED);
-    }
-
-    @GetMapping("/user/logout")
-    @RolesAllowed({RoleModel.USER, RoleModel.MODER, RoleModel.ADMIN})
-    public RedirectView logout(HttpServletRequest request) {
-        this.needAuth(request);
-        this.userService.logout(request);
-
-        return new RedirectView("/");
     }
 }

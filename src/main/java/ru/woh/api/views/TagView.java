@@ -3,7 +3,7 @@ package ru.woh.api.views;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.woh.api.models.TagModel;
+import ru.woh.api.models.Tag;
 
 @NoArgsConstructor
 @Getter
@@ -17,9 +17,9 @@ public class TagView {
         this.name = name;
     }
 
-    public TagModel model()
+    public Tag model()
     {
-        TagModel tag = new TagModel();
+        Tag tag = new Tag();
         tag.setName(this.getName());
 
         return tag;

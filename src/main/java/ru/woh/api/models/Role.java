@@ -13,7 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-public class RoleModel implements Serializable {
+public class Role implements Serializable {
     public static final String ANONYMOUS = "ANONYMOUS";
     public static final String USER = "USER";
     public static final String MODER = "MODER";
@@ -27,5 +27,5 @@ public class RoleModel implements Serializable {
     private @Id @GeneratedValue(strategy = GenerationType.AUTO) Long id;
     private String name;
 
-    private @OneToMany(mappedBy = "role", cascade = CascadeType.ALL) Set<UserModel> users;
+    private @OneToMany(mappedBy = "role", cascade = CascadeType.ALL) Set<User> users;
 }

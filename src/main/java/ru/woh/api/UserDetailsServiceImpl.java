@@ -1,13 +1,13 @@
 package ru.woh.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.woh.api.models.UserModel;
-import ru.woh.api.models.UserRepository;
+import ru.woh.api.exceptions.NotFoundException;
+import ru.woh.api.models.User;
+import ru.woh.api.models.repositories.UserRepository;
 
 import java.util.Collections;
 
@@ -20,8 +20,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        UserModel user = this.userRepository.findFirstByEmail(s).orElseThrow(NotFoundException::new);
+        User user = this.userRepository.findFirstByEmail(s).orElseThrow(NotFoundException::new);
 
-        return new User(user.getName(), user.getPassword(), Collections.emptyList());
+        return new org.springframework.security.core.userdetails.User(user.getName(), user.getPassword(), Collections.emptyList());
     }
 }

@@ -3,8 +3,8 @@ package ru.woh.api.views;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.woh.api.models.CommentModel;
-import ru.woh.api.models.UserModel;
+import ru.woh.api.models.Comment;
+import ru.woh.api.models.User;
 
 import java.util.Date;
 
@@ -18,7 +18,7 @@ public class CommentView {
     private Date updatedAt;
     private UserView user;
 
-    public CommentView(Long id, String text, Date createdAt, Date updatedAt, UserModel user) {
+    public CommentView(Long id, String text, Date createdAt, Date updatedAt, User user) {
         this.id = id;
         this.text = text;
         this.createdAt = createdAt;
@@ -26,8 +26,8 @@ public class CommentView {
         this.user = user.view();
     }
 
-    public CommentModel model() {
-        CommentModel newComment = new CommentModel();
+    public Comment model() {
+        Comment newComment = new Comment();
         newComment.setText(this.getText());
         newComment.setCreatedAt(new Date());
 

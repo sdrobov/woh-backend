@@ -1,10 +1,11 @@
-package ru.woh.api;
+package ru.woh.api.filters;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import ru.woh.api.models.UserModel;
+import ru.woh.api.services.UserService;
+import ru.woh.api.models.User;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -13,9 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
-    private UserService userService;
+    private final UserService userService;
 
-    JWTAuthorizationFilter(AuthenticationManager authenticationManager, UserService userService) {
+    public JWTAuthorizationFilter(AuthenticationManager authenticationManager, UserService userService) {
         super(authenticationManager);
         this.userService = userService;
     }
@@ -30,11 +31,11 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     private Authentication getAuthentication(HttpServletRequest request) {
-        UserModel user = this.userService.getUser(request);
+        User user = this.userService.findUserByAuthToken(request);
         if (user != null) {
             return user.usernamePasswordAuthenticationToken();
         }
 
-        return UserModel.anonymousAuthenticationToken();
+        return User.anonymousAuthenticationToken();
     }
 }

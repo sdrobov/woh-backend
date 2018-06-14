@@ -1,20 +1,21 @@
-package ru.woh.api;
+package ru.woh.api.filters;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import ru.woh.api.models.UserModel;
+import ru.woh.api.services.UserService;
+import ru.woh.api.models.User;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private UserService userService;
-    private AuthenticationManager authenticationManager;
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
 
-    JWTAuthenticationFilter(
+    public JWTAuthenticationFilter(
         UserService userService, AuthenticationManager authenticationManager
     ) {
         this.userService = userService;
@@ -24,9 +25,9 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override public Authentication attemptAuthentication(
         HttpServletRequest request, HttpServletResponse response
     ) throws AuthenticationException {
-        UserModel user = this.userService.getUser(request);
+        User user = this.userService.findUserByAuthToken(request);
         if (user == null) {
-            return this.authenticationManager.authenticate(UserModel.anonymousAuthenticationToken());
+            return this.authenticationManager.authenticate(User.anonymousAuthenticationToken());
         }
 
         return this.authenticationManager.authenticate(user.usernamePasswordAuthenticationToken());
@@ -35,7 +36,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override protected void successfulAuthentication(
         HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult
     ) {
-        UserModel user = (UserModel) authResult.getPrincipal();
+        User user = (User) authResult.getPrincipal();
         response.addHeader("Authorization", String.format("Bearer %s", user.getToken()));
     }
 }

@@ -24,7 +24,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
-public class CommentModel implements Serializable {
+public class Comment implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -44,11 +44,11 @@ public class CommentModel implements Serializable {
     @ManyToOne
     @JoinColumn(name = "user_id")
     @CreatedBy
-    private UserModel user;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
-    private PostModel post;
+    private Post post;
 
     private Long rating;
 

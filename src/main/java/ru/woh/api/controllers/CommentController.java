@@ -3,26 +3,31 @@ package ru.woh.api.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
-import ru.woh.api.NotFoundException;
 import ru.woh.api.models.*;
+import ru.woh.api.models.repositories.CommentRepository;
+import ru.woh.api.services.PostService;
+import ru.woh.api.services.UserService;
 import ru.woh.api.views.CommentView;
 
 import javax.annotation.security.RolesAllowed;
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
-public class CommentController extends BaseRestController {
+public class CommentController {
     private static final int MAX_COMMENTS = 100;
-
-    private final PostRepository postRepository;
-
+    private final PostService postService;
     private final CommentRepository commentRepository;
+    private final UserService userService;
 
     @Autowired
-    public CommentController(PostRepository postRepository, CommentRepository commentRepository) {
-        this.postRepository = postRepository;
+    public CommentController(
+        CommentRepository commentRepository,
+        PostService postService,
+        UserService userService
+    ) {
         this.commentRepository = commentRepository;
+        this.postService = postService;
+        this.userService = userService;
     }
 
     @GetMapping("/{id:[0-9]*}/comments")
@@ -30,33 +35,30 @@ public class CommentController extends BaseRestController {
         @PathVariable("id") Long postId,
         @RequestParam(value = "page", defaultValue = "0") Integer page
     ) {
-        PostModel post = this.postRepository.findById(postId).orElseThrow(NotFoundException::new);
+        Post post = this.postService.one(postId);
 
         return this.commentRepository
             .findAllByPost(post, PageRequest.of(page, MAX_COMMENTS))
-            .map(CommentModel::view)
+            .map(Comment::view)
             .getContent();
     }
 
     @PostMapping("/{id:[0-9]*}/comments")
-    @RolesAllowed({RoleModel.USER, RoleModel.MODER, RoleModel.ADMIN})
+    @RolesAllowed({Role.USER, Role.MODER, Role.ADMIN})
     public List<CommentView> add(
         @PathVariable("id") Long postId,
-        @RequestBody CommentView comment,
-        HttpServletRequest request
+        @RequestBody CommentView comment
     ) {
-        this.needAuth(request);
+        Post post = this.postService.one(postId);
 
-        PostModel post = this.postRepository.findById(postId).orElseThrow(NotFoundException::new);
-
-        CommentModel newComment = comment.model();
+        Comment newComment = comment.model();
         newComment.setPost(post);
-        newComment.setUser(this.getUser(request));
+        newComment.setUser(this.userService.geCurrenttUser());
         this.commentRepository.save(newComment);
 
         return this.commentRepository
             .findAllByPost(post, PageRequest.of(0, MAX_COMMENTS))
-            .map(CommentModel::view)
+            .map(Comment::view)
             .getContent();
     }
 }

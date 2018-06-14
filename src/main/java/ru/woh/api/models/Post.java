@@ -28,7 +28,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-public class PostModel implements Serializable {
+public class Post implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -52,15 +52,15 @@ public class PostModel implements Serializable {
     @ManyToOne
     @JoinColumn(name = "moderator_id")
     @CreatedBy
-    private UserModel moderator;
+    private User moderator;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL) private Set<CommentModel> comments = new HashSet<>();
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL) private Set<Comment> comments = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "TagsRefUsers",
         joinColumns = {@JoinColumn(name = "user_id")},
         inverseJoinColumns = {@JoinColumn(name = "tag_id")})
-    private Set<TagModel> tags = new HashSet<>();
+    private Set<Tag> tags = new HashSet<>();
 
     private Long rating;
 
@@ -75,7 +75,7 @@ public class PostModel implements Serializable {
             this.text,
             this.source,
             this.createdAt,
-            withComments ? this.comments : Collections.<CommentModel>emptySet(),
+            withComments ? this.comments : Collections.emptySet(),
             this.tags
         );
     }
@@ -87,7 +87,7 @@ public class PostModel implements Serializable {
             this.text,
             this.source,
             this.createdAt,
-            Collections.<CommentModel>emptySet(),
+            Collections.emptySet(),
             this.tags,
             this.updatedAt,
             this.moderatedAt,
@@ -96,13 +96,13 @@ public class PostModel implements Serializable {
         );
     }
 
-    public void approve(UserModel moderator) {
+    public void approve(User moderator) {
         this.isAllowed = true;
         this.moderatedAt = new Date();
         this.moderator = moderator;
     }
 
-    public void dismiss(UserModel moderator) {
+    public void dismiss(User moderator) {
         this.isAllowed = false;
         this.moderatedAt = new Date();
         this.moderator = moderator;

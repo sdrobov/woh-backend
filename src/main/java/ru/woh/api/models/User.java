@@ -29,7 +29,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserModel implements Serializable {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -55,23 +55,23 @@ public class UserModel implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "role_id")
-    private RoleModel role;
+    private Role role;
 
     @OneToMany(mappedBy = "moderator",
-        cascade = CascadeType.ALL) private Set<PostModel> moderatedPosts = new HashSet<>();
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL) private Set<CommentModel> comments = new HashSet<>();
+        cascade = CascadeType.ALL) private Set<Post> moderatedPosts = new HashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL) private Set<Comment> comments = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "TagsRefUsers",
         joinColumns = {@JoinColumn(name = "user_id")},
         inverseJoinColumns = {@JoinColumn(name = "tag_id")})
-    private Set<TagModel> tags = new HashSet<>();
+    private Set<Tag> tags = new HashSet<>();
 
     public static AnonymousAuthenticationToken anonymousAuthenticationToken() {
         return new AnonymousAuthenticationToken(
             "key",
             "anonymousUser",
-            AuthorityUtils.createAuthorityList(RoleModel.ROLE_ANONYMOUS)
+            AuthorityUtils.createAuthorityList(Role.ROLE_ANONYMOUS)
         );
     }
 
@@ -79,12 +79,12 @@ public class UserModel implements Serializable {
         return new UserView(this.id, this.email, this.name, this.avatar);
     }
 
-    public Boolean isAdmin() {
-        return Objects.equals(this.getRoleName(), RoleModel.ROLE_ADMIN);
+    private Boolean isAdmin() {
+        return Objects.equals(this.getRoleName(), Role.ROLE_ADMIN);
     }
 
     public Boolean isModer() {
-        return Objects.equals(this.getRoleName(), RoleModel.ROLE_MODER) || this.isAdmin();
+        return Objects.equals(this.getRoleName(), Role.ROLE_MODER) || this.isAdmin();
     }
 
     public UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken() {
@@ -97,8 +97,8 @@ public class UserModel implements Serializable {
 
     private String getRoleName() {
         return this.getRole() != null ? String.format(
-            RoleModel.PREFIX,
+            Role.PREFIX,
             this.getRole().getName().toUpperCase()
-        ) : RoleModel.ROLE_USER;
+        ) : Role.ROLE_USER;
     }
 }
