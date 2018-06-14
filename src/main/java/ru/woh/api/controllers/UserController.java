@@ -81,12 +81,8 @@ public class UserController {
 
     @PostMapping("/user/register")
     @RolesAllowed({Role.ANONYMOUS})
-    public ResponseEntity<UserView> register(
-        @RequestBody RegistrationData registrationData,
-        HttpServletResponse response,
-        HttpServletRequest request
-    ) {
-        User user = this.userService.findUserByAuthToken(request);
+    public ResponseEntity<UserView> register(@RequestBody RegistrationData registrationData) {
+        User user = this.userService.geCurrenttUser();
         if (user != null) {
             throw new BadRequestException("you are already authorized");
         }
