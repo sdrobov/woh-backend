@@ -23,8 +23,8 @@ public class ApiApplication {
                         .addMapping("/**")
                         .allowedOrigins("*")
                         .allowCredentials(true)
-                        .allowedHeaders("DNT", "User-Agent", "X-Requested-With", "If-Modified-Since", "Cache-Control", "Content-Type", "Range")
-                        .allowedMethods("GET", "HEAD", "POST", "OPTIONS")
+                        .allowedHeaders("*")
+                        .allowedMethods("*")
                         .exposedHeaders("Content-Length", "Content-Range")
                         .maxAge(1728000);
             }
