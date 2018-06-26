@@ -104,6 +104,7 @@ public class UserController {
             user.getPassword(),
             (new Date()).toString()
         )));
+        user.setCreatedAt(new Date());
 
         user = this.userRepository.save(user);
 
