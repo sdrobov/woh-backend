@@ -37,7 +37,7 @@ public class AdminController {
     }
 
     @PostMapping("/{id:[0-9]*}")
-    @RolesAllowed({Role.MODER, Role.ADMIN})
+    @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public AdminPostView save(@PathVariable("id") Long id, @RequestBody PostView post) {
         User user = this.userService.geCurrenttUser();
 
@@ -49,12 +49,14 @@ public class AdminController {
         postModel.setModeratedAt(new Date());
         postModel.setUpdatedAt(new Date());
         postModel.setModerator(user);
-        postModel.setTags(
-            post.getTags()
-                .stream()
-                .map(TagView::model)
-                .collect(Collectors.toSet())
-        );
+        if (post.getTags() != null) {
+            postModel.setTags(
+                post.getTags()
+                    .stream()
+                    .map(TagView::model)
+                    .collect(Collectors.toSet())
+            );
+        }
 
         postModel = this.postService.save(postModel);
 
@@ -62,7 +64,7 @@ public class AdminController {
     }
 
     @PostMapping("/add")
-    @RolesAllowed({Role.MODER, Role.ADMIN})
+    @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public AdminPostView add(@RequestBody PostView post) {
         User user = this.userService.geCurrenttUser();
 
@@ -74,12 +76,14 @@ public class AdminController {
         postModel.setModeratedAt(new Date());
         postModel.setModerator(user);
         postModel.setIsAllowed(true);
-        postModel.setTags(
-            post.getTags()
-                .stream()
-                .map(TagView::model)
-                .collect(Collectors.toSet())
-        );
+        if (post.getTags() != null) {
+            postModel.setTags(
+                post.getTags()
+                    .stream()
+                    .map(TagView::model)
+                    .collect(Collectors.toSet())
+            );
+        }
 
         postModel = this.postService.save(postModel);
 
@@ -87,7 +91,7 @@ public class AdminController {
     }
 
     @PostMapping("/{id:[0-9]*}/delete")
-    @RolesAllowed({Role.MODER, Role.ADMIN})
+    @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public void delete(@PathVariable("id") Long id) {
         Post postModel = this.postService.one(id);
 
@@ -95,7 +99,7 @@ public class AdminController {
     }
 
     @PostMapping("/{id:[0-9]*}/approve")
-    @RolesAllowed({Role.MODER, Role.ADMIN})
+    @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public AdminPostView approve(@PathVariable("id") Long id) {
         Post postModel = this.postService.one(id);
 
@@ -106,7 +110,7 @@ public class AdminController {
     }
 
     @PostMapping("/{id:[0-9]*}/dismiss")
-    @RolesAllowed({Role.MODER, Role.ADMIN})
+    @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public AdminPostView dismiss(@PathVariable("id") Long id) {
         Post postModel = this.postService.one(id);
 
@@ -117,7 +121,7 @@ public class AdminController {
     }
 
     @PostMapping("/{id:[0-9]*}/comments/edit/")
-    @RolesAllowed({Role.MODER, Role.ADMIN})
+    @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public CommentView editComment(@RequestBody CommentView comment) {
         Comment commentModel = this.commentRepository.findById(comment.getId())
             .orElseThrow(() -> new NotFoundException(String.format("comment #%d not found", comment.getId())));
@@ -131,7 +135,7 @@ public class AdminController {
     }
 
     @PostMapping("/{postId:[0-9]*}/comments/delete/{id:[0-9]*}")
-    @RolesAllowed({Role.MODER, Role.ADMIN})
+    @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public void deleteComment(@PathVariable("id") Long id) {
         Comment commentModel = this.commentRepository.findById(id)
             .orElseThrow(() -> new NotFoundException(String.format("comment #%d not found", id)));

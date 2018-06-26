@@ -19,10 +19,10 @@ public class Role implements Serializable {
     public static final String MODER = "MODER";
     public static final String ADMIN = "ADMIN";
     public static final String PREFIX = "ROLE_%s";
-    public static final String ROLE_ANONYMOUS = String.format("%s%s", PREFIX, ANONYMOUS);
-    public static final String ROLE_USER = String.format("%s%s", PREFIX, USER);
-    public static final String ROLE_MODER = String.format("%s%s", PREFIX, MODER);
-    public static final String ROLE_ADMIN = String.format("%s%s", PREFIX, ADMIN);
+    public static final String ROLE_ANONYMOUS = "ROLE_ANONYMOUS";
+    public static final String ROLE_USER = "ROLE_USER";
+    public static final String ROLE_MODER = "ROLE_MODER";
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
 
     private @Id @GeneratedValue(strategy = GenerationType.AUTO) Long id;
     private String name;

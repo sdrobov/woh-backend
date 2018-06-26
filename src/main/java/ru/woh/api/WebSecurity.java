@@ -33,8 +33,10 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     }
 
     @Override protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-            .antMatchers("/user/login", "/user/register").permitAll()
+        http.csrf()
+            .disable()
+            .authorizeRequests()
+            .antMatchers(HttpMethod.POST, "/user/login", "/user/register").permitAll()
             .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .anyRequest()
             .hasAnyRole("ANONYMOUS", "USER", "MODER", "ADMIN")
@@ -42,7 +44,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
             .addFilter(new JWTAuthenticationFilter(userService, authenticationManager()))
             .addFilter(new JWTAuthorizationFilter(authenticationManager(), userService))
             .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        ;
     }
 
     @Override protected void configure(AuthenticationManagerBuilder auth) throws Exception {

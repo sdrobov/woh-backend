@@ -66,13 +66,13 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    @RolesAllowed({Role.USER, Role.MODER, Role.ADMIN})
+    @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
     public UserView status() {
         return this.userService.geCurrenttUser().view();
     }
 
     @PostMapping("/user/login")
-    @RolesAllowed({Role.ANONYMOUS})
+    @RolesAllowed({Role.ROLE_ANONYMOUS})
     public UserExtView login(@RequestBody LoginData loginData) {
         User user = this.userService.authenticate(loginData.getEmail(), loginData.getPassword());
 
@@ -80,7 +80,7 @@ public class UserController {
     }
 
     @PostMapping("/user/register")
-    @RolesAllowed({Role.ANONYMOUS})
+    @RolesAllowed({Role.ROLE_ANONYMOUS})
     public ResponseEntity<UserView> register(@RequestBody RegistrationData registrationData) {
         User user = this.userService.geCurrenttUser();
         if (user != null) {

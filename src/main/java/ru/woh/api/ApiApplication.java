@@ -20,13 +20,13 @@ public class ApiApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry
-                        .addMapping("/**")
-                        .allowedOrigins("*")
-                        .allowCredentials(true)
-                        .allowedHeaders("*")
-                        .allowedMethods("*")
-                        .exposedHeaders("Content-Length", "Content-Range")
-                        .maxAge(1728000);
+                    .addMapping("/**")
+                    .allowedOrigins("*")
+                    .allowCredentials(true)
+                    .allowedHeaders("*")
+                    .allowedMethods("*")
+                    .exposedHeaders("Content-Length", "Content-Range")
+                    .maxAge(1728000);
             }
         };
     }

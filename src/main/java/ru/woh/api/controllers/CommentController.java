@@ -44,7 +44,7 @@ public class CommentController {
     }
 
     @PostMapping("/{id:[0-9]*}/comments")
-    @RolesAllowed({Role.USER, Role.MODER, Role.ADMIN})
+    @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
     public List<CommentView> add(
         @PathVariable("id") Long postId,
         @RequestBody CommentView comment

@@ -32,10 +32,10 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
     private Authentication getAuthentication(HttpServletRequest request) {
         User user = this.userService.findUserByAuthToken(request);
-        if (user != null) {
-            return user.usernamePasswordAuthenticationToken();
+        if (user == null) {
+            return User.anonymousAuthenticationToken();
         }
 
-        return User.anonymousAuthenticationToken();
+        return user.usernamePasswordAuthenticationToken();
     }
 }
