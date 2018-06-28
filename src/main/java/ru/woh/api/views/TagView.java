@@ -12,6 +12,10 @@ public class TagView {
     protected Long id;
     protected String name;
 
+    public TagView(String name) {
+        this.name = name;
+    }
+
     public TagView(Long id, String name) {
         this.id = id;
         this.name = name;
@@ -20,6 +24,7 @@ public class TagView {
     public Tag model()
     {
         Tag tag = new Tag();
+        tag.setId(this.getId());
         tag.setName(this.getName());
 
         return tag;

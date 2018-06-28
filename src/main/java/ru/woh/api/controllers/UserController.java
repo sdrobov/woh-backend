@@ -21,8 +21,6 @@ import ru.woh.api.models.repositories.UserRepository;
 import ru.woh.api.views.UserView;
 
 import javax.annotation.security.RolesAllowed;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
 @RestController
