@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 @Entity
-@Table(name = "Roles")
+@Table(name = "role")
 @NoArgsConstructor
 @Getter
 @Setter
@@ -24,8 +24,14 @@ public class Role implements Serializable {
     public static final String ROLE_MODER = "ROLE_MODER";
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
 
-    private @Id @GeneratedValue(strategy = GenerationType.AUTO) Long id;
+    private @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, unique = true)
+    Long id;
+
+    @Column(nullable = false, unique = true)
     private String name;
 
-    private @OneToMany(mappedBy = "role", cascade = CascadeType.ALL) Set<User> users;
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
+    private Set<User> users;
 }

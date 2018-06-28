@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.woh.api.exceptions.NotFoundException;
+import ru.woh.api.models.repositories.TagRepository;
 import ru.woh.api.services.PostService;
 import ru.woh.api.services.UserService;
 import ru.woh.api.models.*;
@@ -13,7 +14,6 @@ import ru.woh.api.models.repositories.CommentRepository;
 import ru.woh.api.views.AdminPostView;
 import ru.woh.api.views.CommentView;
 import ru.woh.api.views.PostView;
-import ru.woh.api.views.TagView;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.Date;
@@ -24,16 +24,19 @@ public class AdminController {
     private final PostService postService;
     private final CommentRepository commentRepository;
     private final UserService userService;
+    private final TagRepository tagRepository;
 
     @Autowired
     public AdminController(
         CommentRepository commentRepository,
         UserService userService,
-        PostService postService
+        PostService postService,
+        TagRepository tagRepository
     ) {
         this.commentRepository = commentRepository;
         this.userService = userService;
         this.postService = postService;
+        this.tagRepository = tagRepository;
     }
 
     @PostMapping("/{id:[0-9]*}")
@@ -53,7 +56,13 @@ public class AdminController {
             postModel.setTags(
                 post.getTags()
                     .stream()
-                    .map(TagView::model)
+                    .map(String::trim)
+                    .distinct()
+                    .map(tagName -> this.tagRepository.findFirstByName(tagName).orElseGet(() -> {
+                        Tag tag = new Tag();
+                        tag.setName(tagName);
+                        return this.tagRepository.save(tag);
+                    }))
                     .collect(Collectors.toSet())
             );
         }
@@ -80,7 +89,13 @@ public class AdminController {
             postModel.setTags(
                 post.getTags()
                     .stream()
-                    .map(TagView::model)
+                    .map(String::trim)
+                    .distinct()
+                    .map(tagName -> this.tagRepository.findFirstByName(tagName).orElseGet(() -> {
+                        Tag tag = new Tag();
+                        tag.setName(tagName);
+                        return this.tagRepository.save(tag);
+                    }))
                     .collect(Collectors.toSet())
             );
         }

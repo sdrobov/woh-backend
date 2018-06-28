@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -17,12 +18,17 @@ import ru.woh.api.filters.JWTAuthorizationFilter;
 import ru.woh.api.services.UserService;
 
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(
+    securedEnabled = true,
+    jsr250Enabled = true,
+    prePostEnabled = true)
 public class WebSecurity extends WebSecurityConfigurerAdapter {
     private final UserService userService;
     private final UserDetailsServiceImpl userDetailsService;
     private final PasswordEncoder passwordEncoder;
 
-    @Autowired public WebSecurity(
+    @Autowired
+    public WebSecurity(
         UserService userService,
         UserDetailsServiceImpl userDetailsService,
         PasswordEncoder passwordEncoder
@@ -32,7 +38,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Override protected void configure(HttpSecurity http) throws Exception {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
         http.csrf()
             .disable()
             .authorizeRequests()
@@ -48,7 +55,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         ;
     }
 
-    @Override protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(this.userDetailsService).passwordEncoder(this.passwordEncoder);
     }
 

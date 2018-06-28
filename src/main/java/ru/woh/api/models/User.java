@@ -21,8 +21,8 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity(name = "User")
-@Table(name = "Users")
-@SQLDelete(sql = "UPDATE Users SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@Table(name = "user")
+@SQLDelete(sql = "UPDATE user SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @Loader(namedQuery = "findUserById")
 @NamedQuery(name = "findUserById", query = "SELECT u FROM User u WHERE u.id = ?1 AND u.deletedAt IS NULL")
 @Where(clause = "deleted_at IS NULL")
@@ -31,12 +31,18 @@ import java.util.Set;
 @Setter
 public class User implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, unique = true)
     private Long id;
 
-    @Column(unique = true) private String email;
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(nullable = false)
     private String password;
-    @Column(unique = true) private String token;
+
+    @Column(nullable = false, unique = true)
+    private String token;
 
     @Column(name = "created_at")
     @CreatedDate
@@ -46,23 +52,33 @@ public class User implements Serializable {
     @LastModifiedDate
     private Date updatedAt;
 
-    @Column(name = "deleted_at") private Date deletedAt;
+    @Column(name = "deleted_at")
+    private Date deletedAt;
+
     private String name;
     private String avatar;
-    @Column(unique = true) private String fb;
-    @Column(unique = true) private String vk;
-    @Column(unique = true) private String google;
+
+    @Column(unique = true)
+    private String fb;
+
+    @Column(unique = true)
+    private String vk;
+
+    @Column(unique = true)
+    private String google;
 
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
 
     @OneToMany(mappedBy = "moderator",
-        cascade = CascadeType.ALL) private Set<Post> moderatedPosts = new HashSet<>();
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL) private Set<Comment> comments = new HashSet<>();
+        cascade = CascadeType.ALL)
+    private Set<Post> moderatedPosts = new HashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<Comment> comments = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "TagsRefUsers",
+    @JoinTable(name = "tags_ref_users",
         joinColumns = {@JoinColumn(name = "user_id")},
         inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private Set<Tag> tags = new HashSet<>();

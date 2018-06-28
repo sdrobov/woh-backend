@@ -21,7 +21,7 @@ public class PostView {
     protected String source;
     protected Date createdAt;
     protected List<CommentView> comments;
-    protected List<TagView> tags;
+    protected List<String> tags;
 
     public PostView(Long id, String title, String text, String source, Date createdAt, Set<Comment> comments, Set<Tag> tags) {
         this.id = id;
@@ -36,7 +36,7 @@ public class PostView {
             .collect(Collectors.toList());
         this.tags = tags
             .stream()
-            .map(Tag::view)
+            .map(Tag::getName)
             .collect(Collectors.toList());
     }
 }

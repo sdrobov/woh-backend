@@ -20,8 +20,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity(name = "Post")
-@Table(name = "Posts")
-@SQLDelete(sql = "UPDATE Posts SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@Table(name = "post")
+@SQLDelete(sql = "UPDATE post SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @Loader(namedQuery = "findPostById")
 @NamedQuery(name = "findPostById", query = "SELECT p FROM Post p WHERE p.id = ?1 AND p.deletedAt IS NULL")
 @Where(clause = "deleted_at IS NULL")
@@ -30,7 +30,8 @@ import java.util.Set;
 @Setter
 public class Post implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, unique = true)
     private Long id;
 
     private String title;
@@ -45,20 +46,26 @@ public class Post implements Serializable {
     @LastModifiedDate
     private Date updatedAt;
 
-    @Column(name = "deleted_at") private Date deletedAt;
-    @Column(name = "is_allowed") private Boolean isAllowed;
-    @Column(name = "moderated_at") private Date moderatedAt;
+    @Column(name = "deleted_at")
+    private Date deletedAt;
+
+    @Column(name = "is_allowed")
+    private Boolean isAllowed;
+
+    @Column(name = "moderated_at")
+    private Date moderatedAt;
 
     @ManyToOne
     @JoinColumn(name = "moderator_id")
     @CreatedBy
     private User moderator;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL) private Set<Comment> comments = new HashSet<>();
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private Set<Comment> comments = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "TagsRefUsers",
-        joinColumns = {@JoinColumn(name = "user_id")},
+    @JoinTable(name = "tags_ref_posts",
+        joinColumns = {@JoinColumn(name = "post_id")},
         inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private Set<Tag> tags = new HashSet<>();
 

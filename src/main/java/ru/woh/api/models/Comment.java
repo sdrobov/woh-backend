@@ -16,8 +16,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity(name = "Comment")
-@Table(name = "Comments")
-@SQLDelete(sql = "UPDATE Comments SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@Table(name = "comment")
+@SQLDelete(sql = "UPDATE comment SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @Loader(namedQuery = "findCommentById")
 @NamedQuery(name = "findCommentById", query = "SELECT c FROM Comment c WHERE c.id = ?1 AND c.deletedAt IS NULL")
 @Where(clause = "deleted_at IS NULL")
@@ -26,7 +26,8 @@ import java.util.Date;
 @Setter
 public class Comment implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, unique = true)
     private Long id;
 
     private String text;
