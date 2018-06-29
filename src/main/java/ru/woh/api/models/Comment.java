@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Loader;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -30,6 +31,7 @@ public class Comment implements Serializable {
     @Column(nullable = false, unique = true)
     private Long id;
 
+    @Type(type = "text")
     private String text;
 
     @Column(name = "created_at")

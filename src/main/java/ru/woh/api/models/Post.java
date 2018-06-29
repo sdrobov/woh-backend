@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Loader;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -35,7 +36,10 @@ public class Post implements Serializable {
     private Long id;
 
     private String title;
+
+    @Type(type = "text")
     private String text;
+
     private String source;
 
     @Column(name = "created_at")
