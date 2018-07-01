@@ -57,8 +57,8 @@ public class UserController {
     public static class UserExtView extends UserView {
         protected String token;
 
-        UserExtView(Long id, String email, String name, String avatar, String token) {
-            super(id, email, name, avatar);
+        UserExtView(Long id, String email, String name, String avatar, String role, String token) {
+            super(id, email, name, avatar, role);
             this.token = token;
         }
     }
@@ -74,7 +74,7 @@ public class UserController {
     public UserExtView login(@RequestBody LoginData loginData) {
         User user = this.userService.authenticate(loginData.getEmail(), loginData.getPassword());
 
-        return new UserExtView(user.getId(), user.getEmail(), user.getName(), user.getAvatar(), user.getToken());
+        return new UserExtView(user.getId(), user.getEmail(), user.getName(), user.getAvatar(), user.getRoleName(), user.getToken());
     }
 
     @PostMapping("/user/register")

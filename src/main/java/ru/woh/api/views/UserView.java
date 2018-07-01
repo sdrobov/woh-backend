@@ -12,11 +12,13 @@ public class UserView {
     protected String email;
     protected String name;
     protected String avatar;
+    protected String role;
 
-    public UserView(Long id, String email, String name, String avatar) {
+    public UserView(Long id, String email, String name, String avatar, String role) {
         this.id = id;
         this.email = email;
         this.name = name;
         this.avatar = avatar;
+        this.role = role;
     }
 }

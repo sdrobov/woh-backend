@@ -92,7 +92,7 @@ public class User implements Serializable {
     }
 
     public UserView view() {
-        return new UserView(this.id, this.email, this.name, this.avatar);
+        return new UserView(this.id, this.email, this.name, this.avatar, this.getRoleName());
     }
 
     private Boolean isAdmin() {
@@ -111,7 +111,7 @@ public class User implements Serializable {
         );
     }
 
-    private String getRoleName() {
+    public String getRoleName() {
         return this.getRole() != null ? String.format(
             Role.PREFIX,
             this.getRole().getName().toUpperCase()
