@@ -52,6 +52,7 @@ public class AdminController {
         postModel.setModeratedAt(new Date());
         postModel.setUpdatedAt(new Date());
         postModel.setModerator(user);
+        postModel.setAnnounce(post.getAnnounce());
         if (post.getTags() != null) {
             postModel.setTags(
                 post.getTags()
@@ -85,6 +86,7 @@ public class AdminController {
         postModel.setModeratedAt(new Date());
         postModel.setModerator(user);
         postModel.setIsAllowed(true);
+        postModel.setAnnounce(post.getAnnounce());
         if (post.getTags() != null) {
             postModel.setTags(
                 post.getTags()

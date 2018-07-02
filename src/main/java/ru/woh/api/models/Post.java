@@ -40,6 +40,9 @@ public class Post implements Serializable {
     @Type(type = "text")
     private String text;
 
+    @Type(type = "text")
+    private String announce;
+
     private String source;
 
     @Column(name = "created_at")
@@ -76,7 +79,7 @@ public class Post implements Serializable {
     private Long rating;
 
     public PostView view() {
-        return new PostView(this.id, this.title, this.text, this.source, this.createdAt, this.comments, this.tags);
+        return new PostView(this.id, this.title, this.text, this.source, this.createdAt, this.comments, this.tags, this.announce);
     }
 
     public PostView view(Boolean withComments) {
@@ -87,7 +90,8 @@ public class Post implements Serializable {
             this.source,
             this.createdAt,
             withComments ? this.comments : Collections.emptySet(),
-            this.tags
+            this.tags,
+            this.announce
         );
     }
 
@@ -100,6 +104,7 @@ public class Post implements Serializable {
             this.createdAt,
             Collections.emptySet(),
             this.tags,
+            this.announce,
             this.updatedAt,
             this.moderatedAt,
             this.moderator,

@@ -18,12 +18,13 @@ public class PostView {
     protected Long id;
     protected String title;
     protected String text;
+    protected String announce;
     protected String source;
     protected Date createdAt;
     protected List<CommentView> comments;
     protected List<String> tags;
 
-    public PostView(Long id, String title, String text, String source, Date createdAt, Set<Comment> comments, Set<Tag> tags) {
+    public PostView(Long id, String title, String text, String source, Date createdAt, Set<Comment> comments, Set<Tag> tags, String announce) {
         this.id = id;
         this.title = title;
         this.text = text;
@@ -38,5 +39,6 @@ public class PostView {
             .stream()
             .map(Tag::getName)
             .collect(Collectors.toList());
+        this.announce = announce;
     }
 }
