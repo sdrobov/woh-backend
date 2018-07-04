@@ -21,7 +21,7 @@ public class CommentView {
 
     @Getter
     @Setter
-    private class ReplyTo {
+    public class ReplyTo {
         private Long id;
         private String text;
         private UserView user;

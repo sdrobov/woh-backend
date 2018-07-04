@@ -3,6 +3,7 @@ package ru.woh.api.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
+import ru.woh.api.exceptions.NotFoundException;
 import ru.woh.api.models.*;
 import ru.woh.api.models.repositories.CommentRepository;
 import ru.woh.api.services.PostService;
@@ -54,6 +55,11 @@ public class CommentController {
         Comment newComment = comment.model();
         newComment.setPost(post);
         newComment.setUser(this.userService.geCurrenttUser());
+        if (comment.getReplyTo() != null && comment.getReplyTo().getId() != null) {
+            Comment replyToComment = this.commentRepository.findById(comment.getReplyTo().getId()).orElseThrow(() -> new NotFoundException(String.format("Reply to comment with id #%d not found", comment.getReplyTo().getId())));
+            newComment.setReplyTo(replyToComment);
+        }
+
         this.commentRepository.save(newComment);
 
         return this.commentRepository
