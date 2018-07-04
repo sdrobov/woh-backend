@@ -55,7 +55,11 @@ public class Comment implements Serializable {
 
     private Long rating;
 
+    @ManyToOne
+    @JoinColumn(name = "reply_comment_id")
+    private Comment replyTo;
+
     public CommentView view() {
-        return new CommentView(this.id, this.text, this.createdAt, this.updatedAt, this.user);
+        return new CommentView(this.id, this.text, this.createdAt, this.updatedAt, this.user, this.replyTo);
     }
 }
