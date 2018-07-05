@@ -21,10 +21,15 @@ public class CommentView {
 
     @Getter
     @Setter
+    @NoArgsConstructor
     public class ReplyTo {
         private Long id;
         private String text;
         private UserView user;
+
+        public ReplyTo(Long id) {
+            this.id = id;
+        }
 
         public ReplyTo(Long id, String text, UserView user) {
             this.id = id;
