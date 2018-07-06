@@ -15,6 +15,7 @@ import ru.woh.api.views.CommentView;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 @Entity(name = "Comment")
 @Table(name = "comment")
@@ -55,9 +56,12 @@ public class Comment implements Serializable {
 
     private Long rating;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
     @JoinColumn(name = "reply_comment_id")
     private Comment replyTo;
+
+    @OneToMany(mappedBy = "replyTo", cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
+    private Set<Comment> replies;
 
     public CommentView view() {
         return new CommentView(this.id, this.text, this.createdAt, this.updatedAt, this.user, this.replyTo);

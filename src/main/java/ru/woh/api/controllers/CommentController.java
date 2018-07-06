@@ -3,7 +3,7 @@ package ru.woh.api.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
-import ru.woh.api.exceptions.NotFoundException;
+import ru.woh.api.exceptions.*;
 import ru.woh.api.models.*;
 import ru.woh.api.models.repositories.CommentRepository;
 import ru.woh.api.services.PostService;
@@ -11,6 +11,7 @@ import ru.woh.api.services.UserService;
 import ru.woh.api.views.CommentView;
 
 import javax.annotation.security.RolesAllowed;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -66,5 +67,41 @@ public class CommentController {
             .findAllByPost(post, PageRequest.of(0, MAX_COMMENTS))
             .map(Comment::view)
             .getContent();
+    }
+
+
+    @PostMapping("/{id:[0-9]*}/comments/edit/")
+    @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
+    public CommentView editComment(@RequestBody CommentView comment) {
+        Comment commentModel = this.commentRepository.findById(comment.getId())
+            .orElseThrow(() -> new NotFoundException(String.format("comment #%d not found", comment.getId())));
+
+        if (!this.userService.geCurrenttUser().isModer()) {
+            if (commentModel.getUser() != this.userService.geCurrenttUser()) {
+                throw new ForbiddenException("you can delete only your own comments!");
+            }
+        }
+
+        commentModel.setText(comment.getText());
+        commentModel.setUpdatedAt(new Date());
+
+        commentModel = this.commentRepository.save(commentModel);
+
+        return commentModel.view();
+    }
+
+    @PostMapping("/{postId:[0-9]*}/comments/delete/{id:[0-9]*}")
+    @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
+    public void deleteComment(@PathVariable("id") Long id) {
+        Comment commentModel = this.commentRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException(String.format("comment #%d not found", id)));
+
+        if (!this.userService.geCurrenttUser().isModer()) {
+            if (commentModel.getUser() != this.userService.geCurrenttUser()) {
+                throw new ForbiddenException("you can delete only your own comments!");
+            }
+        }
+
+        this.commentRepository.delete(commentModel);
     }
 }

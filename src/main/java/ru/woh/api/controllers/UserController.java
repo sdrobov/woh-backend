@@ -103,6 +103,7 @@ public class UserController {
             (new Date()).toString()
         )));
         user.setCreatedAt(new Date());
+        user.setAvatar("/static/nopic.gif");
 
         user = this.userRepository.save(user);
 

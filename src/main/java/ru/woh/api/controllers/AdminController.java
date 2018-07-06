@@ -5,14 +5,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.woh.api.exceptions.NotFoundException;
+import ru.woh.api.models.Post;
+import ru.woh.api.models.Role;
+import ru.woh.api.models.Tag;
+import ru.woh.api.models.User;
+import ru.woh.api.models.repositories.CommentRepository;
 import ru.woh.api.models.repositories.TagRepository;
 import ru.woh.api.services.PostService;
 import ru.woh.api.services.UserService;
-import ru.woh.api.models.*;
-import ru.woh.api.models.repositories.CommentRepository;
 import ru.woh.api.views.AdminPostView;
-import ru.woh.api.views.CommentView;
 import ru.woh.api.views.PostView;
 
 import javax.annotation.security.RolesAllowed;
@@ -135,28 +136,5 @@ public class AdminController {
         postModel = this.postService.save(postModel);
 
         return postModel.adminView();
-    }
-
-    @PostMapping("/{id:[0-9]*}/comments/edit/")
-    @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
-    public CommentView editComment(@RequestBody CommentView comment) {
-        Comment commentModel = this.commentRepository.findById(comment.getId())
-            .orElseThrow(() -> new NotFoundException(String.format("comment #%d not found", comment.getId())));
-
-        commentModel.setText(comment.getText());
-        commentModel.setUpdatedAt(new Date());
-
-        commentModel = this.commentRepository.save(commentModel);
-
-        return commentModel.view();
-    }
-
-    @PostMapping("/{postId:[0-9]*}/comments/delete/{id:[0-9]*}")
-    @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
-    public void deleteComment(@PathVariable("id") Long id) {
-        Comment commentModel = this.commentRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException(String.format("comment #%d not found", id)));
-
-        this.commentRepository.delete(commentModel);
     }
 }

@@ -102,7 +102,7 @@ public class Post implements Serializable {
             this.text,
             this.source,
             this.createdAt,
-            Collections.emptySet(),
+            this.comments,
             this.tags,
             this.announce,
             this.updatedAt,
