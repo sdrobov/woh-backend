@@ -66,7 +66,7 @@ public class UserController {
     @GetMapping("/user")
     @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
     public UserView status() {
-        return this.userService.geCurrenttUser().view();
+        return this.userService.getCurrenttUser().view();
     }
 
     @PostMapping("/user/login")
@@ -80,7 +80,7 @@ public class UserController {
     @PostMapping("/user/register")
     @RolesAllowed({Role.ROLE_ANONYMOUS})
     public ResponseEntity<UserView> register(@RequestBody RegistrationData registrationData) {
-        User user = this.userService.geCurrenttUser();
+        User user = this.userService.getCurrenttUser();
         if (user != null) {
             throw new BadRequestException("you are already authorized");
         }

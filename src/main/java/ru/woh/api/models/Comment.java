@@ -63,7 +63,10 @@ public class Comment implements Serializable {
     @OneToMany(mappedBy = "replyTo", cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
     private Set<Comment> replies;
 
+    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private Set<CommentLikes> likes;
+
     public CommentView view() {
-        return new CommentView(this.id, this.text, this.createdAt, this.updatedAt, this.user, this.replyTo);
+        return new CommentView(this.id, this.text, this.createdAt, this.updatedAt, this.user, this.replyTo, this.rating);
     }
 }

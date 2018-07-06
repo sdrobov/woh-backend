@@ -23,8 +23,9 @@ public class PostView {
     protected Date createdAt;
     protected List<CommentView> comments;
     protected List<String> tags;
+    protected Long rating;
 
-    public PostView(Long id, String title, String text, String source, Date createdAt, Set<Comment> comments, Set<Tag> tags, String announce) {
+    public PostView(Long id, String title, String text, String source, Date createdAt, Set<Comment> comments, Set<Tag> tags, String announce, Long rating) {
         this.id = id;
         this.title = title;
         this.text = text;
@@ -40,5 +41,6 @@ public class PostView {
             .map(Tag::getName)
             .collect(Collectors.toList());
         this.announce = announce;
+        this.rating = rating;
     }
 }

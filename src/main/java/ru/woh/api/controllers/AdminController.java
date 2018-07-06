@@ -43,7 +43,7 @@ public class AdminController {
     @PostMapping("/{id:[0-9]*}")
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public AdminPostView save(@PathVariable("id") Long id, @RequestBody PostView post) {
-        User user = this.userService.geCurrenttUser();
+        User user = this.userService.getCurrenttUser();
 
         Post postModel = this.postService.one(id);
 
@@ -77,7 +77,7 @@ public class AdminController {
     @PostMapping("/add")
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public AdminPostView add(@RequestBody PostView post) {
-        User user = this.userService.geCurrenttUser();
+        User user = this.userService.getCurrenttUser();
 
         Post postModel = new Post();
         postModel.setTitle(post.getTitle());
@@ -121,7 +121,7 @@ public class AdminController {
     public AdminPostView approve(@PathVariable("id") Long id) {
         Post postModel = this.postService.one(id);
 
-        postModel.approve(this.userService.geCurrenttUser());
+        postModel.approve(this.userService.getCurrenttUser());
         postModel = this.postService.save(postModel);
 
         return postModel.adminView();
@@ -132,7 +132,7 @@ public class AdminController {
     public AdminPostView dismiss(@PathVariable("id") Long id) {
         Post postModel = this.postService.one(id);
 
-        postModel.dismiss(this.userService.geCurrenttUser());
+        postModel.dismiss(this.userService.getCurrenttUser());
         postModel = this.postService.save(postModel);
 
         return postModel.adminView();

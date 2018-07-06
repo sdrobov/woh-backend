@@ -20,12 +20,8 @@ public class AdminPostView extends PostView {
     protected Boolean isAllowed;
     protected Boolean isModerated;
 
-    public AdminPostView(Long id, String title, String text, String source, Date createdAt, Set<Comment> comments, Set<Tag> tags, String announce) {
-        super(id, title, text, source, createdAt, comments, tags, announce);
-    }
-
-    public AdminPostView(Long id, String title, String text, String source, Date createdAt, Set<Comment> comments, Set<Tag> tags, String announce, Date updatedAt, Date moderatedAt, User moderator, Boolean isAllowed) {
-        super(id, title, text, source, createdAt, comments, tags, announce);
+    public AdminPostView(Long id, String title, String text, String source, Date createdAt, Set<Comment> comments, Set<Tag> tags, String announce, Long rating, Date updatedAt, Date moderatedAt, User moderator, Boolean isAllowed) {
+        super(id, title, text, source, createdAt, comments, tags, announce, rating);
         this.updatedAt = updatedAt;
         this.moderatedAt = moderatedAt;
         this.moderator = moderator != null ? moderator.view() : null;

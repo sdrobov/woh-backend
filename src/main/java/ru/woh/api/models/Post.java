@@ -15,7 +15,6 @@ import ru.woh.api.views.PostView;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -76,23 +75,13 @@ public class Post implements Serializable {
         inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private Set<Tag> tags = new HashSet<>();
 
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private Set<PostLikes> likes;
+
     private Long rating;
 
     public PostView view() {
-        return new PostView(this.id, this.title, this.text, this.source, this.createdAt, this.comments, this.tags, this.announce);
-    }
-
-    public PostView view(Boolean withComments) {
-        return new PostView(
-            this.id,
-            this.title,
-            this.text,
-            this.source,
-            this.createdAt,
-            withComments ? this.comments : Collections.emptySet(),
-            this.tags,
-            this.announce
-        );
+        return new PostView(this.id, this.title, this.text, this.source, this.createdAt, this.comments, this.tags, this.announce, this.rating);
     }
 
     public AdminPostView adminView() {
@@ -105,6 +94,7 @@ public class Post implements Serializable {
             this.comments,
             this.tags,
             this.announce,
+            this.rating,
             this.updatedAt,
             this.moderatedAt,
             this.moderator,

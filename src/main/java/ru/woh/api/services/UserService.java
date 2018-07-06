@@ -32,7 +32,7 @@ public class UserService {
         return this.userRepository.findFirstByToken(token).orElse(null);
     }
 
-    public User geCurrenttUser() {
+    public User getCurrenttUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         return auth instanceof UsernamePasswordAuthenticationToken ? (User) auth.getPrincipal() : null;

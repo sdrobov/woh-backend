@@ -25,7 +25,7 @@ public class PostService {
     }
 
     private List<Post> list(Integer page, Integer limit) {
-        User user = this.userService.geCurrenttUser();
+        User user = this.userService.getCurrenttUser();
         Boolean isModer = user != null && user.isModer();
 
         return (
@@ -45,14 +45,14 @@ public class PostService {
 
     public PostView view(Long id) {
         Post post = this.one(id);
-        User user = this.userService.geCurrenttUser();
+        User user = this.userService.getCurrenttUser();
         Boolean isModer = user != null && user.isModer();
 
         return isModer ? post.adminView() : post.view();
     }
 
     public PostListView listView(Integer page, Integer limit) {
-        User user = this.userService.geCurrenttUser();
+        User user = this.userService.getCurrenttUser();
         Boolean isModer = user != null && user.isModer();
 
         return new PostListView(this.list(page, limit)
