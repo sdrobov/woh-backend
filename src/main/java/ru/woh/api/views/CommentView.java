@@ -19,7 +19,7 @@ public class CommentView {
     private Date updatedAt;
     private UserView user;
     private ReplyTo replyTo;
-    private Long rating;
+    private RatingView rating;
 
     @Getter
     @Setter
@@ -42,13 +42,12 @@ public class CommentView {
         }
     }
 
-    public CommentView(Long id, String text, Date createdAt, Date updatedAt, User user, Comment replyTo, Long rating) {
+    public CommentView(Long id, String text, Date createdAt, Date updatedAt, User user, Comment replyTo) {
         this.id = id;
         this.text = text;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.user = user.view();
-        this.rating = rating;
         try {
             if (replyTo != null) {
                 this.replyTo = new ReplyTo(replyTo.getId(), replyTo.getText(), replyTo.getUser().view(), replyTo.getCreatedAt());

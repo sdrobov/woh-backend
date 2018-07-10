@@ -67,6 +67,6 @@ public class Comment implements Serializable {
     private Set<CommentLikes> likes;
 
     public CommentView view() {
-        return new CommentView(this.id, this.text, this.createdAt, this.updatedAt, this.user, this.replyTo, this.rating);
+        return new CommentView(this.id, this.text, this.createdAt, this.updatedAt, this.user, this.replyTo);
     }
 }

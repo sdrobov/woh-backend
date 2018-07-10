@@ -81,7 +81,7 @@ public class Post implements Serializable {
     private Long rating;
 
     public PostView view() {
-        return new PostView(this.id, this.title, this.text, this.source, this.createdAt, this.comments, this.tags, this.announce, this.rating);
+        return new PostView(this.id, this.title, this.text, this.source, this.createdAt, this.tags, this.announce);
     }
 
     public AdminPostView adminView() {
@@ -91,10 +91,8 @@ public class Post implements Serializable {
             this.text,
             this.source,
             this.createdAt,
-            this.comments,
             this.tags,
             this.announce,
-            this.rating,
             this.updatedAt,
             this.moderatedAt,
             this.moderator,

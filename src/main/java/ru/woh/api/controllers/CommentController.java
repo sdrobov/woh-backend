@@ -1,13 +1,10 @@
 package ru.woh.api.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import ru.woh.api.exceptions.ForbiddenException;
-import ru.woh.api.exceptions.NotFoundException;
 import ru.woh.api.models.*;
 import ru.woh.api.models.repositories.CommentLikesRepository;
-import ru.woh.api.models.repositories.CommentRepository;
+import ru.woh.api.services.CommentService;
 import ru.woh.api.services.PostService;
 import ru.woh.api.services.UserService;
 import ru.woh.api.views.CommentView;
@@ -20,20 +17,19 @@ import java.util.List;
 public class CommentController {
     private static final int MAX_COMMENTS = 100;
     private final PostService postService;
-    private final CommentRepository commentRepository;
     private final UserService userService;
+    private final CommentService commentService;
     private final CommentLikesRepository commentLikesRepository;
 
-    @Autowired
     public CommentController(
-        CommentRepository commentRepository,
         PostService postService,
         UserService userService,
+        CommentService commentService,
         CommentLikesRepository commentLikesRepository
     ) {
-        this.commentRepository = commentRepository;
         this.postService = postService;
         this.userService = userService;
+        this.commentService = commentService;
         this.commentLikesRepository = commentLikesRepository;
     }
 
@@ -44,10 +40,7 @@ public class CommentController {
     ) {
         Post post = this.postService.one(postId);
 
-        return this.commentRepository
-            .findAllByPost(post, PageRequest.of(page, MAX_COMMENTS))
-            .map(Comment::view)
-            .getContent();
+        return this.commentService.list(post, page, MAX_COMMENTS);
     }
 
     @PostMapping("/{id:[0-9]*}/comments")
@@ -62,28 +55,20 @@ public class CommentController {
         newComment.setPost(post);
         newComment.setUser(this.userService.getCurrenttUser());
         if (comment.getReplyTo() != null && comment.getReplyTo().getId() != null) {
-            Comment replyToComment = this.commentRepository.findById(comment.getReplyTo().getId())
-                .orElseThrow(() -> new NotFoundException(String.format(
-                    "Reply to comment with id #%d not found",
-                    comment.getReplyTo().getId()
-                )));
+            Comment replyToComment = this.commentService.one(comment.getReplyTo().getId());
             newComment.setReplyTo(replyToComment);
         }
 
-        this.commentRepository.save(newComment);
+        this.commentService.save(newComment);
 
-        return this.commentRepository
-            .findAllByPost(post, PageRequest.of(0, MAX_COMMENTS))
-            .map(Comment::view)
-            .getContent();
+        return this.commentService.list(post, 0, MAX_COMMENTS);
     }
 
 
     @PostMapping("/{id:[0-9]*}/comments/edit/")
     @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
     public CommentView editComment(@RequestBody CommentView comment) {
-        Comment commentModel = this.commentRepository.findById(comment.getId())
-            .orElseThrow(() -> new NotFoundException(String.format("comment #%d not found", comment.getId())));
+        Comment commentModel = this.commentService.one(comment.getId());
 
         if (!this.userService.getCurrenttUser().isModer()) {
             if (commentModel.getUser() != this.userService.getCurrenttUser()) {
@@ -94,16 +79,15 @@ public class CommentController {
         commentModel.setText(comment.getText());
         commentModel.setUpdatedAt(new Date());
 
-        commentModel = this.commentRepository.save(commentModel);
+        commentModel = this.commentService.save(commentModel);
 
-        return commentModel.view();
+        return this.commentService.makeCommentViewWithRating(commentModel);
     }
 
     @PostMapping("/{postId:[0-9]*}/comments/delete/{id:[0-9]*}")
     @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
     public void deleteComment(@PathVariable("id") Long id) {
-        Comment commentModel = this.commentRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException(String.format("comment #%d not found", id)));
+        Comment commentModel = this.commentService.one(id);
 
         if (!this.userService.getCurrenttUser().isModer()) {
             if (commentModel.getUser() != this.userService.getCurrenttUser()) {
@@ -111,24 +95,20 @@ public class CommentController {
             }
         }
 
-        this.commentRepository.delete(commentModel);
+        this.commentService.delete(commentModel);
     }
 
     @PostMapping("/{postId:[0-9]*}/comments/like/{id:[0-9]*}")
     @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
     public CommentView like(@PathVariable("id") Long id) {
-        Comment comment = this.commentRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format(
-            "comment #%d not found",
-            id
-        )));
+        Comment comment = this.commentService.one(id);
         User user = this.userService.getCurrenttUser();
         Integer mod = 1;
 
         CommentLikes commentLikes = this.commentLikesRepository.findById(new CommentLikes.CommentLikesPK(
             comment.getId(),
             user.getId()
-        ))
-            .orElse(null);
+        )).orElse(null);
 
         if (commentLikes != null) {
             if (commentLikes.getIsLike()) {
@@ -144,26 +124,22 @@ public class CommentController {
         this.commentLikesRepository.save(commentLikes);
 
         comment.setRating((comment.getRating() != null ? comment.getRating() : 0) + mod);
-        comment = this.commentRepository.save(comment);
+        comment = this.commentService.save(comment);
 
-        return comment.view();
+        return this.commentService.makeCommentViewWithRating(comment);
     }
 
     @PostMapping("/{postId:[0-9]*}/comments/dislike/{id:[0-9]*}")
     @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
     public CommentView dislike(@PathVariable("id") Long id) {
-        Comment comment = this.commentRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format(
-            "comment #%d not found",
-            id
-        )));
+        Comment comment = this.commentService.one(id);
         User user = this.userService.getCurrenttUser();
         Integer mod = 1;
 
         CommentLikes commentLikes = this.commentLikesRepository.findById(new CommentLikes.CommentLikesPK(
             comment.getId(),
             user.getId()
-        ))
-            .orElse(null);
+        )).orElse(null);
 
         if (commentLikes != null) {
             if (!commentLikes.getIsLike()) {
@@ -179,8 +155,8 @@ public class CommentController {
         this.commentLikesRepository.save(commentLikes);
 
         comment.setRating((comment.getRating() != null ? comment.getRating() : 0) - mod);
-        comment = this.commentRepository.save(comment);
+        comment = this.commentService.save(comment);
 
-        return comment.view();
+        return this.commentService.makeCommentViewWithRating(comment);
     }
 }
