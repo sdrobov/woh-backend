@@ -66,7 +66,7 @@ public class Post implements Serializable {
     @CreatedBy
     private User moderator;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Comment> comments = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -79,6 +79,10 @@ public class Post implements Serializable {
     private Set<PostLikes> likes;
 
     private Long rating;
+
+    @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
+    @JoinColumn(name = "source_id")
+    private Source sourceSite;
 
     public PostView view() {
         return new PostView(this.id, this.title, this.text, this.source, this.createdAt, this.tags, this.announce);
