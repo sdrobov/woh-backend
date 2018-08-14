@@ -148,6 +148,21 @@ public class UserController {
         return user.view();
     }
 
+    @PostMapping("/user/password")
+    @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
+    public ResponseEntity<Void> password(@RequestParam("password") String password, @RequestParam("password2") String password2) {
+        if (!Objects.equals(password, password2)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        User currentUser = this.userService.getCurrenttUser();
+        currentUser.setPassword(this.passwordEncoder.encode(password));
+
+        this.userRepository.save(currentUser);
+
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/user/avatar/")
     @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
     public ResponseEntity<byte[]> avatar() {
