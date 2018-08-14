@@ -13,7 +13,10 @@ spring:
     store-type: mongodb
   data:
     mongodb:
-      uri: mongodb://localhost/woh
+#      uri: mongodb://localhost/woh
+      database: woh
+      host: localhost
+      grid-fs-database: woh
 
 ---
 
@@ -26,4 +29,7 @@ spring:
     initialization-mode: never
   data:
     mongodb:
-      uri: mongodb://${MONGO_HOST}/${MONGO_DB}
+#      uri: mongodb://${MONGO_HOST}/${MONGO_DB}
+    host: ${MONGO_HOST}
+    database: ${MONGO_DB}
+    grid-fs-database: ${MONGO_DB}
