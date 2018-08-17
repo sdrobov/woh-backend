@@ -81,6 +81,14 @@ public class UserController {
         return this.userService.getCurrenttUser().view();
     }
 
+    @GetMapping("/user/{id:[0-9]*}")
+    @RolesAllowed({Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
+    public UserView byId(@PathVariable("id") Long id) {
+        return this.userRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format(
+            "User #%d not found",
+            id))).view();
+    }
+
     @PostMapping("/user/login")
     @RolesAllowed({Role.ROLE_ANONYMOUS})
     public UserExtView login(@RequestBody LoginData loginData) {

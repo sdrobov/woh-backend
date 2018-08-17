@@ -11,14 +11,14 @@ public class UserView {
     protected Long id;
     protected String email;
     protected String name;
-    protected String avatar;
+    protected Boolean avatar;
     protected String role;
 
     public UserView(Long id, String email, String name, String avatar, String role) {
         this.id = id;
         this.email = email;
         this.name = name;
-        this.avatar = avatar;
+        this.avatar = !(avatar == null);
         this.role = role;
     }
 }
