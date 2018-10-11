@@ -23,7 +23,13 @@ import ru.woh.api.services.UserService;
 import ru.woh.api.views.UserView;
 
 import javax.annotation.security.RolesAllowed;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
@@ -51,7 +57,7 @@ public class UserController {
     @NoArgsConstructor
     @Getter
     @Setter
-    public static class LoginData {
+    public static class LoginRequest {
         protected String email;
         protected String password;
     }
@@ -59,7 +65,7 @@ public class UserController {
     @NoArgsConstructor
     @Getter
     @Setter
-    public static class RegistrationData extends LoginData {
+    public static class RegistrationRequest extends LoginRequest {
         protected String name = "";
     }
 
@@ -84,8 +90,70 @@ public class UserController {
 
         Boolean isValid() {
             return Objects.equals(this.password, this.password2)
-                    && this.password != null
-                    && !this.password.isEmpty();
+                && this.password != null
+                && !this.password.isEmpty();
+        }
+    }
+
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    public static class AvatarChangeRequest {
+        protected MultipartFile file;
+        protected Integer x1;
+        protected Integer y1;
+        protected Integer x2;
+        protected Integer y2;
+        protected Integer h;
+        protected Integer w;
+
+        Boolean isValid() {
+            return !this.file.isEmpty()
+                && this.x1 != null
+                && this.y1 != null
+                && this.x2 != null
+                && this.y2 != null
+                && this.h != null
+                && this.w != null;
+        }
+
+        Integer getWidth() {
+            return this.w;
+        }
+
+        Integer getHeight() {
+            return this.h;
+        }
+
+        BufferedImage getBufferedImage() {
+            try {
+                BufferedImage originalAvatar = ImageIO.read(new ByteArrayInputStream(this.file.getBytes()));
+                Integer newWidth = this.getWidth();
+                Integer newHeight = this.getHeight();
+                if (!Objects.equals(newWidth, newHeight)) {
+                    newWidth = newHeight = Math.max(newWidth, newHeight);
+                }
+
+                BufferedImage crop1 = originalAvatar.getSubimage(this.x1, this.y1, newWidth, newHeight);
+                BufferedImage crop2 = null;
+                if (crop1.getWidth() > 1000 || crop1.getHeight() > 1000) {
+                    crop2 = new BufferedImage(1000, 1000, crop1.getType());
+                    Graphics2D graphics2D = crop2.createGraphics();
+
+                    if (crop2.getType() == BufferedImage.TYPE_INT_ARGB) {
+                        graphics2D.setComposite(AlphaComposite.Src);
+                    }
+
+                    graphics2D.drawImage(crop1, 0, 0, 1000, 1000, null);
+                    graphics2D.dispose();
+                }
+
+                return crop2 != null ? crop2 : crop1;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
         }
     }
 
@@ -105,8 +173,8 @@ public class UserController {
 
     @PostMapping("/user/login")
     @RolesAllowed({Role.ROLE_ANONYMOUS})
-    public UserExtView login(@RequestBody LoginData loginData) {
-        User user = this.userService.authenticate(loginData.getEmail(), loginData.getPassword());
+    public UserExtView login(@RequestBody LoginRequest loginRequest) {
+        User user = this.userService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
 
         return new UserExtView(user.getId(),
             user.getEmail(),
@@ -118,23 +186,23 @@ public class UserController {
 
     @PostMapping("/user/register")
     @RolesAllowed({Role.ROLE_ANONYMOUS})
-    public ResponseEntity<UserView> register(@RequestBody RegistrationData registrationData) {
+    public ResponseEntity<UserView> register(@RequestBody RegistrationRequest registrationRequest) {
         User user = this.userService.getCurrenttUser();
         if (user != null) {
             throw new BadRequestException("you are already authorized");
         }
 
         try {
-            user = this.userService.authenticate(registrationData.getEmail(), registrationData.getPassword());
+            user = this.userService.authenticate(registrationRequest.getEmail(), registrationRequest.getPassword());
             if (user != null) {
                 throw new UserAlreadyExistsException("user already exists");
             }
         } catch (NotFoundException e) { /* nop */ }
 
         user = new User();
-        user.setEmail(registrationData.getEmail());
-        user.setPassword(this.passwordEncoder.encode(registrationData.getPassword()));
-        user.setName(registrationData.getName());
+        user.setEmail(registrationRequest.getEmail());
+        user.setPassword(this.passwordEncoder.encode(registrationRequest.getPassword()));
+        user.setName(registrationRequest.getName());
         user.setToken(this.passwordEncoder.encode(String.format(
             "%s%s%s",
             user.getEmail(),
@@ -210,17 +278,43 @@ public class UserController {
 
     @PostMapping("/user/avatar/")
     @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
-    public ResponseEntity<Void> avatar(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<Void> avatar(@ModelAttribute AvatarChangeRequest avatarChangeRequest) {
+        if (!avatarChangeRequest.isValid()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        BufferedImage avatar = avatarChangeRequest.getBufferedImage();
+        if (avatar == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
         User currentUser = this.userService.getCurrenttUser();
 
         HashMap<String, String> meta = new HashMap<>();
         meta.put("userId", currentUser.getId().toString());
-        meta.put(HttpHeaders.CONTENT_TYPE, file.getContentType());
+        meta.put(HttpHeaders.CONTENT_TYPE, avatarChangeRequest.getFile().getContentType());
 
         this.gridFsService.findByKeyValue("userId", currentUser.getId().toString())
             .forEach((Consumer<? super GridFSFile>) this.gridFsService::delete);
 
-        String avatarId = this.gridFsService.store(file.getInputStream(), file.getName(), file.getContentType(), meta);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        try {
+            ImageIO.write(avatar, "jpeg", byteArrayOutputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+
+        String avatarId = this.gridFsService.store(
+            inputStream,
+            avatarChangeRequest.getFile().getName(),
+            avatarChangeRequest.getFile().getContentType(),
+            meta
+        );
         if (avatarId == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

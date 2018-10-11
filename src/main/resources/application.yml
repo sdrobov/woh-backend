@@ -17,6 +17,10 @@ spring:
       database: woh
       host: localhost
       grid-fs-database: woh
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 10MB
 
 ---
 
