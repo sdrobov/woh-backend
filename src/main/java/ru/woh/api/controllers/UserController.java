@@ -75,6 +75,20 @@ public class UserController {
         }
     }
 
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    public static class ChangePasswordRequest {
+        protected String password;
+        protected String password2;
+
+        Boolean isValid() {
+            return Objects.equals(this.password, this.password2)
+                    && this.password != null
+                    && !this.password.isEmpty();
+        }
+    }
+
     @GetMapping("/user")
     @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
     public UserView status() {
@@ -158,13 +172,13 @@ public class UserController {
 
     @PostMapping("/user/password")
     @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
-    public ResponseEntity<Void> password(@RequestParam("password") String password, @RequestParam("password2") String password2) {
-        if (!Objects.equals(password, password2)) {
+    public ResponseEntity<Void> password(@RequestBody ChangePasswordRequest changePasswordRequest) {
+        if (!changePasswordRequest.isValid()) {
             return ResponseEntity.badRequest().build();
         }
 
         User currentUser = this.userService.getCurrenttUser();
-        currentUser.setPassword(this.passwordEncoder.encode(password));
+        currentUser.setPassword(this.passwordEncoder.encode(changePasswordRequest.getPassword()));
 
         this.userRepository.save(currentUser);
 
