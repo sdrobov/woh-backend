@@ -34,6 +34,7 @@ public class PostView {
         this.tags = tags
             .stream()
             .map(Tag::getName)
+            .sorted()
             .collect(Collectors.toList());
         this.announce = announce;
     }

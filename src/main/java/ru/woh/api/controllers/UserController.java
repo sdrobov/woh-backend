@@ -69,14 +69,13 @@ public class UserController {
         protected String name = "";
     }
 
-    @NoArgsConstructor
     @Getter
     @Setter
     public static class UserExtView extends UserView {
         protected String token;
 
-        UserExtView(Long id, String email, String name, String avatar, String role, String token) {
-            super(id, email, name, avatar, role);
+        UserExtView(Long id, String email, String name, String avatar, String role, String annotation, String token) {
+            super(id, email, name, avatar, role, annotation);
             this.token = token;
         }
     }
@@ -181,6 +180,7 @@ public class UserController {
             user.getName(),
             user.getAvatar(),
             user.getRoleName(),
+            user.getAnnotation(),
             user.getToken());
     }
 
@@ -210,7 +210,6 @@ public class UserController {
             (new Date()).toString()
         )));
         user.setCreatedAt(new Date());
-        user.setAvatar("/static/nopic.gif");
 
         user = this.userRepository.save(user);
 
@@ -323,6 +322,25 @@ public class UserController {
         this.userRepository.save(currentUser);
 
         return ResponseEntity.created(URI.create("/user/avatar/" + currentUser.getId().toString())).build();
+    }
+
+    @PostMapping("/user/avatar/drop/")
+    @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
+    public ResponseEntity<Void> dropAvatar() {
+        User currentUser = this.userService.getCurrenttUser();
+        ResponseEntity currentAvatar = this.getAvatar(currentUser);
+
+        if (currentAvatar.getStatusCode() == HttpStatus.NOT_FOUND) {
+            return ResponseEntity.ok().build();
+        }
+
+        GridFSFile avatar = this.gridFsService.findById(currentUser.getAvatar());
+        this.gridFsService.delete(avatar);
+        currentUser.setAvatar(null);
+
+        this.userRepository.save(currentUser);
+
+        return ResponseEntity.ok().build();
     }
 
     private ResponseEntity<byte[]> getAvatar(User user) {

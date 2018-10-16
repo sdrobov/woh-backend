@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 public class CommentController {
-    private static final int MAX_COMMENTS = 100;
+    private static final int MAX_COMMENTS = 5;
     private final PostService postService;
     private final UserService userService;
     private final CommentService commentService;

@@ -20,7 +20,7 @@ public class PostController {
     private final PostService postService;
     private final UserService userService;
     private final PostLikesRepository postLikesRepository;
-    private static final int defaultPageSize = 100;
+    private static final int defaultPageSize = 5;
 
     @Autowired
     public PostController(PostService postService, PostLikesRepository postLikesRepository, UserService userService) {
@@ -44,7 +44,7 @@ public class PostController {
     public PostView like(@PathVariable("id") Long id) {
         Post post = this.postService.one(id);
         User user = this.userService.getCurrenttUser();
-        Integer mod = 1;
+        int mod = 1;
 
         PostLikes postLike = this.postLikesRepository.findById(new PostLikes.PostLikesPK(post.getId(), user.getId()))
             .orElse(null);

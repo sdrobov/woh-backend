@@ -13,12 +13,14 @@ public class UserView {
     protected String name;
     protected Boolean avatar;
     protected String role;
+    protected String annotation;
 
-    public UserView(Long id, String email, String name, String avatar, String role) {
+    public UserView(Long id, String email, String name, String avatar, String role, String annotation) {
         this.id = id;
         this.email = email;
         this.name = name;
         this.avatar = !(avatar == null);
         this.role = role;
+        this.annotation = annotation;
     }
 }

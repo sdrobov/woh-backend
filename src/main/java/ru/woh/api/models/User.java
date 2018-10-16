@@ -67,6 +67,8 @@ public class User implements Serializable {
     @Column(unique = true)
     private String google;
 
+    private String annotation;
+
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
@@ -92,7 +94,7 @@ public class User implements Serializable {
     }
 
     public UserView view() {
-        return new UserView(this.id, this.email, this.name, this.avatar, this.getRoleName());
+        return new UserView(this.id, this.email, this.name, this.avatar, this.getRoleName(), this.annotation);
     }
 
     private Boolean isAdmin() {
