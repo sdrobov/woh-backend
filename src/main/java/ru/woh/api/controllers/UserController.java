@@ -44,10 +44,12 @@ public class UserController {
     private final GridFsService gridFsService;
 
     @Autowired
-    public UserController(PasswordEncoder passwordEncoder,
-                          UserRepository userRepository,
-                          UserService userService,
-                          GridFsService gridFsService) {
+    public UserController(
+        PasswordEncoder passwordEncoder,
+        UserRepository userRepository,
+        UserService userService,
+        GridFsService gridFsService
+    ) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.userService = userService;
@@ -116,22 +118,11 @@ public class UserController {
                 && this.w != null;
         }
 
-        Integer getWidth() {
-            return this.w;
-        }
-
-        Integer getHeight() {
-            return this.h;
-        }
-
         BufferedImage getBufferedImage() {
             try {
                 BufferedImage originalAvatar = ImageIO.read(new ByteArrayInputStream(this.file.getBytes()));
-                Integer newWidth = this.getWidth();
-                Integer newHeight = this.getHeight();
-                if (!Objects.equals(newWidth, newHeight)) {
-                    newWidth = newHeight = Math.max(newWidth, newHeight);
-                }
+                int newWidth, newHeight;
+                newWidth = newHeight = Math.max(this.w, this.h);
 
                 BufferedImage crop1 = originalAvatar.getSubimage(this.x1, this.y1, newWidth, newHeight);
                 BufferedImage crop2 = null;
@@ -167,7 +158,8 @@ public class UserController {
     public UserView byId(@PathVariable("id") Long id) {
         return this.userRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format(
             "User #%d not found",
-            id))).view();
+            id
+        ))).view();
     }
 
     @PostMapping("/user/login")
@@ -175,13 +167,15 @@ public class UserController {
     public UserExtView login(@RequestBody LoginRequest loginRequest) {
         User user = this.userService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
 
-        return new UserExtView(user.getId(),
+        return new UserExtView(
+            user.getId(),
             user.getEmail(),
             user.getName(),
             user.getAvatar(),
             user.getRoleName(),
             user.getAnnotation(),
-            user.getToken());
+            user.getToken()
+        );
     }
 
     @PostMapping("/user/register")
@@ -230,6 +224,10 @@ public class UserController {
 
         if (!Objects.equals(user.getName(), userView.getName())) {
             user.setName(userView.getName());
+        }
+
+        if (!Objects.equals(user.getAnnotation(), userView.getAnnotation())) {
+            user.setAnnotation(userView.getAnnotation());
         }
 
         this.userRepository.save(user);

@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedDate;
+import ru.woh.api.views.SourceView;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,7 +17,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-class Source implements Serializable {
+public class Source implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, unique = true)
@@ -42,4 +43,17 @@ class Source implements Serializable {
 
     @OneToMany(mappedBy = "sourceSite", fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     private Set<Post> posts;
+
+    public SourceView view() {
+        return new SourceView(
+            this.id,
+            this.name,
+            this.url,
+            this.settings,
+            this.createdAt,
+            this.lastPostDate,
+            this.isLocked,
+            this.posts
+        );
+    }
 }

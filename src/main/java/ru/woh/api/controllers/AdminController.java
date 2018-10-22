@@ -1,43 +1,39 @@
 package ru.woh.api.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import ru.woh.api.models.Post;
-import ru.woh.api.models.Role;
-import ru.woh.api.models.Tag;
-import ru.woh.api.models.User;
-import ru.woh.api.models.repositories.CommentRepository;
+import org.springframework.web.bind.annotation.*;
+import ru.woh.api.models.*;
+import ru.woh.api.models.repositories.SourceRepository;
 import ru.woh.api.models.repositories.TagRepository;
 import ru.woh.api.services.PostService;
 import ru.woh.api.services.UserService;
 import ru.woh.api.views.AdminPostView;
 import ru.woh.api.views.PostView;
+import ru.woh.api.views.SourceView;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 public class AdminController {
     private final PostService postService;
-    private final CommentRepository commentRepository;
     private final UserService userService;
     private final TagRepository tagRepository;
+    private final SourceRepository sourceRepository;
 
     @Autowired
     public AdminController(
-        CommentRepository commentRepository,
         UserService userService,
         PostService postService,
-        TagRepository tagRepository
+        TagRepository tagRepository,
+        SourceRepository sourceRepository
     ) {
-        this.commentRepository = commentRepository;
         this.userService = userService;
         this.postService = postService;
         this.tagRepository = tagRepository;
+        this.sourceRepository = sourceRepository;
     }
 
     @PostMapping("/{id:[0-9]*}")
@@ -136,5 +132,11 @@ public class AdminController {
         postModel = this.postService.save(postModel);
 
         return postModel.adminView();
+    }
+
+    @GetMapping("/sources/")
+    @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
+    public List<SourceView> sourcesList() {
+        return this.sourceRepository.findAll().getContent().stream().map(Source::view).collect(Collectors.toList());
     }
 }
