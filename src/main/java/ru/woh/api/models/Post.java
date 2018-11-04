@@ -69,7 +69,7 @@ public class Post implements Serializable {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Comment> comments = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.DETACH)
     @JoinTable(name = "tags_ref_posts",
         joinColumns = {@JoinColumn(name = "post_id")},
         inverseJoinColumns = {@JoinColumn(name = "tag_id")})
