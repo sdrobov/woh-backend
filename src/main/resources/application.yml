@@ -13,7 +13,6 @@ spring:
     store-type: mongodb
   data:
     mongodb:
-#      uri: mongodb://localhost/woh
       database: woh
       host: localhost
       grid-fs-database: woh
@@ -21,6 +20,9 @@ spring:
     multipart:
       max-file-size: 2MB
       max-request-size: 10MB
+parser:
+  host: localhost
+  port: 3000
 
 ---
 
@@ -33,7 +35,9 @@ spring:
     initialization-mode: never
   data:
     mongodb:
-#      uri: mongodb://${MONGO_HOST}/${MONGO_DB}
     host: ${MONGO_HOST}
     database: ${MONGO_DB}
     grid-fs-database: ${MONGO_DB}
+parser:
+  host: ${PARSER_HOST}
+  port: ${PARSER_PORT}

@@ -1,10 +1,12 @@
 package ru.woh.api.views;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.woh.api.models.Post;
+import ru.woh.api.models.Source;
 
 import java.io.IOException;
 import java.util.Date;
@@ -36,11 +38,27 @@ public class SourceView {
         static SourceSettings fromJson(String json) {
             ObjectMapper mapper = new ObjectMapper();
 
+            SourceSettings sourceSettings;
             try {
-                return mapper.readValue(json, SourceSettings.class);
+                sourceSettings = mapper.readValue(json, SourceSettings.class);
             } catch (IOException e) {
-                return new SourceSettings();
+                sourceSettings = new SourceSettings();
             }
+
+            return sourceSettings;
+        }
+
+        public String toString() {
+            ObjectMapper mapper = new ObjectMapper();
+            String result;
+
+            try {
+                result = mapper.writeValueAsString(this);
+            } catch (JsonProcessingException e) {
+                result = "";
+            }
+
+            return result;
         }
     }
 
@@ -71,5 +89,19 @@ public class SourceView {
         this.lastPostDate = lastPostDate;
         this.isLocked = isLocked;
         this.posts = posts.stream().map(Post::view).collect(Collectors.toList());
+    }
+
+    public Source model() {
+        Source source = new Source();
+
+        source.setId(this.id);
+        source.setName(this.name);
+        source.setUrl(this.url);
+        source.setCreatedAt(this.createdAt);
+        source.setLastPostDate(this.lastPostDate);
+        source.setIsLocked(this.isLocked);
+        source.setSettings(this.settings.toString());
+
+        return source;
     }
 }
