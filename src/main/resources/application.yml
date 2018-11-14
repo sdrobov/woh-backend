@@ -5,7 +5,7 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   datasource:
-    url: jdbc:mysql://localhost/woh
+    url: jdbc:mysql://localhost/woh?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: woh
     password: qwerty
     initialization-mode: never
@@ -13,8 +13,8 @@ spring:
     store-type: mongodb
   data:
     mongodb:
-      database: woh
       host: localhost
+      database: woh
       grid-fs-database: woh
   servlet:
     multipart:
@@ -29,15 +29,15 @@ parser:
 spring:
   profiles: container
   datasource:
-    url: jdbc:mysql://${DATABASE_HOST}/${DATABASE_NAME}
+    url: jdbc:mysql://${DATABASE_HOST}/${DATABASE_NAME}?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
     initialization-mode: never
   data:
     mongodb:
-    host: ${MONGO_HOST}
-    database: ${MONGO_DB}
-    grid-fs-database: ${MONGO_DB}
+      host: ${MONGO_HOST}
+      database: ${MONGO_DB}
+      grid-fs-database: ${MONGO_DB}
 parser:
   host: ${PARSER_HOST}
   port: ${PARSER_PORT}
