@@ -150,7 +150,7 @@
                 <configuration>
                     <repository>registry.gitlab.com/woh/backend-spring</repository>
                     <username>serch.m@gmail.com</username>
-                    <password>8eAx2Kshq1Tu-fSBKbgh</password>
+                    <password>-_ynzkGUbQDE9us7Dyx8</password>
                     <buildArgs>
                         <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
                     </buildArgs>

@@ -34,7 +34,7 @@ public class CommentView {
             this.id = id;
         }
 
-        public ReplyTo(Long id, String text, UserView user, Date createdAt) {
+        ReplyTo(Long id, String text, UserView user, Date createdAt) {
             this.id = id;
             this.text = text;
             this.user = user;

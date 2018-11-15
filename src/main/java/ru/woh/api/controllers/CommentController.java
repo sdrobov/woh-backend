@@ -103,7 +103,7 @@ public class CommentController {
     public CommentView like(@PathVariable("id") Long id) {
         Comment comment = this.commentService.one(id);
         User user = this.userService.getCurrenttUser();
-        Integer mod = 1;
+        int mod = 1;
 
         CommentLikes commentLikes = this.commentLikesRepository.findById(new CommentLikes.CommentLikesPK(
             comment.getId(),
@@ -134,7 +134,7 @@ public class CommentController {
     public CommentView dislike(@PathVariable("id") Long id) {
         Comment comment = this.commentService.one(id);
         User user = this.userService.getCurrenttUser();
-        Integer mod = 1;
+        int mod = 1;
 
         CommentLikes commentLikes = this.commentLikesRepository.findById(new CommentLikes.CommentLikesPK(
             comment.getId(),

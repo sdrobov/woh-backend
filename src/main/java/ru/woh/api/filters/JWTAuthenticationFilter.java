@@ -4,8 +4,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import ru.woh.api.services.UserService;
 import ru.woh.api.models.User;
+import ru.woh.api.services.UserService;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;

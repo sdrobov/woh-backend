@@ -1,9 +1,10 @@
 package ru.woh.api.models.repositories;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.CrudRepository;
 import ru.woh.api.models.Source;
 
-public interface SourceRepository extends PagingAndSortingRepository<Source, Long> {
-    Page<Source> findAll();
+import java.util.ArrayList;
+
+public interface SourceRepository extends CrudRepository<Source, Long> {
+    ArrayList<Source> findAll();
 }

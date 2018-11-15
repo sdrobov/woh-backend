@@ -1,20 +1,20 @@
 package ru.woh.api.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.woh.api.exceptions.NotFoundException;
 import ru.woh.api.models.Post;
 import ru.woh.api.models.PostLikes;
+import ru.woh.api.models.User;
 import ru.woh.api.models.repositories.PostLikesRepository;
 import ru.woh.api.models.repositories.PostRepository;
-import ru.woh.api.models.User;
 import ru.woh.api.views.PostListView;
 import ru.woh.api.views.PostView;
 import ru.woh.api.views.RatingView;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,9 +37,9 @@ public class PostService {
         this.postLikesRepository = postLikesRepository;
     }
 
-    private List<Post> list(Integer page, Integer limit) {
+    private Page<Post> list(Integer page, Integer limit) {
         User user = this.userService.getCurrenttUser();
-        Boolean isModer = user != null && user.isModer();
+        boolean isModer = user != null && user.isModer();
 
         return (
             isModer
@@ -49,7 +49,7 @@ public class PostService {
                     limit,
                     new Sort(Sort.Direction.DESC, "createdAt")
                 ))
-        ).getContent();
+        );
     }
 
     public Post one(Long id) {
@@ -64,10 +64,13 @@ public class PostService {
     }
 
     public PostListView listView(Integer page, Integer limit) {
-        return new PostListView(this.list(page, limit)
+        var postPage = this.list(page, limit);
+        var views = postPage.getContent()
             .stream()
             .map(this::makeViewWithRating)
-            .collect(Collectors.toList()));
+            .collect(Collectors.toList());
+
+        return new PostListView(postPage.getTotalElements(), (long) postPage.getTotalPages(), (long) page, views);
     }
 
     private PostView makeViewWithRating(Post post) {
@@ -79,7 +82,8 @@ public class PostService {
         rating.setCount(post.getRating());
 
         if (user != null) {
-            PostLikes like = this.postLikesRepository.findById(new PostLikes.PostLikesPK(post.getId(), user.getId())).orElse(null);
+            PostLikes like = this.postLikesRepository.findById(new PostLikes.PostLikesPK(post.getId(), user.getId()))
+                .orElse(null);
 
             if (like != null) {
                 if (like.getIsLike()) {
