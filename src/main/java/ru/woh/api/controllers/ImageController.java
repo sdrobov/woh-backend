@@ -17,6 +17,7 @@ public class ImageController {
     }
 
     @GetMapping("/image/{id:.*}")
+    @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public ResponseEntity<byte[]> image(@PathVariable("id") String id) {
         return this.imageStorageService.getImage(id);
     }

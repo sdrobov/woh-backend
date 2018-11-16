@@ -34,6 +34,7 @@ public class CommentController {
     }
 
     @GetMapping("/{id:[0-9]*}/comments")
+    @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public List<CommentView> list(
         @PathVariable("id") Long postId,
         @RequestParam(value = "page", defaultValue = "0") Integer page

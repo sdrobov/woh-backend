@@ -38,11 +38,13 @@ public class PostController {
     }
 
     @GetMapping("/")
+    @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public PostListView list(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         return this.postService.listView(page, PostController.defaultPageSize);
     }
 
     @GetMapping("/{id:[0-9]*}")
+    @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public PostView one(@PathVariable("id") Long id) {
         return this.postService.view(id);
     }
