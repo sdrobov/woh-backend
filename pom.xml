@@ -162,8 +162,9 @@
                 </executions>
                 <configuration>
                     <repository>registry.gitlab.com/woh/backend-spring</repository>
-                    <username>serch.m@gmail.com</username>
-                    <password>-_ynzkGUbQDE9us7Dyx8</password>
+                    <!-- <username>serch.m@gmail.com</username>
+                    <password>-_ynzkGUbQDE9us7Dyx8</password> -->
+                    <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
                     <buildArgs>
                         <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
                     </buildArgs>
