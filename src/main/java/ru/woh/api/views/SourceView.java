@@ -34,6 +34,7 @@ public class SourceView {
         private String nextContentSelector;
         private String previewSelector;
         private Boolean isApproved;
+        private Integer type;
 
         static SourceSettings fromJson(String json) {
             ObjectMapper mapper = new ObjectMapper();

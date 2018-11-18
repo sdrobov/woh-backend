@@ -295,6 +295,7 @@ class SourceView {
         String nextContentSelector;
         String previewSelector;
         Boolean isApproved;
+        Integer type; // 1 - обычный сайт, 2 - rss-сайт, 3 - ютуб
     }
 }
 
