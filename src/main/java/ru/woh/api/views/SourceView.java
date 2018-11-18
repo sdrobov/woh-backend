@@ -89,7 +89,11 @@ public class SourceView {
         this.createdAt = createdAt;
         this.lastPostDate = lastPostDate;
         this.isLocked = isLocked;
-        this.posts = posts.stream().map(Post::view).collect(Collectors.toList());
+        this.posts = posts != null
+            ? posts.stream()
+                .map(Post::view)
+                .collect(Collectors.toList())
+            : null;
     }
 
     public Source model() {
