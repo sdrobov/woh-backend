@@ -22,8 +22,7 @@ public class SourceView {
     @Getter
     @Setter
     public static class SourceSettings {
-        private String rssUrl;
-        private String mainUrl;
+        private String url;
         private String linksSelector;
         private String descriptionSelector;
         private String titlesSelector;

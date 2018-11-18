@@ -283,8 +283,7 @@ class SourceView {
     List<PostView> posts;
 
     class SourceSettings {
-        String rssUrl;
-        String mainUrl;
+        String url;
         String linksSelector;
         String descriptionSelector;
         String titlesSelector;
