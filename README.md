@@ -274,27 +274,27 @@ class PostView
 List<SourceView>
 class SourceView {
     Long id;
-    String name;
-    String url;
+    String name; // уникальное название
+    String url; // ссылка на корень сайта
     SourceSettings settings;
     Date createdAt;
     Date lastPostDate;
-    Boolean isLocked;
+    Boolean isLocked; // флаг, говорящий о том что данный источник в данный момент парсится
     List<PostView> posts;
 
     class SourceSettings {
-        String url;
-        String linksSelector;
-        String descriptionSelector;
-        String titlesSelector;
-        String titleSelector;
-        String datesSelector;
-        String dateFormat;
-        String nextSelector;
-        String contentSelector;
-        String nextContentSelector;
-        String previewSelector;
-        Boolean isApproved;
+        String url; // ссылка на страницу статей/новостей/rss/канал
+        String linksSelector; // css-селектор для страницы новостей, который выбирает все ссылки на новости
+        String descriptionSelector; // css-селектор для страницы новостей который выбирает анонсы если они там есть
+        String titlesSelector; // css-селектор для страницы конкретной новости, который выбирает заголовок
+        String titleSelector; // css-селектор для страницы конкретной новости, который выбирает заголовок новости
+        String datesSelector; // css-селектор для страницы конкретной новости, который выбирает дату новости, если она там есть
+        String dateFormat; // поле, куда можно ввести формат даты, если вдруг дата указана в каком-нибудь ебанутом формате
+        String nextSelector; // css-селектор для страницы новостей на кнопку "далее" или ее аналог
+        String contentSelector; // css-селектор для страницы конкретной новости, который выбирает текст новости
+        String nextContentSelector; // css-селектор для страницы конкретной новости, который выбирает следующую страницу, если новость разбита на страницы
+        String previewSelector; // css-селектор для страницы конкретной новости, который выбирает картинку-превью
+        Boolean isApproved; // флаг, показывающий что источник можно лить в posts
         Integer type; // 1 - обычный сайт, 2 - rss-сайт, 3 - ютуб
     }
 }
@@ -344,7 +344,7 @@ class SourceView
 
 ### Post preview API
 
-#### GET `/post-previw/`
+#### GET `/post-preview/`
 
 - RolesAllowed: MODER, ADMIN
 - JSON Response:
@@ -361,7 +361,7 @@ class PostPreviewView {
 }
 ```
 
-#### GET `/post-previw/{id:[0-9]+}`
+#### GET `/post-preview/{id:[0-9]+}`
 
 - RolesAllowed: MODER, ADMIN
 - JSON Response:
@@ -370,7 +370,7 @@ class PostPreviewView {
 class PostPreviewView
 ```
 
-#### GET `/post-previw/by-source/{id:[0-9]+}`
+#### GET `/post-preview/by-source/{id:[0-9]+}`
 
 - RolesAllowed: MODER, ADMIN
 - JSON Response:

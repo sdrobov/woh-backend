@@ -29,7 +29,7 @@ public class PostPreviewController {
         this.sourceRepository = sourceRepository;
     }
 
-    @GetMapping("/post-previw/")
+    @GetMapping("/post-preview/")
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public List<PostPreviewView> list() {
         return this.postPreviewRepository.findAll()
@@ -38,7 +38,7 @@ public class PostPreviewController {
             .collect(Collectors.toList());
     }
 
-    @GetMapping("/post-previw/{id:[0-9]+}")
+    @GetMapping("/post-preview/{id:[0-9]+}")
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public PostPreviewView byId(@PathVariable("id") Long id) {
         return this.postPreviewRepository.findById(id)
@@ -49,7 +49,7 @@ public class PostPreviewController {
             .view();
     }
 
-    @GetMapping("/post-previw/by-source/{id:[0-9]+}")
+    @GetMapping("/post-preview/by-source/{id:[0-9]+}")
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public List<PostPreviewView> bySource(@PathVariable("id") Long id) {
         var source = this.sourceRepository.findById(id)

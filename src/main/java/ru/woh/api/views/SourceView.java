@@ -104,7 +104,7 @@ public class SourceView {
         source.setUrl(this.url);
         source.setCreatedAt(this.createdAt);
         source.setLastPostDate(this.lastPostDate);
-        source.setIsLocked(this.isLocked);
+        source.setIsLocked(this.isLocked ? 1 : 0);
         source.setSettings(this.settings.toString());
 
         return source;
