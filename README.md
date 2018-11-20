@@ -2,6 +2,46 @@
 
 ## API
 
+- [User API](#user-api)
+  * [GET `/user`](#get---user-)
+  * [GET `/user/{id:[0-9]*}`](#get---user--id--0-9----)
+  * [POST `/user/login`](#post---user-login-)
+  * [POST `/user/register`](#post---user-register-)
+  * [POST `/user/save`](#post---user-save-)
+  * [POST `/user/password`](#post---user-password-)
+  * [POST `/user/avatar/`](#post---user-avatar--)
+  * [POST `/user/avatar/drop/`](#post---user-avatar-drop--)
+- [Post API](#post-api)
+  * [GET `/`](#get----)
+  * [GET `/{id:[0-9]*}`](#get----id--0-9----)
+  * [POST `/{id:[0-9]*}`](#post----id--0-9----)
+  * [POST `/add`](#post---add-)
+  * [POST `/{id:[0-9]*}/delete`](#post----id--0-9----delete-)
+  * [POST `/{id:[0-9]*}/approve`](#post----id--0-9----approve-)
+  * [POST `/{id:[0-9]*}/dismiss`](#post----id--0-9----dismiss-)
+  * [POST `/{id:[0-9]*}/like`](#post----id--0-9----like-)
+  * [POST `/{id:[0-9]*}/dislike`](#post----id--0-9----dislike-)
+- [Source API](#source-api)
+  * [GET `/source/`](#get---source--)
+  * [GET `/source/{id:[0-9]*}/`](#get---source--id--0-9-----)
+  * [GET `/source/run/{id:[0-9]*}/`](#get---source-run--id--0-9-----)
+  * [POST `/source/add/`](#post---source-add--)
+  * [POST `/source/edit/`](#post---source-edit--)
+  * [POST `/source/delete/{id:[0-9]*}/`](#post---source-delete--id--0-9-----)
+- [Post preview API](#post-preview-api)
+  * [GET `/post-preview/`](#get---post-preview--)
+  * [GET `/post-preview/{id:[0-9]+}`](#get---post-preview--id--0-9----)
+  * [GET `/post-preview/by-source/{id:[0-9]+}`](#get---post-preview-by-source--id--0-9----)
+- [Image API](#image-api)
+  * [GET `/image/{id:.*}`](#get---image--id----)
+- [Comment API](#comment-api)
+  * [GET `/{id:[0-9]*}/comments`](#get----id--0-9----comments-)
+  * [POST `/{id:[0-9]*}/comments`](#post----id--0-9----comments-)
+  * [POST `/{id:[0-9]*}/comments/edit/`](#post----id--0-9----comments-edit--)
+  * [POST `/{postId:[0-9]*}/comments/delete/{id:[0-9]*}`](#post----postid--0-9----comments-delete--id--0-9----)
+  * [POST `/{postId:[0-9]*}/comments/like/{id:[0-9]*}`](#post----postid--0-9----comments-like--id--0-9----)
+  * [POST `/{postId:[0-9]*}/comments/dislike/{id:[0-9]*}`](#post----postid--0-9----comments-dislike--id--0-9----)
+
 ### User API
 
 #### GET `/user`
@@ -299,6 +339,14 @@ class SourceView {
     }
 }
 
+```
+#### GET `/source/{id:[0-9]*}/`
+
+- RolesAllowed: ADMIN
+- JSON Response:
+
+```java
+class SourceView
 ```
 
 #### GET `/source/run/{id:[0-9]*}/`

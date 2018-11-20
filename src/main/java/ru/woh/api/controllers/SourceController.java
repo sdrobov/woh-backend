@@ -34,6 +34,15 @@ public class SourceController {
             .collect(Collectors.toList());
     }
 
+    @GetMapping("/source/{id:[0-9]*}/")
+    @RolesAllowed({Role.ROLE_ADMIN})
+    public SourceView byId(@PathVariable("id") Long id) {
+        return this.sourceRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format(
+            "source #%d not found",
+            id
+        ))).view();
+    }
+
     @GetMapping("/source/run/{id:[0-9]*}/")
     @RolesAllowed({Role.ROLE_ADMIN})
     public ResponseEntity runSource(@PathVariable("id") Long id) {
