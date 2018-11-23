@@ -62,7 +62,6 @@ class UserView {
     String avatar;
     String role;
     String annotation;
-    List<PostView> proposedPosts;
 }
 ```
 
