@@ -10,8 +10,8 @@ import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import ru.woh.api.views.AdminPostView;
-import ru.woh.api.views.PostView;
+import ru.woh.api.views.admin.AdminPostView;
+import ru.woh.api.views.site.PostView;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -45,20 +45,28 @@ public class Post implements Serializable {
     private String source;
 
     @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
     private Date createdAt;
 
     @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
     private Date updatedAt;
 
     @Column(name = "deleted_at")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date deletedAt;
+
+    @Column(name = "published_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date publishedAt;
 
     @Column(name = "is_allowed")
     private Boolean isAllowed;
 
     @Column(name = "moderated_at")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date moderatedAt;
 
     @ManyToOne
@@ -66,13 +74,17 @@ public class Post implements Serializable {
     @CreatedBy
     private User moderator;
 
+    @ManyToOne
+    @JoinColumn(name = "proposed_by")
+    private User proposedBy;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Comment> comments = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.DETACH)
     @JoinTable(name = "tags_ref_posts",
-        joinColumns = {@JoinColumn(name = "post_id")},
-        inverseJoinColumns = {@JoinColumn(name = "tag_id")})
+        joinColumns = { @JoinColumn(name = "post_id") },
+        inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
@@ -85,7 +97,17 @@ public class Post implements Serializable {
     private Source sourceSite;
 
     public PostView view() {
-        return new PostView(this.id, this.title, this.text, this.source, this.createdAt, this.tags, this.announce);
+        return new PostView(
+            this.id,
+            this.title,
+            this.text,
+            this.source,
+            this.createdAt,
+            this.publishedAt,
+            this.tags,
+            this.announce,
+            this.proposedBy
+        );
     }
 
     public AdminPostView adminView() {
@@ -95,8 +117,10 @@ public class Post implements Serializable {
             this.text,
             this.source,
             this.createdAt,
+            this.publishedAt,
             this.tags,
             this.announce,
+            this.proposedBy,
             this.updatedAt,
             this.moderatedAt,
             this.moderator,

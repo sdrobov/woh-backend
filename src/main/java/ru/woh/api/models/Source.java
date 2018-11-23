@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedDate;
-import ru.woh.api.views.SourceView;
+import ru.woh.api.views.admin.SourceView;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -32,10 +32,12 @@ public class Source implements Serializable {
     private String settings;
 
     @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
     private Date createdAt;
 
     @Column(name = "last_post_date")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date lastPostDate;
 
     @Column(name = "is_locked")

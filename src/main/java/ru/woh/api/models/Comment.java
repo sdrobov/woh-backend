@@ -10,7 +10,7 @@ import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import ru.woh.api.views.CommentView;
+import ru.woh.api.views.site.CommentView;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -36,10 +36,12 @@ public class Comment implements Serializable {
     private String text;
 
     @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
     private Date createdAt;
 
     @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
     private Date updatedAt;
 

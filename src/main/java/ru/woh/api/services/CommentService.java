@@ -10,8 +10,8 @@ import ru.woh.api.models.CommentLikes;
 import ru.woh.api.models.Post;
 import ru.woh.api.models.repositories.CommentLikesRepository;
 import ru.woh.api.models.repositories.CommentRepository;
-import ru.woh.api.views.CommentView;
-import ru.woh.api.views.RatingView;
+import ru.woh.api.views.site.CommentView;
+import ru.woh.api.views.site.RatingView;
 
 import java.util.List;
 
@@ -39,14 +39,14 @@ public class CommentService {
         )));
     }
 
-    public List<CommentView> last(Post post) {
+    List<CommentView> last(Post post) {
         return this.commentRepository.findAllByPost(
             post,
             PageRequest.of(0, 2, Sort.by(Sort.Order.desc("createdAt")))
         ).map(this::makeCommentViewWithRating).getContent();
     }
 
-    public Long count(Post post) {
+    Long count(Post post) {
         return this.commentRepository.countByPost(post);
     }
 

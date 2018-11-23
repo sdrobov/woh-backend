@@ -8,7 +8,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
-import ru.woh.api.views.PostPreviewView;
+import ru.woh.api.views.admin.PostPreviewView;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -37,10 +37,12 @@ public class PostPreview {
     private String announce;
 
     @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
     private Date createdAt;
 
     @Column(name = "deleted_at")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date deletedAt;
 
     @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)

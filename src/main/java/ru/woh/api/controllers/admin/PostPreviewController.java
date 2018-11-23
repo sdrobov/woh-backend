@@ -1,4 +1,4 @@
-package ru.woh.api.controllers;
+package ru.woh.api.controllers.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,7 +9,7 @@ import ru.woh.api.models.PostPreview;
 import ru.woh.api.models.Role;
 import ru.woh.api.models.repositories.PostPreviewRepository;
 import ru.woh.api.models.repositories.SourceRepository;
-import ru.woh.api.views.PostPreviewView;
+import ru.woh.api.views.admin.PostPreviewView;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.List;

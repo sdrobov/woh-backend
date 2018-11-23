@@ -1,4 +1,4 @@
-package ru.woh.api.views;
+package ru.woh.api.views.site;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,11 +11,11 @@ import java.util.List;
 @Setter
 public class PostListView {
     protected Long totalCount;
-    protected Long totalPages;
-    protected Long currentPage;
+    protected Integer totalPages;
+    protected Integer currentPage;
     protected List<PostView> posts;
 
-    public PostListView(Long totalCount, Long totalPages, Long currentPage, List<PostView> posts) {
+    public PostListView(Long totalCount, Integer totalPages, Integer currentPage, List<PostView> posts) {
         this.totalCount = totalCount;
         this.totalPages = totalPages;
         this.currentPage = currentPage;

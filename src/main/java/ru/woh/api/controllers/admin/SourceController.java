@@ -1,4 +1,4 @@
-package ru.woh.api.controllers;
+package ru.woh.api.controllers.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +8,7 @@ import ru.woh.api.models.Role;
 import ru.woh.api.models.Source;
 import ru.woh.api.models.repositories.SourceRepository;
 import ru.woh.api.services.ParserService;
-import ru.woh.api.views.SourceView;
+import ru.woh.api.views.admin.SourceView;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.List;

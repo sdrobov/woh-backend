@@ -1,4 +1,4 @@
-package ru.woh.api.controllers;
+package ru.woh.api.controllers.site;
 
 import com.mongodb.client.gridfs.model.GridFSFile;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +21,8 @@ import ru.woh.api.requests.RegistrationRequest;
 import ru.woh.api.services.GridFsService;
 import ru.woh.api.services.ImageStorageService;
 import ru.woh.api.services.UserService;
-import ru.woh.api.views.UserExtView;
-import ru.woh.api.views.UserView;
+import ru.woh.api.views.site.UserExtView;
+import ru.woh.api.views.site.UserView;
 
 import javax.annotation.security.RolesAllowed;
 import java.awt.image.BufferedImage;
@@ -56,13 +56,13 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
+    @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public UserView status() {
         return this.userService.getCurrenttUser().view();
     }
 
     @GetMapping("/user/{id:[0-9]*}")
-    @RolesAllowed({Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
+    @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public UserView byId(@PathVariable("id") Long id) {
         return this.userRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format(
             "User #%d not found",
@@ -71,7 +71,7 @@ public class UserController {
     }
 
     @PostMapping("/user/login")
-    @RolesAllowed({Role.ROLE_ANONYMOUS})
+    @RolesAllowed({ Role.ROLE_ANONYMOUS })
     public UserExtView login(@RequestBody LoginRequest loginRequest) {
         User user = this.userService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
 
@@ -82,12 +82,13 @@ public class UserController {
             user.getAvatar(),
             user.getRoleName(),
             user.getAnnotation(),
+            user.getProposedPosts(),
             user.getToken()
         );
     }
 
     @PostMapping("/user/register")
-    @RolesAllowed({Role.ROLE_ANONYMOUS})
+    @RolesAllowed({ Role.ROLE_ANONYMOUS })
     public ResponseEntity<UserView> register(@RequestBody RegistrationRequest registrationRequest) {
         User user = this.userService.getCurrenttUser();
         if (user != null) {
@@ -119,7 +120,7 @@ public class UserController {
     }
 
     @PostMapping("/user/save")
-    @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
+    @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public UserView save(@RequestBody UserView userView) {
         if (userView.getId() == null) {
             throw new BadRequestException("user id required");
@@ -148,7 +149,7 @@ public class UserController {
     }
 
     @PostMapping("/user/password")
-    @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
+    @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public ResponseEntity<Void> password(@RequestBody ChangePasswordRequest changePasswordRequest) {
         if (!changePasswordRequest.isValid()) {
             return ResponseEntity.badRequest().build();
@@ -163,7 +164,7 @@ public class UserController {
     }
 
     @PostMapping("/user/avatar/")
-    @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
+    @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public ResponseEntity<Void> avatar(@ModelAttribute AvatarChangeRequest avatarChangeRequest) {
         if (!avatarChangeRequest.isValid()) {
             return ResponseEntity.badRequest().build();
@@ -200,7 +201,7 @@ public class UserController {
     }
 
     @PostMapping("/user/avatar/drop/")
-    @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
+    @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public ResponseEntity<Void> dropAvatar() {
         User currentUser = this.userService.getCurrenttUser();
         if (currentUser.getAvatar() == null) {

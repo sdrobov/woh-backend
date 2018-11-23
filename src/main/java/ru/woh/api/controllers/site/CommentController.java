@@ -1,4 +1,4 @@
-package ru.woh.api.controllers;
+package ru.woh.api.controllers.site;
 
 import org.springframework.web.bind.annotation.*;
 import ru.woh.api.exceptions.ForbiddenException;
@@ -7,7 +7,7 @@ import ru.woh.api.models.repositories.CommentLikesRepository;
 import ru.woh.api.services.CommentService;
 import ru.woh.api.services.PostService;
 import ru.woh.api.services.UserService;
-import ru.woh.api.views.CommentView;
+import ru.woh.api.views.site.CommentView;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.Date;

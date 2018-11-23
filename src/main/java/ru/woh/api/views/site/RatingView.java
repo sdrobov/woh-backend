@@ -1,4 +1,4 @@
-package ru.woh.api.views;
+package ru.woh.api.views.site;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

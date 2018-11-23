@@ -13,6 +13,7 @@
   * [POST `/user/avatar/drop/`](#post-useravatardrop)
 - [Post API](#post-api)
   * [GET `/`](#get-)
+  * [GET `/by-tag/{tag:.*}`](#get-by-tagtag)
   * [GET `/{id:[0-9]*}`](#get-id0-9)
   * [POST `/{id:[0-9]*}`](#post-id0-9)
   * [POST `/add`](#post-add)
@@ -21,6 +22,10 @@
   * [POST `/{id:[0-9]*}/dismiss`](#post-id0-9dismiss)
   * [POST `/{id:[0-9]*}/like`](#post-id0-9like)
   * [POST `/{id:[0-9]*}/dislike`](#post-id0-9dislike)
+  * [GET `/published/`](#get-published)
+  * [GET `/published-waiting/`](#get-published-waiting)
+  * [GET `/published-waiting/{date:.*}/`](#get-published-waitingdate)
+  * [GET `/moderation-waiting/`](#get-moderation-waiting)
 - [Source API](#source-api)
   * [GET `/source/`](#get-source)
   * [GET `/source/{id:[0-9]*}/`](#get-sourceid0-9)
@@ -57,6 +62,7 @@ class UserView {
     String avatar;
     String role;
     String annotation;
+    List<PostView> proposedPosts;
 }
 ```
 
@@ -185,6 +191,7 @@ class PostListView {
         List<String> tags;
         RatingView rating;
         Long totalComments;
+        UserView proposedBy;
 
         class CommentView {
             Long id;
@@ -211,6 +218,14 @@ class PostListView {
     }
 }
 ```
+#### GET `/by-tag/{tag:.*}/`
+
+- RolesAllowed: ANONYMOUS, USER, MODER, ADMIN
+- JSON Response:
+
+```java
+class PostListView
+```
 
 #### GET `/{id:[0-9]*}`
 
@@ -218,7 +233,11 @@ class PostListView {
 - JSON Response:
 
 ```java
-class PostView
+class PostExtView {
+    PostView post;
+    List<PostView> prev;
+    List<PostView> next;
+}
 ```
 
 #### POST `/{id:[0-9]*}`
@@ -301,6 +320,42 @@ class PostView
 
 ```java
 class PostView
+```
+
+#### GET `/published/`
+
+- RolesAllowed: MODER, ADMIN
+- JSON Response:
+
+```java
+class PostListView
+```
+
+#### GET `/published-waiting/`
+
+- RolesAllowed: MODER, ADMIN
+- JSON Response:
+
+```java
+class PostListView
+```
+
+#### GET `/published-waiting/{date:.*}/`
+
+- RolesAllowed: MODER, ADMIN
+- JSON Response:
+
+```java
+class PostListView
+```
+
+#### GET `/moderation-waiting/`
+
+- RolesAllowed: MODER, ADMIN
+- JSON Response:
+
+```java
+class PostListView
 ```
 
 ### Source API

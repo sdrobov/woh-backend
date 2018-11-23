@@ -11,7 +11,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
-import ru.woh.api.views.UserView;
+import ru.woh.api.views.site.UserView;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -45,14 +45,17 @@ public class User implements Serializable {
     private String token;
 
     @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
     private Date createdAt;
 
     @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
     private Date updatedAt;
 
     @Column(name = "deleted_at")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date deletedAt;
 
     private String name;
@@ -74,15 +77,20 @@ public class User implements Serializable {
     private Role role;
 
     @OneToMany(mappedBy = "moderator",
-        cascade = CascadeType.ALL)
+        cascade = CascadeType.DETACH)
     private Set<Post> moderatedPosts = new HashSet<>();
+
+    @OneToMany(mappedBy = "proposedBy",
+        cascade = CascadeType.DETACH)
+    private Set<Post> proposedPosts = new HashSet<>();
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Comment> comments = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "tags_ref_users",
-        joinColumns = {@JoinColumn(name = "user_id")},
-        inverseJoinColumns = {@JoinColumn(name = "tag_id")})
+        joinColumns = { @JoinColumn(name = "user_id") },
+        inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
 
     public static AnonymousAuthenticationToken anonymousAuthenticationToken() {
@@ -94,7 +102,15 @@ public class User implements Serializable {
     }
 
     public UserView view() {
-        return new UserView(this.id, this.email, this.name, this.avatar, this.getRoleName(), this.annotation);
+        return new UserView(
+            this.id,
+            this.email,
+            this.name,
+            this.avatar,
+            this.getRoleName(),
+            this.annotation,
+            this.proposedPosts
+        );
     }
 
     private Boolean isAdmin() {

@@ -1,4 +1,4 @@
-package ru.woh.api.controllers;
+package ru.woh.api.controllers.site;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

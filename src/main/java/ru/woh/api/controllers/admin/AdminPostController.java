@@ -1,56 +1,50 @@
-package ru.woh.api.controllers;
+package ru.woh.api.controllers.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
-import ru.woh.api.exceptions.ForbiddenException;
-import ru.woh.api.models.*;
-import ru.woh.api.models.repositories.PostLikesRepository;
+import ru.woh.api.models.Post;
+import ru.woh.api.models.Role;
+import ru.woh.api.models.Tag;
+import ru.woh.api.models.User;
+import ru.woh.api.models.repositories.PostRepository;
 import ru.woh.api.models.repositories.TagRepository;
 import ru.woh.api.services.PostService;
 import ru.woh.api.services.UserService;
-import ru.woh.api.views.AdminPostView;
-import ru.woh.api.views.PostListView;
-import ru.woh.api.views.PostView;
+import ru.woh.api.views.admin.AdminPostView;
+import ru.woh.api.views.site.PostListView;
+import ru.woh.api.views.site.PostView;
 
 import javax.annotation.security.RolesAllowed;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.stream.Collectors;
 
 @RestController
-public class PostController {
-    private final PostService postService;
+public class AdminPostController {
     private final UserService userService;
-    private final PostLikesRepository postLikesRepository;
+    private final PostService postService;
+    private final PostRepository postRepository;
     private final TagRepository tagRepository;
-    private static final int defaultPageSize = 5;
+    private final static int defaultPageSize = 100;
 
     @Autowired
-    public PostController(
-        PostService postService,
-        PostLikesRepository postLikesRepository,
+    public AdminPostController(
         UserService userService,
-        TagRepository tagRepository
+        PostService postService,
+        PostRepository postRepository, TagRepository tagRepository
     ) {
-        this.postService = postService;
-        this.postLikesRepository = postLikesRepository;
         this.userService = userService;
+        this.postService = postService;
+        this.postRepository = postRepository;
         this.tagRepository = tagRepository;
     }
 
-    @GetMapping("/")
-    @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public PostListView list(@RequestParam(value = "page", defaultValue = "0") Integer page) {
-        return this.postService.listView(page, PostController.defaultPageSize);
-    }
-
-    @GetMapping("/{id:[0-9]*}")
-    @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public PostView one(@PathVariable("id") Long id) {
-        return this.postService.view(id);
-    }
-
     @PostMapping("/{id:[0-9]*}")
-    @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
+    @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
     public AdminPostView save(@PathVariable("id") Long id, @RequestBody PostView post) {
         User user = this.userService.getCurrenttUser();
 
@@ -84,7 +78,7 @@ public class PostController {
     }
 
     @PostMapping("/add")
-    @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
+    @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
     public AdminPostView addPost(@RequestBody PostView post) {
         User user = this.userService.getCurrenttUser();
 
@@ -118,7 +112,7 @@ public class PostController {
     }
 
     @PostMapping("/{id:[0-9]*}/delete")
-    @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
+    @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
     public void deletePost(@PathVariable("id") Long id) {
         Post postModel = this.postService.one(id);
 
@@ -126,7 +120,7 @@ public class PostController {
     }
 
     @PostMapping("/{id:[0-9]*}/approve")
-    @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
+    @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
     public AdminPostView approvePost(@PathVariable("id") Long id) {
         Post postModel = this.postService.one(id);
 
@@ -137,7 +131,7 @@ public class PostController {
     }
 
     @PostMapping("/{id:[0-9]*}/dismiss")
-    @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
+    @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
     public AdminPostView dismissPost(@PathVariable("id") Long id) {
         Post postModel = this.postService.one(id);
 
@@ -147,62 +141,59 @@ public class PostController {
         return postModel.adminView();
     }
 
-    @PostMapping("/{id:[0-9]*}/like")
-    @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
-    public PostView like(@PathVariable("id") Long id) {
-        Post post = this.postService.one(id);
-        User user = this.userService.getCurrenttUser();
-        int mod = 1;
+    @GetMapping("/published/")
+    @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
+    public PostListView published(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+        var posts = this.postRepository.findAllAllowed(PageRequest.of(page, AdminPostController.defaultPageSize));
+        var views = posts.getContent().stream().map(Post::view).collect(Collectors.toList());
 
-        PostLikes postLike = this.postLikesRepository.findById(new PostLikes.PostLikesPK(post.getId(), user.getId()))
-            .orElse(null);
-
-        if (postLike != null) {
-            if (postLike.getIsLike()) {
-                throw new ForbiddenException("you can only like once");
-            }
-
-            postLike.setIsLike(true);
-            mod += 1;
-        } else {
-            postLike = new PostLikes(new PostLikes.PostLikesPK(post.getId(), user.getId()), true);
-        }
-
-        this.postLikesRepository.save(postLike);
-
-        post.setRating((post.getRating() != null ? post.getRating() : 0) + mod);
-        this.postService.save(post);
-
-        return this.postService.view(id);
+        return new PostListView(posts.getTotalElements(), posts.getTotalPages(), page, views);
     }
 
+    @GetMapping("/published-waiting/")
+    @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
+    public PostListView waitingForPublish(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+        var posts = this.postRepository.findWaitingForPublishing(PageRequest.of(
+            page,
+            AdminPostController.defaultPageSize
+        ));
+        var views = posts.getContent().stream().map(Post::view).collect(Collectors.toList());
 
-    @PostMapping("/{id:[0-9]*}/dislike")
-    @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
-    public PostView dislike(@PathVariable("id") Long id) {
-        Post post = this.postService.one(id);
-        User user = this.userService.getCurrenttUser();
-        int mod = 1;
+        return new PostListView(posts.getTotalElements(), posts.getTotalPages(), page, views);
+    }
 
-        PostLikes postLike = this.postLikesRepository.findById(new PostLikes.PostLikesPK(post.getId(), user.getId()))
-            .orElse(null);
+    @GetMapping("/published-waiting/{date:.*}/")
+    @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
+    public PostListView waitingForPublish(
+        @PathVariable("date") Date date,
+        @RequestParam(value = "page", defaultValue = "0") Integer page
+    ) {
+        var from = Date.from(LocalDateTime.ofInstant(date.toInstant(), ZoneId.of("UTC"))
+            .with(LocalTime.MIN)
+            .toInstant(ZoneOffset.UTC));
+        var to = Date.from(LocalDateTime.ofInstant(date.toInstant(), ZoneId.of("UTC"))
+            .with(LocalTime.MIN)
+            .toInstant(ZoneOffset.UTC));
 
-        if (postLike != null) {
-            if (!postLike.getIsLike()) {
-                throw new ForbiddenException("you can only dislike once");
-            }
+        var posts = this.postRepository.findWaitingForPublishingAt(
+            from,
+            to,
+            PageRequest.of(page, AdminPostController.defaultPageSize)
+        );
+        var views = posts.getContent().stream().map(Post::view).collect(Collectors.toList());
 
-            postLike.setIsLike(false);
-            mod += 1;
-        } else {
-            postLike = new PostLikes(new PostLikes.PostLikesPK(post.getId(), user.getId()), false);
-        }
+        return new PostListView(posts.getTotalElements(), posts.getTotalPages(), page, views);
+    }
 
-        this.postLikesRepository.save(postLike);
+    @GetMapping("/moderation-waiting/")
+    @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
+    public PostListView waitingForModeration(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+        var posts = this.postRepository.findWaitingForModeration(PageRequest.of(
+            page,
+            AdminPostController.defaultPageSize
+        ));
+        var views = posts.getContent().stream().map(Post::view).collect(Collectors.toList());
 
-        post.setRating((post.getRating() != null ? post.getRating() : 0) - mod);
-        this.postService.save(post);
-
-        return this.postService.view(id);
+        return new PostListView(posts.getTotalElements(), posts.getTotalPages(), page, views);
     }
 }

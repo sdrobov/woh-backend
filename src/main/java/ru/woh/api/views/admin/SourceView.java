@@ -1,4 +1,4 @@
-package ru.woh.api.views;
+package ru.woh.api.views.admin;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.woh.api.models.Post;
 import ru.woh.api.models.Source;
+import ru.woh.api.views.site.PostView;
 
 import java.io.IOException;
 import java.util.Date;

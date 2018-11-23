@@ -1,13 +1,14 @@
-package ru.woh.api.controllers;
+package ru.woh.api.controllers.site;
 
-import javax.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import ru.woh.api.services.ImageStorageService;
 import ru.woh.api.models.Role;
+import ru.woh.api.services.ImageStorageService;
+
+import javax.annotation.security.RolesAllowed;
 
 @RestController
 public class ImageController {

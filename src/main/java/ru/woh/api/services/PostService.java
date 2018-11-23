@@ -11,10 +11,12 @@ import ru.woh.api.models.PostLikes;
 import ru.woh.api.models.User;
 import ru.woh.api.models.repositories.PostLikesRepository;
 import ru.woh.api.models.repositories.PostRepository;
-import ru.woh.api.views.PostListView;
-import ru.woh.api.views.PostView;
-import ru.woh.api.views.RatingView;
+import ru.woh.api.views.site.PostListView;
+import ru.woh.api.views.site.PostView;
+import ru.woh.api.views.site.RatingView;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +46,7 @@ public class PostService {
         return (
             isModer
                 ? this.postRepository.findAll(PageRequest.of(page, limit, new Sort(Sort.Direction.DESC, "createdAt")))
-                : this.postRepository.findAllByIsAllowedTrue(PageRequest.of(
+                : this.postRepository.findAllAllowed(PageRequest.of(
                     page,
                     limit,
                     new Sort(Sort.Direction.DESC, "createdAt")
@@ -63,6 +65,16 @@ public class PostService {
         return this.makeViewWithRating(this.one(id));
     }
 
+    public List<PostView> prev(PostView post) {
+        return this.postRepository.findPrev(post.getPublishedAt(), post.getId()).stream().map(Post::view).collect(
+            Collectors.toList());
+    }
+
+    public List<PostView> next(PostView post) {
+        return this.postRepository.findNext(post.getPublishedAt(), post.getId()).stream().map(Post::view).collect(
+            Collectors.toList());
+    }
+
     public PostListView listView(Integer page, Integer limit) {
         var postPage = this.list(page, limit);
         var views = postPage.getContent()
@@ -70,7 +82,17 @@ public class PostService {
             .map(this::makeViewWithRating)
             .collect(Collectors.toList());
 
-        return new PostListView(postPage.getTotalElements(), (long) postPage.getTotalPages(), (long) page, views);
+        return new PostListView(postPage.getTotalElements(), postPage.getTotalPages(), page, views);
+    }
+
+    public PostListView byTag(Integer page, Integer limit, String tag) {
+        var posts = this.postRepository.findAllByTags(
+            Collections.singleton(tag),
+            PageRequest.of(page, limit, new Sort(Sort.Direction.DESC, "createdAt"))
+        );
+        var views = posts.getContent().stream().map(this::makeViewWithRating).collect(Collectors.toList());
+
+        return new PostListView(posts.getTotalElements(), posts.getTotalPages(), page, views);
     }
 
     private PostView makeViewWithRating(Post post) {
