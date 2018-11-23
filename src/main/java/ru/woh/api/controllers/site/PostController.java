@@ -60,36 +60,17 @@ public class PostController {
     @PostMapping("/{id:[0-9]*}/like")
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public PostView like(@PathVariable("id") Long id) {
-        Post post = this.postService.one(id);
-        User user = this.userService.getCurrenttUser();
-        int mod = 1;
-
-        PostLikes postLike = this.postLikesRepository.findById(new PostLikes.PostLikesPK(post.getId(), user.getId()))
-            .orElse(null);
-
-        if (postLike != null) {
-            if (postLike.getIsLike()) {
-                throw new ForbiddenException("you can only like once");
-            }
-
-            postLike.setIsLike(true);
-            mod += 1;
-        } else {
-            postLike = new PostLikes(new PostLikes.PostLikesPK(post.getId(), user.getId()), true);
-        }
-
-        this.postLikesRepository.save(postLike);
-
-        post.setRating((post.getRating() != null ? post.getRating() : 0) + mod);
-        this.postService.save(post);
-
-        return this.postService.view(id);
+        return this.likeOrDislike(id, true);
     }
 
 
     @PostMapping("/{id:[0-9]*}/dislike")
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public PostView dislike(@PathVariable("id") Long id) {
+        return this.likeOrDislike(id, false);
+    }
+
+    private PostView likeOrDislike(Long id, Boolean like) {
         Post post = this.postService.one(id);
         User user = this.userService.getCurrenttUser();
         int mod = 1;
@@ -98,14 +79,14 @@ public class PostController {
             .orElse(null);
 
         if (postLike != null) {
-            if (!postLike.getIsLike()) {
-                throw new ForbiddenException("you can only dislike once");
+            if (postLike.getIsLike() == like) {
+                throw new ForbiddenException(String.format("you can only %s once", like ? "like" : "dislike"));
             }
 
-            postLike.setIsLike(false);
+            postLike.setIsLike(like);
             mod += 1;
         } else {
-            postLike = new PostLikes(new PostLikes.PostLikesPK(post.getId(), user.getId()), false);
+            postLike = new PostLikes(new PostLikes.PostLikesPK(post.getId(), user.getId()), like);
         }
 
         this.postLikesRepository.save(postLike);

@@ -45,7 +45,7 @@ public class CommentController {
     }
 
     @PostMapping("/{id:[0-9]*}/comments")
-    @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
+    @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public List<CommentView> add(
         @PathVariable("id") Long postId,
         @RequestBody CommentView comment
@@ -67,7 +67,7 @@ public class CommentController {
 
 
     @PostMapping("/{id:[0-9]*}/comments/edit/")
-    @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
+    @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public CommentView editComment(@RequestBody CommentView comment) {
         Comment commentModel = this.commentService.one(comment.getId());
 
@@ -86,7 +86,7 @@ public class CommentController {
     }
 
     @PostMapping("/{postId:[0-9]*}/comments/delete/{id:[0-9]*}")
-    @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
+    @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public void deleteComment(@PathVariable("id") Long id) {
         Comment commentModel = this.commentService.one(id);
 
@@ -100,39 +100,19 @@ public class CommentController {
     }
 
     @PostMapping("/{postId:[0-9]*}/comments/like/{id:[0-9]*}")
-    @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
+    @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public CommentView like(@PathVariable("id") Long id) {
-        Comment comment = this.commentService.one(id);
-        User user = this.userService.getCurrenttUser();
-        int mod = 1;
-
-        CommentLikes commentLikes = this.commentLikesRepository.findById(new CommentLikes.CommentLikesPK(
-            comment.getId(),
-            user.getId()
-        )).orElse(null);
-
-        if (commentLikes != null) {
-            if (commentLikes.getIsLike()) {
-                throw new ForbiddenException("you can only like once");
-            }
-
-            commentLikes.setIsLike(true);
-            mod += 1;
-        } else {
-            commentLikes = new CommentLikes(new CommentLikes.CommentLikesPK(comment.getId(), user.getId()), true);
-        }
-
-        this.commentLikesRepository.save(commentLikes);
-
-        comment.setRating((comment.getRating() != null ? comment.getRating() : 0) + mod);
-        comment = this.commentService.save(comment);
-
-        return this.commentService.makeCommentViewWithRating(comment);
+        return this.likeOrDislike(id, true);
     }
 
     @PostMapping("/{postId:[0-9]*}/comments/dislike/{id:[0-9]*}")
-    @RolesAllowed({Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN})
+    @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public CommentView dislike(@PathVariable("id") Long id) {
+        return this.likeOrDislike(id, false);
+    }
+
+    @SuppressWarnings("Duplicates")
+    private CommentView likeOrDislike(Long id, Boolean like) {
         Comment comment = this.commentService.one(id);
         User user = this.userService.getCurrenttUser();
         int mod = 1;
@@ -143,14 +123,14 @@ public class CommentController {
         )).orElse(null);
 
         if (commentLikes != null) {
-            if (!commentLikes.getIsLike()) {
-                throw new ForbiddenException("you can only dislike once");
+            if (commentLikes.getIsLike() == like) {
+                throw new ForbiddenException(String.format("you can only %s once", like ? "like" : "dislike"));
             }
 
-            commentLikes.setIsLike(false);
+            commentLikes.setIsLike(like);
             mod += 1;
         } else {
-            commentLikes = new CommentLikes(new CommentLikes.CommentLikesPK(comment.getId(), user.getId()), false);
+            commentLikes = new CommentLikes(new CommentLikes.CommentLikesPK(comment.getId(), user.getId()), true);
         }
 
         this.commentLikesRepository.save(commentLikes);

@@ -56,6 +56,13 @@ public class AdminPostController {
         postModel.setModeratedAt(new Date());
         postModel.setUpdatedAt(new Date());
         postModel.setModerator(user);
+        return getAdminPostView(post, postModel);
+    }
+
+    private AdminPostView getAdminPostView(
+        @RequestBody PostView post,
+        Post postModel
+    ) {
         postModel.setAnnounce(post.getAnnounce());
         if (post.getTags() != null) {
             postModel.setTags(
@@ -90,25 +97,7 @@ public class AdminPostController {
         postModel.setModeratedAt(new Date());
         postModel.setModerator(user);
         postModel.setIsAllowed(true);
-        postModel.setAnnounce(post.getAnnounce());
-        if (post.getTags() != null) {
-            postModel.setTags(
-                post.getTags()
-                    .stream()
-                    .map(String::trim)
-                    .distinct()
-                    .map(tagName -> this.tagRepository.findFirstByName(tagName).orElseGet(() -> {
-                        Tag tag = new Tag();
-                        tag.setName(tagName);
-                        return this.tagRepository.save(tag);
-                    }))
-                    .collect(Collectors.toSet())
-            );
-        }
-
-        postModel = this.postService.save(postModel);
-
-        return postModel.adminView();
+        return getAdminPostView(post, postModel);
     }
 
     @PostMapping("/{id:[0-9]*}/delete")

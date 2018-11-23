@@ -108,13 +108,8 @@ public class PostService {
                 .orElse(null);
 
             if (like != null) {
-                if (like.getIsLike()) {
-                    rating.setLike(true);
-                    rating.setDislike(false);
-                } else {
-                    rating.setDislike(true);
-                    rating.setLike(false);
-                }
+                rating.setLike(like.getIsLike());
+                rating.setDislike(!like.getIsLike());
             }
         }
 

@@ -2,9 +2,6 @@ package ru.woh.api.views.site;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.woh.api.models.Post;
-
-import java.util.Set;
 
 @Getter
 @Setter
@@ -18,10 +15,9 @@ public class UserExtView extends UserView {
         String avatar,
         String role,
         String annotation,
-        Set<Post> proposedPosts,
         String token
     ) {
-        super(id, email, name, avatar, role, annotation, proposedPosts);
+        super(id, email, name, avatar, role, annotation);
         this.token = token;
     }
 }

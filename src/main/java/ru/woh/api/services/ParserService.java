@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 import ru.woh.api.ParserConfiguration;
-import ru.woh.api.models.Source;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -45,7 +44,7 @@ public class ParserService {
         this.parserConfiguration = parserConfiguration;
     }
 
-    public Boolean parseSource(Source source) {
+    public Boolean parseSource() {
         URL url = this.parserConfiguration.getParserUrl();
         HttpURLConnection connection;
         try {

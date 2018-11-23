@@ -51,7 +51,7 @@ public class SourceController {
             id
         )));
 
-        if (this.parserService.parseSource(source)) {
+        if (this.parserService.parseSource()) {
             return ResponseEntity.status(500).build();
         }
 

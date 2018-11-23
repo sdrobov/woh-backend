@@ -20,14 +20,14 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
     @Query("SELECT p FROM Post p WHERE isAllowed = 1 AND publishedAt <= CURRENT_TIMESTAMP AND tags IN ?1 ORDER BY publishedAt DESC")
     Page<Post> findAllByTags(Set<String> tags, Pageable pageable);
 
-    @Query("SELECT p FROM Post p WHERE isAllowed = 1 AND publishedAt <= ?1 AND id != ?2 ORDER BY publishedAt DESC")
+    @Query("SELECT p FROM Post p WHERE isAllowed = 1 AND publishedAt <= ?1 AND id <> ?2 ORDER BY publishedAt DESC")
     List<Post> findAllPrev(Date publishedAt, Long id, Pageable pageable);
 
     default List<Post> findPrev(Date publishedAt, Long id) {
         return this.findAllPrev(publishedAt, id, PageRequest.of(0, 3));
     }
 
-    @Query("SELECT p FROM Post p WHERE isAllowed = 1 AND publishedAt >= ?1 AND id != ?2 ORDER BY publishedAt ASC")
+    @Query("SELECT p FROM Post p WHERE isAllowed = 1 AND publishedAt >= ?1 AND id <> ?2 ORDER BY publishedAt ASC")
     List<Post> findAllNext(Date publishedAt, Long id, Pageable pageable);
 
     default List<Post> findNext(Date publishedAt, Long id) {

@@ -108,8 +108,7 @@ public class User implements Serializable {
             this.name,
             this.avatar,
             this.getRoleName(),
-            this.annotation,
-            this.proposedPosts
+            this.annotation
         );
     }
 

@@ -47,6 +47,6 @@ public class PostView {
         this.publishedAt = publishedAt;
         this.tags = tags != null ? tags.stream().map(Tag::getName).sorted().collect(Collectors.toList()) : null;
         this.announce = announce;
-        this.proposedBy = proposedBy.view();
+        this.proposedBy = proposedBy != null ? proposedBy.view() : null;
     }
 }

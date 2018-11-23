@@ -82,7 +82,6 @@ public class UserController {
             user.getAvatar(),
             user.getRoleName(),
             user.getAnnotation(),
-            user.getProposedPosts(),
             user.getToken()
         );
     }
@@ -216,11 +215,4 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    private ResponseEntity<byte[]> getAvatar(User user) {
-        if (user.getAvatar() == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return this.imageStorageService.getImage(user.getAvatar());
-    }
 }

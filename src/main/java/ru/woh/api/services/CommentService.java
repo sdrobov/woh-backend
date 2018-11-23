@@ -32,6 +32,7 @@ public class CommentService {
         this.userService = userService;
     }
 
+
     public Comment one(Long id) {
         return this.commentRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format(
             "Comment #%d not found",
@@ -69,13 +70,8 @@ public class CommentService {
             )).orElse(null);
 
             if (like != null) {
-                if (like.getIsLike()) {
-                    rating.setLike(true);
-                    rating.setDislike(false);
-                } else {
-                    rating.setDislike(true);
-                    rating.setLike(false);
-                }
+                rating.setLike(like.getIsLike());
+                rating.setDislike(!like.getIsLike());
             }
         }
 
