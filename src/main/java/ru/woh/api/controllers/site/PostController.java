@@ -10,11 +10,12 @@ import ru.woh.api.models.User;
 import ru.woh.api.models.repositories.PostLikesRepository;
 import ru.woh.api.services.PostService;
 import ru.woh.api.services.UserService;
-import ru.woh.api.views.site.PostExtView;
 import ru.woh.api.views.site.PostListView;
 import ru.woh.api.views.site.PostView;
 
 import javax.annotation.security.RolesAllowed;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class PostController {
@@ -51,10 +52,20 @@ public class PostController {
 
     @GetMapping("/{id:[0-9]*}")
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public PostExtView one(@PathVariable("id") Long id) {
-        var post = this.postService.view(id);
+    public PostView one(@PathVariable("id") Long id) {
+        return this.postService.view(id);
+    }
 
-        return new PostExtView(post, this.postService.prev(post), this.postService.next(post));
+    @GetMapping("/{id:[0-9]*}/nearest/")
+    @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
+    public List<PostView> nearest(@PathVariable("id") Long id) {
+        var post = this.postService.view(id);
+        var posts = new ArrayList<PostView>();
+
+        posts.addAll(this.postService.prev(post));
+        posts.addAll(this.postService.next(post));
+
+        return posts;
     }
 
     @PostMapping("/{id:[0-9]*}/like")

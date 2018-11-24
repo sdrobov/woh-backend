@@ -232,11 +232,16 @@ class PostListView
 - JSON Response:
 
 ```java
-class PostExtView {
-    PostView post;
-    List<PostView> prev;
-    List<PostView> next;
-}
+class PostView
+```
+
+#### GET `/{id:[0-9]*}/nearest/`
+
+- RolesAllowed: ANONYMOUS, USER, MODER, ADMIN
+- JSON Response:
+
+```java
+List<PostView>
 ```
 
 #### POST `/{id:[0-9]*}`
