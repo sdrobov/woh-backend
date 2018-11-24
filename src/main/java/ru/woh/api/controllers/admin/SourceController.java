@@ -27,7 +27,7 @@ public class SourceController {
 
     @GetMapping("/source/")
     @RolesAllowed({Role.ROLE_ADMIN})
-    public List<SourceView> listSource() {
+    public List<SourceView> list() {
         return this.sourceRepository.findAll()
             .stream()
             .map(Source::view)
@@ -45,7 +45,7 @@ public class SourceController {
 
     @GetMapping("/source/run/{id:[0-9]*}/")
     @RolesAllowed({Role.ROLE_ADMIN})
-    public ResponseEntity runSource(@PathVariable("id") Long id) {
+    public ResponseEntity run(@PathVariable("id") Long id) {
         Source source = this.sourceRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format(
             "source #%d not found",
             id
@@ -60,7 +60,7 @@ public class SourceController {
 
     @PostMapping("/source/add/")
     @RolesAllowed({Role.ROLE_ADMIN})
-    public SourceView addSource(@RequestBody SourceView sourceView) {
+    public SourceView add(@RequestBody SourceView sourceView) {
         Source source = sourceView.model();
         source.setId(null);
 
@@ -69,7 +69,7 @@ public class SourceController {
 
     @PostMapping("/source/edit/")
     @RolesAllowed({Role.ROLE_ADMIN})
-    public SourceView editSource(@RequestBody SourceView sourceView) {
+    public SourceView edit(@RequestBody SourceView sourceView) {
         if (sourceView.getId() == null || !this.sourceRepository.existsById(sourceView.getId())) {
             throw new NotFoundException("source not found");
         }
@@ -79,7 +79,7 @@ public class SourceController {
 
     @PostMapping("/source/delete/{id:[0-9]*}/")
     @RolesAllowed({Role.ROLE_ADMIN})
-    public ResponseEntity deleteSource(@PathVariable Long id) {
+    public ResponseEntity delete(@PathVariable("id") Long id) {
         if (!this.sourceRepository.existsById(id)) {
             throw new NotFoundException("source not found");
         }

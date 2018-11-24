@@ -135,7 +135,7 @@ public class CommentController {
 
         this.commentLikesRepository.save(commentLikes);
 
-        comment.setRating((comment.getRating() != null ? comment.getRating() : 0) - mod);
+        comment.setRating((comment.getRating() != null ? comment.getRating() : 0) + (like ? mod : 0 - mod));
         comment = this.commentService.save(comment);
 
         return this.commentService.makeCommentViewWithRating(comment);

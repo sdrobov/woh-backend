@@ -70,6 +70,7 @@ public class PostController {
         return this.likeOrDislike(id, false);
     }
 
+    @SuppressWarnings("Duplicates")
     private PostView likeOrDislike(Long id, Boolean like) {
         Post post = this.postService.one(id);
         User user = this.userService.getCurrenttUser();
@@ -91,7 +92,7 @@ public class PostController {
 
         this.postLikesRepository.save(postLike);
 
-        post.setRating((post.getRating() != null ? post.getRating() : 0) - mod);
+        post.setRating((post.getRating() != null ? post.getRating() : 0) + (like ? mod : 0 - mod));
         this.postService.save(post);
 
         return this.postService.view(id);

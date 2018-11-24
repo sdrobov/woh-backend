@@ -91,9 +91,7 @@ public class SourceView {
         this.lastPostDate = lastPostDate;
         this.isLocked = isLocked;
         this.posts = posts != null
-            ? posts.stream()
-                .map(Post::view)
-                .collect(Collectors.toList())
+            ? posts.stream().map(Post::view).collect(Collectors.toList())
             : null;
     }
 
@@ -105,8 +103,8 @@ public class SourceView {
         source.setUrl(this.url);
         source.setCreatedAt(this.createdAt);
         source.setLastPostDate(this.lastPostDate);
-        source.setIsLocked(this.isLocked ? 1 : 0);
-        source.setSettings(this.settings.toString());
+        source.setIsLocked((this.isLocked == null || this.isLocked == true) ? 1 : 0);
+        source.setSettings(this.settings != null ? this.settings.toString() : "");
 
         return source;
     }
