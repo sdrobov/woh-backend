@@ -43,7 +43,7 @@ public class AdminPostController {
         this.tagRepository = tagRepository;
     }
 
-    @PostMapping("/{id:[0-9]*}")
+    @PostMapping({ "/{id:[0-9]*}", "/{id:[0-9]*}/" })
     @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
     public AdminPostView save(@PathVariable("id") Long id, @RequestBody PostView post) {
         User user = this.userService.getCurrenttUser();
@@ -84,7 +84,7 @@ public class AdminPostController {
         return postModel.adminView();
     }
 
-    @PostMapping("/add")
+    @PostMapping({ "/add", "/add/" })
     @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
     public AdminPostView addPost(@RequestBody PostView post) {
         User user = this.userService.getCurrenttUser();
@@ -96,11 +96,11 @@ public class AdminPostController {
         postModel.setCreatedAt(new Date());
         postModel.setModeratedAt(new Date());
         postModel.setModerator(user);
-        postModel.setIsAllowed(true);
+        postModel.setIsAllowed((short) 1);
         return getAdminPostView(post, postModel);
     }
 
-    @PostMapping("/{id:[0-9]*}/delete")
+    @PostMapping({ "/{id:[0-9]*}/delete", "/{id:[0-9]*}/delete/" })
     @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
     public void deletePost(@PathVariable("id") Long id) {
         Post postModel = this.postService.one(id);
@@ -108,7 +108,7 @@ public class AdminPostController {
         this.postService.delete(postModel);
     }
 
-    @PostMapping("/{id:[0-9]*}/approve")
+    @PostMapping({ "/{id:[0-9]*}/approve", "/{id:[0-9]*}/approve/" })
     @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
     public AdminPostView approvePost(@PathVariable("id") Long id) {
         Post postModel = this.postService.one(id);
@@ -119,7 +119,7 @@ public class AdminPostController {
         return postModel.adminView();
     }
 
-    @PostMapping("/{id:[0-9]*}/dismiss")
+    @PostMapping({ "/{id:[0-9]*}/dismiss", "/{id:[0-9]*}/dismiss/" })
     @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
     public AdminPostView dismissPost(@PathVariable("id") Long id) {
         Post postModel = this.postService.one(id);
@@ -130,7 +130,7 @@ public class AdminPostController {
         return postModel.adminView();
     }
 
-    @GetMapping("/published/")
+    @GetMapping({ "/published", "/published/" })
     @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
     public PostListView published(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         var posts = this.postRepository.findAllAllowed(PageRequest.of(page, AdminPostController.defaultPageSize));
@@ -139,7 +139,7 @@ public class AdminPostController {
         return new PostListView(posts.getTotalElements(), posts.getTotalPages(), page, views);
     }
 
-    @GetMapping("/published-waiting/")
+    @GetMapping({ "/published-waiting", "/published-waiting/" })
     @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
     public PostListView waitingForPublish(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         var posts = this.postRepository.findWaitingForPublishing(PageRequest.of(
@@ -151,7 +151,7 @@ public class AdminPostController {
         return new PostListView(posts.getTotalElements(), posts.getTotalPages(), page, views);
     }
 
-    @GetMapping("/published-waiting/{date:.*}/")
+    @GetMapping({ "/published-waiting/{date:.*}", "/published-waiting/{date:.*}/" })
     @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
     public PostListView waitingForPublish(
         @PathVariable("date") Date date,
@@ -174,7 +174,7 @@ public class AdminPostController {
         return new PostListView(posts.getTotalElements(), posts.getTotalPages(), page, views);
     }
 
-    @GetMapping("/moderation-waiting/")
+    @GetMapping({ "/moderation-waiting", "/moderation-waiting/" })
     @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
     public PostListView waitingForModeration(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         var posts = this.postRepository.findWaitingForModeration(PageRequest.of(

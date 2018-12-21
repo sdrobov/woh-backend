@@ -3,17 +3,18 @@ package ru.woh.api.views.admin;
 import ru.woh.api.models.Tag;
 import ru.woh.api.models.User;
 import ru.woh.api.views.site.PostView;
+import ru.woh.api.views.site.RatingView;
 import ru.woh.api.views.site.UserView;
 
 import java.util.Date;
 import java.util.Set;
 
 public class AdminPostView extends PostView {
-    protected Date updatedAt;
-    protected Date moderatedAt;
-    protected UserView moderator;
-    protected Boolean isAllowed;
-    protected Boolean isModerated;
+    private Date updatedAt;
+    private Date moderatedAt;
+    private UserView moderator;
+    private Boolean isAllowed;
+    private Boolean isModerated;
 
     public AdminPostView(
         Long id,
@@ -25,20 +26,34 @@ public class AdminPostView extends PostView {
         Set<Tag> tags,
         String announce,
         User proposedBy,
+        String teaserImage,
+        String featuredImage,
+        String nearestImage,
+        Boolean canBeNearest,
         Date updatedAt,
         Date moderatedAt,
         User moderator,
         Boolean isAllowed
     ) {
-        super(id, title, text, source, createdAt, publishedAt, tags, announce, proposedBy);
+        super(
+            id,
+            title,
+            text,
+            source,
+            createdAt,
+            publishedAt,
+            tags,
+            announce,
+            proposedBy,
+            teaserImage,
+            featuredImage,
+            nearestImage,
+            canBeNearest
+        );
         this.updatedAt = updatedAt;
         this.moderatedAt = moderatedAt;
         this.moderator = moderator != null ? moderator.view() : null;
         this.isAllowed = isAllowed;
-        this.isModerated = moderatedAt != null;
-    }
-
-    public AdminPostView() {
     }
 
     public Date getUpdatedAt() {

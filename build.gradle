@@ -1,5 +1,21 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE")
+    }
+}
+
 apply plugin: 'java'
-apply plugin: 'maven'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+bootJar {
+    baseName = 'woh-backend'
+    version =  '0.0.1-SNAPSHOT'
+}
 
 group = 'ru.woh'
 version = '0.0.1-SNAPSHOT'

@@ -10,17 +10,21 @@ import java.util.stream.Collectors;
 
 public class PostView {
     protected Long id;
-    protected String title;
+    private String title;
     protected String text;
-    protected String announce;
+    private String announce;
     protected String source;
     protected Date createdAt;
-    protected Date publishedAt;
-    protected List<CommentView> comments;
-    protected List<String> tags;
-    protected RatingView rating;
-    protected Long totalComments;
-    protected UserView proposedBy;
+    private Date publishedAt;
+    private List<CommentView> comments;
+    private List<String> tags;
+    private RatingView rating;
+    private Long totalComments;
+    private UserView proposedBy;
+    private String teaserImage;
+    private String featuredImage;
+    private String nearestImage;
+    private Boolean canBeNearest;
 
     public PostView(
         Long id,
@@ -31,20 +35,23 @@ public class PostView {
         Date publishedAt,
         Set<Tag> tags,
         String announce,
-        User proposedBy
+        User proposedBy,
+        String teaserImage,
+        String featuredImage, String nearestImage, Boolean canBeNearest
     ) {
         this.id = id;
         this.title = title;
         this.text = text;
+        this.announce = announce;
         this.source = source;
         this.createdAt = createdAt;
         this.publishedAt = publishedAt;
         this.tags = tags != null ? tags.stream().map(Tag::getName).sorted().collect(Collectors.toList()) : null;
-        this.announce = announce;
         this.proposedBy = proposedBy != null ? proposedBy.view() : null;
-    }
-
-    public PostView() {
+        this.teaserImage = teaserImage;
+        this.featuredImage = featuredImage;
+        this.nearestImage = nearestImage;
+        this.canBeNearest = canBeNearest;
     }
 
     public Long getId() {
@@ -141,5 +148,37 @@ public class PostView {
 
     public void setProposedBy(UserView proposedBy) {
         this.proposedBy = proposedBy;
+    }
+
+    public String getTeaserImage() {
+        return teaserImage;
+    }
+
+    public void setTeaserImage(String teaserImage) {
+        this.teaserImage = teaserImage;
+    }
+
+    public String getFeaturedImage() {
+        return featuredImage;
+    }
+
+    public void setFeaturedImage(String featuredImage) {
+        this.featuredImage = featuredImage;
+    }
+
+    public String getNearestImage() {
+        return nearestImage;
+    }
+
+    public void setNearestImage(String nearestImage) {
+        this.nearestImage = nearestImage;
+    }
+
+    public Boolean getCanBeNearest() {
+        return canBeNearest;
+    }
+
+    public void setCanBeNearest(Boolean canBeNearest) {
+        this.canBeNearest = canBeNearest;
     }
 }

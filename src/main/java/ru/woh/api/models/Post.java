@@ -57,11 +57,23 @@ public class Post implements Serializable {
     private Date publishedAt;
 
     @Column(name = "is_allowed")
-    private Boolean isAllowed;
+    private Short isAllowed;
 
     @Column(name = "moderated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date moderatedAt;
+
+    @Column(name = "teaser_image")
+    private String teaserImage;
+
+    @Column(name = "featured_image")
+    private String featuredImage;
+
+    @Column(name = "nearest_image")
+    private String nearestImage;
+
+    @Column(name = "can_be_nearest")
+    private Short canBeNearest;
 
     @ManyToOne
     @JoinColumn(name = "moderator_id")
@@ -103,7 +115,11 @@ public class Post implements Serializable {
             this.publishedAt,
             this.tags,
             this.announce,
-            this.proposedBy
+            this.proposedBy,
+            this.teaserImage,
+            this.featuredImage,
+            this.nearestImage,
+            this.canBeNearest == 1
         );
     }
 
@@ -118,21 +134,25 @@ public class Post implements Serializable {
             this.tags,
             this.announce,
             this.proposedBy,
+            this.teaserImage,
+            this.featuredImage,
+            this.nearestImage,
+            this.canBeNearest == 1,
             this.updatedAt,
             this.moderatedAt,
             this.moderator,
-            this.isAllowed
+            this.isAllowed == 1
         );
     }
 
     public void approve(User moderator) {
-        this.isAllowed = true;
+        this.isAllowed = 1;
         this.moderatedAt = new Date();
         this.moderator = moderator;
     }
 
     public void dismiss(User moderator) {
-        this.isAllowed = false;
+        this.isAllowed = 0;
         this.moderatedAt = new Date();
         this.moderator = moderator;
     }
@@ -173,7 +193,7 @@ public class Post implements Serializable {
         return this.publishedAt;
     }
 
-    public Boolean getIsAllowed() {
+    public Short getIsAllowed() {
         return this.isAllowed;
     }
 
@@ -245,7 +265,7 @@ public class Post implements Serializable {
         this.publishedAt = publishedAt;
     }
 
-    public void setIsAllowed(Boolean isAllowed) {
+    public void setIsAllowed(Short isAllowed) {
         this.isAllowed = isAllowed;
     }
 
@@ -279,5 +299,37 @@ public class Post implements Serializable {
 
     public void setSourceSite(Source sourceSite) {
         this.sourceSite = sourceSite;
+    }
+
+    public String getTeaserImage() {
+        return teaserImage;
+    }
+
+    public void setTeaserImage(String teaserImage) {
+        this.teaserImage = teaserImage;
+    }
+
+    public String getFeaturedImage() {
+        return featuredImage;
+    }
+
+    public void setFeaturedImage(String featuredImage) {
+        this.featuredImage = featuredImage;
+    }
+
+    public String getNearestImage() {
+        return nearestImage;
+    }
+
+    public void setNearestImage(String nearestImage) {
+        this.nearestImage = nearestImage;
+    }
+
+    public Short getCanBeNearest() {
+        return canBeNearest;
+    }
+
+    public void setCanBeNearest(Short canBeNearest) {
+        this.canBeNearest = canBeNearest;
     }
 }

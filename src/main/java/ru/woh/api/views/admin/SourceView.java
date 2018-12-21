@@ -13,9 +13,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SourceView {
-    public SourceView() {
-    }
-
     public Long getId() {
         return this.id;
     }
@@ -94,9 +91,6 @@ public class SourceView {
         private String previewSelector;
         private Boolean isApproved;
         private Integer type;
-
-        public SourceSettings() {
-        }
 
         static SourceSettings fromJson(String json) {
             ObjectMapper mapper = new ObjectMapper();
@@ -268,7 +262,7 @@ public class SourceView {
         source.setUrl(this.url);
         source.setCreatedAt(this.createdAt);
         source.setLastPostDate(this.lastPostDate);
-        source.setIsLocked((this.isLocked == null || this.isLocked == true) ? 1 : 0);
+        source.setIsLocked((this.isLocked == null || this.isLocked) ? 1 : 0);
         source.setSettings(this.settings != null ? this.settings.toString() : "");
 
         return source;

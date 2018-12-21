@@ -6,9 +6,6 @@ import java.io.Serializable;
 @Entity(name = "PostLikes")
 @Table(name = "post_likes")
 public class PostLikes implements Serializable {
-    public PostLikes() {
-    }
-
     public PostLikesPK getPk() {
         return this.pk;
     }
@@ -52,9 +49,6 @@ public class PostLikes implements Serializable {
         public PostLikesPK(Long postId, Long userId) {
             this.postId = postId;
             this.userId = userId;
-        }
-
-        public PostLikesPK() {
         }
 
         public Long getPostId() {

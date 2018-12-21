@@ -47,7 +47,7 @@ public class PostService {
         return (
             isModer
                 ? this.postRepository.findAll(PageRequest.of(page, limit, new Sort(Sort.Direction.DESC, "createdAt")))
-                : this.postRepository.findAllAllowed(PageRequest.of(
+                : this.postRepository.findAllExceptTodayTeasers(PageRequest.of(
                     page,
                     limit,
                     new Sort(Sort.Direction.DESC, "createdAt")
