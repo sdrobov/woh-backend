@@ -4,8 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import ru.woh.api.exceptions.NotFoundException;
+import org.springframework.web.client.HttpClientErrorException;
 import ru.woh.api.models.Post;
 import ru.woh.api.models.PostLikes;
 import ru.woh.api.models.User;
@@ -55,7 +56,7 @@ public class PostService {
     }
 
     public Post one(Long id) {
-        return this.postRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format(
+        return this.postRepository.findById(id).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, String.format(
             "post #%d not found",
             id
         )));

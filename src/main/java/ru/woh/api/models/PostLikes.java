@@ -1,22 +1,47 @@
 package ru.woh.api.models;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity(name = "PostLikes")
 @Table(name = "post_likes")
-@Getter
-@Setter
-@NoArgsConstructor
 public class PostLikes implements Serializable {
+    public PostLikes() {
+    }
+
+    public PostLikesPK getPk() {
+        return this.pk;
+    }
+
+    public Post getPost() {
+        return this.post;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public Boolean getIsLike() {
+        return this.isLike;
+    }
+
+    public void setPk(PostLikesPK pk) {
+        this.pk = pk;
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setIsLike(Boolean isLike) {
+        this.isLike = isLike;
+    }
+
     @Embeddable
-    @Getter
-    @Setter
-    @NoArgsConstructor
     public static class PostLikesPK implements Serializable {
         @Column(name = "post_id", nullable = false)
         private Long postId;
@@ -26,6 +51,25 @@ public class PostLikes implements Serializable {
 
         public PostLikesPK(Long postId, Long userId) {
             this.postId = postId;
+            this.userId = userId;
+        }
+
+        public PostLikesPK() {
+        }
+
+        public Long getPostId() {
+            return this.postId;
+        }
+
+        public Long getUserId() {
+            return this.userId;
+        }
+
+        public void setPostId(Long postId) {
+            this.postId = postId;
+        }
+
+        public void setUserId(Long userId) {
             this.userId = userId;
         }
     }

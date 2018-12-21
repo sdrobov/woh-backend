@@ -1,22 +1,47 @@
 package ru.woh.api.models;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity(name = "CommentLikes")
 @Table(name = "comment_likes")
-@Getter
-@Setter
-@NoArgsConstructor
 public class CommentLikes implements Serializable {
+    public CommentLikes() {
+    }
+
+    public CommentLikesPK getPk() {
+        return this.pk;
+    }
+
+    public Comment getComment() {
+        return this.comment;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public Boolean getIsLike() {
+        return this.isLike;
+    }
+
+    public void setPk(CommentLikesPK pk) {
+        this.pk = pk;
+    }
+
+    public void setComment(Comment comment) {
+        this.comment = comment;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setIsLike(Boolean isLike) {
+        this.isLike = isLike;
+    }
+
     @Embeddable
-    @Getter
-    @Setter
-    @NoArgsConstructor
     public static class CommentLikesPK implements Serializable {
         @Column(name = "comment_id", nullable = false)
         private Long commentId;
@@ -26,6 +51,25 @@ public class CommentLikes implements Serializable {
 
         public CommentLikesPK(Long commentId, Long userId) {
             this.commentId = commentId;
+            this.userId = userId;
+        }
+
+        public CommentLikesPK() {
+        }
+
+        public Long getCommentId() {
+            return this.commentId;
+        }
+
+        public Long getUserId() {
+            return this.userId;
+        }
+
+        public void setCommentId(Long commentId) {
+            this.commentId = commentId;
+        }
+
+        public void setUserId(Long userId) {
             this.userId = userId;
         }
     }

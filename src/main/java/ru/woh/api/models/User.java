@@ -1,8 +1,5 @@
 package ru.woh.api.models;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.Loader;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -26,9 +23,6 @@ import java.util.Set;
 @Loader(namedQuery = "findUserById")
 @NamedQuery(name = "findUserById", query = "SELECT u FROM User u WHERE u.id = ?1 AND u.deletedAt IS NULL")
 @Where(clause = "deleted_at IS NULL")
-@NoArgsConstructor
-@Getter
-@Setter
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -93,6 +87,9 @@ public class User implements Serializable {
         inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
 
+    public User() {
+    }
+
     public static AnonymousAuthenticationToken anonymousAuthenticationToken() {
         return new AnonymousAuthenticationToken(
             "key",
@@ -133,5 +130,149 @@ public class User implements Serializable {
             Role.PREFIX,
             this.getRole().getName().toUpperCase()
         ) : Role.ROLE_USER;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public String getToken() {
+        return this.token;
+    }
+
+    public Date getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    public Date getDeletedAt() {
+        return this.deletedAt;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getAvatar() {
+        return this.avatar;
+    }
+
+    public String getFb() {
+        return this.fb;
+    }
+
+    public String getVk() {
+        return this.vk;
+    }
+
+    public String getGoogle() {
+        return this.google;
+    }
+
+    public String getAnnotation() {
+        return this.annotation;
+    }
+
+    public Role getRole() {
+        return this.role;
+    }
+
+    public Set<Post> getModeratedPosts() {
+        return this.moderatedPosts;
+    }
+
+    public Set<Post> getProposedPosts() {
+        return this.proposedPosts;
+    }
+
+    public Set<Comment> getComments() {
+        return this.comments;
+    }
+
+    public Set<Tag> getTags() {
+        return this.tags;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setDeletedAt(Date deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public void setFb(String fb) {
+        this.fb = fb;
+    }
+
+    public void setVk(String vk) {
+        this.vk = vk;
+    }
+
+    public void setGoogle(String google) {
+        this.google = google;
+    }
+
+    public void setAnnotation(String annotation) {
+        this.annotation = annotation;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public void setModeratedPosts(Set<Post> moderatedPosts) {
+        this.moderatedPosts = moderatedPosts;
+    }
+
+    public void setProposedPosts(Set<Post> proposedPosts) {
+        this.proposedPosts = proposedPosts;
+    }
+
+    public void setComments(Set<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
     }
 }

@@ -3,8 +3,9 @@ package ru.woh.api.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import ru.woh.api.exceptions.NotFoundException;
+import org.springframework.web.client.HttpClientErrorException;
 import ru.woh.api.models.Comment;
 import ru.woh.api.models.CommentLikes;
 import ru.woh.api.models.Post;
@@ -34,7 +35,7 @@ public class CommentService {
 
 
     public Comment one(Long id) {
-        return this.commentRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format(
+        return this.commentRepository.findById(id).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, String.format(
             "Comment #%d not found",
             id
         )));

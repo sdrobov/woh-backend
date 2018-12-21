@@ -1,10 +1,5 @@
 package ru.woh.api.views.site;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
 public class UserExtView extends UserView {
     protected String token;
 
@@ -18,6 +13,14 @@ public class UserExtView extends UserView {
         String token
     ) {
         super(id, email, name, avatar, role, annotation);
+        this.token = token;
+    }
+
+    public String getToken() {
+        return this.token;
+    }
+
+    public void setToken(String token) {
         this.token = token;
     }
 }

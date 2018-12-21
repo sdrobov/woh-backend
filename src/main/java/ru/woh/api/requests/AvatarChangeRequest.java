@@ -1,8 +1,5 @@
 package ru.woh.api.requests;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -11,9 +8,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-@NoArgsConstructor
-@Getter
-@Setter
 public class AvatarChangeRequest {
     protected MultipartFile file;
     protected Integer x1;
@@ -22,6 +16,9 @@ public class AvatarChangeRequest {
     protected Integer y2;
     protected Integer h;
     protected Integer w;
+
+    public AvatarChangeRequest() {
+    }
 
     public Boolean isValid() {
         return !this.file.isEmpty()
@@ -59,5 +56,61 @@ public class AvatarChangeRequest {
         }
 
         return null;
+    }
+
+    public MultipartFile getFile() {
+        return this.file;
+    }
+
+    public Integer getX1() {
+        return this.x1;
+    }
+
+    public Integer getY1() {
+        return this.y1;
+    }
+
+    public Integer getX2() {
+        return this.x2;
+    }
+
+    public Integer getY2() {
+        return this.y2;
+    }
+
+    public Integer getH() {
+        return this.h;
+    }
+
+    public Integer getW() {
+        return this.w;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
+
+    public void setX1(Integer x1) {
+        this.x1 = x1;
+    }
+
+    public void setY1(Integer y1) {
+        this.y1 = y1;
+    }
+
+    public void setX2(Integer x2) {
+        this.x2 = x2;
+    }
+
+    public void setY2(Integer y2) {
+        this.y2 = y2;
+    }
+
+    public void setH(Integer h) {
+        this.h = h;
+    }
+
+    public void setW(Integer w) {
+        this.w = w;
     }
 }

@@ -1,18 +1,11 @@
 package ru.woh.api.models;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 
 @Entity
 @Table(name = "role")
-@NoArgsConstructor
-@Getter
-@Setter
 public class Role implements Serializable {
     public static final String ANONYMOUS = "ANONYMOUS";
     public static final String USER = "USER";
@@ -34,4 +27,31 @@ public class Role implements Serializable {
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
     private Set<User> users;
+
+    public Role() {
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public Set<User> getUsers() {
+        return this.users;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
 }

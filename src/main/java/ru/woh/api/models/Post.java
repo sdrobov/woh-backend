@@ -1,8 +1,5 @@
 package ru.woh.api.models;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.Loader;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Type;
@@ -25,9 +22,6 @@ import java.util.Set;
 @Loader(namedQuery = "findPostById")
 @NamedQuery(name = "findPostById", query = "SELECT p FROM Post p WHERE p.id = ?1 AND p.deletedAt IS NULL")
 @Where(clause = "deleted_at IS NULL")
-@NoArgsConstructor
-@Getter
-@Setter
 public class Post implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -96,6 +90,9 @@ public class Post implements Serializable {
     @JoinColumn(name = "source_id")
     private Source sourceSite;
 
+    public Post() {
+    }
+
     public PostView view() {
         return new PostView(
             this.id,
@@ -138,5 +135,149 @@ public class Post implements Serializable {
         this.isAllowed = false;
         this.moderatedAt = new Date();
         this.moderator = moderator;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public String getText() {
+        return this.text;
+    }
+
+    public String getAnnounce() {
+        return this.announce;
+    }
+
+    public String getSource() {
+        return this.source;
+    }
+
+    public Date getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    public Date getDeletedAt() {
+        return this.deletedAt;
+    }
+
+    public Date getPublishedAt() {
+        return this.publishedAt;
+    }
+
+    public Boolean getIsAllowed() {
+        return this.isAllowed;
+    }
+
+    public Date getModeratedAt() {
+        return this.moderatedAt;
+    }
+
+    public User getModerator() {
+        return this.moderator;
+    }
+
+    public User getProposedBy() {
+        return this.proposedBy;
+    }
+
+    public Set<Comment> getComments() {
+        return this.comments;
+    }
+
+    public Set<Tag> getTags() {
+        return this.tags;
+    }
+
+    public Set<PostLikes> getLikes() {
+        return this.likes;
+    }
+
+    public Long getRating() {
+        return this.rating;
+    }
+
+    public Source getSourceSite() {
+        return this.sourceSite;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public void setAnnounce(String announce) {
+        this.announce = announce;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setDeletedAt(Date deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    public void setPublishedAt(Date publishedAt) {
+        this.publishedAt = publishedAt;
+    }
+
+    public void setIsAllowed(Boolean isAllowed) {
+        this.isAllowed = isAllowed;
+    }
+
+    public void setModeratedAt(Date moderatedAt) {
+        this.moderatedAt = moderatedAt;
+    }
+
+    public void setModerator(User moderator) {
+        this.moderator = moderator;
+    }
+
+    public void setProposedBy(User proposedBy) {
+        this.proposedBy = proposedBy;
+    }
+
+    public void setComments(Set<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public void setLikes(Set<PostLikes> likes) {
+        this.likes = likes;
+    }
+
+    public void setRating(Long rating) {
+        this.rating = rating;
+    }
+
+    public void setSourceSite(Source sourceSite) {
+        this.sourceSite = sourceSite;
     }
 }

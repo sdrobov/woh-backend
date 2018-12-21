@@ -1,9 +1,10 @@
 package ru.woh.api.controllers.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.woh.api.exceptions.NotFoundException;
+import org.springframework.web.client.HttpClientErrorException;
 import ru.woh.api.models.Role;
 import ru.woh.api.models.Source;
 import ru.woh.api.models.repositories.SourceRepository;
@@ -37,7 +38,7 @@ public class SourceController {
     @GetMapping("/source/{id:[0-9]*}/")
     @RolesAllowed({Role.ROLE_ADMIN})
     public SourceView byId(@PathVariable("id") Long id) {
-        return this.sourceRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format(
+        return this.sourceRepository.findById(id).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, String.format(
             "source #%d not found",
             id
         ))).view();
@@ -46,7 +47,7 @@ public class SourceController {
     @GetMapping("/source/run/{id:[0-9]*}/")
     @RolesAllowed({Role.ROLE_ADMIN})
     public ResponseEntity run(@PathVariable("id") Long id) {
-        Source source = this.sourceRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format(
+        Source source = this.sourceRepository.findById(id).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, String.format(
             "source #%d not found",
             id
         )));
@@ -71,7 +72,7 @@ public class SourceController {
     @RolesAllowed({Role.ROLE_ADMIN})
     public SourceView edit(@RequestBody SourceView sourceView) {
         if (sourceView.getId() == null || !this.sourceRepository.existsById(sourceView.getId())) {
-            throw new NotFoundException("source not found");
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "source not found");
         }
 
         return this.sourceRepository.save(sourceView.model()).view();
@@ -81,7 +82,7 @@ public class SourceController {
     @RolesAllowed({Role.ROLE_ADMIN})
     public ResponseEntity delete(@PathVariable("id") Long id) {
         if (!this.sourceRepository.existsById(id)) {
-            throw new NotFoundException("source not found");
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "source not found");
         }
 
         this.sourceRepository.deleteById(id);

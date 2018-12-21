@@ -1,7 +1,8 @@
 package ru.woh.api.controllers.site;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.woh.api.exceptions.ForbiddenException;
+import org.springframework.web.client.HttpClientErrorException;
 import ru.woh.api.models.*;
 import ru.woh.api.models.repositories.CommentLikesRepository;
 import ru.woh.api.services.CommentService;
@@ -33,7 +34,7 @@ public class CommentController {
         this.commentLikesRepository = commentLikesRepository;
     }
 
-    @GetMapping("/{id:[0-9]*}/comments")
+    @GetMapping({"/{id:[0-9]*}/comments", "/{id:[0-9]*}/comments/"})
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public List<CommentView> list(
         @PathVariable("id") Long postId,
@@ -44,7 +45,7 @@ public class CommentController {
         return this.commentService.list(post, page, MAX_COMMENTS);
     }
 
-    @PostMapping("/{id:[0-9]*}/comments")
+    @PostMapping({"/{id:[0-9]*}/comments", "/{id:[0-9]*}/comments/"})
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public List<CommentView> add(
         @PathVariable("id") Long postId,
@@ -66,14 +67,14 @@ public class CommentController {
     }
 
 
-    @PostMapping("/{id:[0-9]*}/comments/edit/")
+    @PostMapping({"/{id:[0-9]*}/comments/edit", "/{id:[0-9]*}/comments/edit/"})
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public CommentView editComment(@RequestBody CommentView comment) {
         Comment commentModel = this.commentService.one(comment.getId());
 
         if (!this.userService.getCurrenttUser().isModer()) {
             if (commentModel.getUser() != this.userService.getCurrenttUser()) {
-                throw new ForbiddenException("you can delete only your own comments!");
+                throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "you can delete only your own comments!");
             }
         }
 
@@ -85,27 +86,27 @@ public class CommentController {
         return this.commentService.makeCommentViewWithRating(commentModel);
     }
 
-    @PostMapping("/{postId:[0-9]*}/comments/delete/{id:[0-9]*}")
+    @PostMapping({"/{postId:[0-9]*}/comments/delete/{id:[0-9]*}", "/{postId:[0-9]*}/comments/delete/{id:[0-9]*}/"})
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public void deleteComment(@PathVariable("id") Long id) {
         Comment commentModel = this.commentService.one(id);
 
         if (!this.userService.getCurrenttUser().isModer()) {
             if (commentModel.getUser() != this.userService.getCurrenttUser()) {
-                throw new ForbiddenException("you can delete only your own comments!");
+                throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "you can delete only your own comments!");
             }
         }
 
         this.commentService.delete(commentModel);
     }
 
-    @PostMapping("/{postId:[0-9]*}/comments/like/{id:[0-9]*}")
+    @PostMapping({"/{postId:[0-9]*}/comments/like/{id:[0-9]*}", "/{postId:[0-9]*}/comments/like/{id:[0-9]*}/"})
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public CommentView like(@PathVariable("id") Long id) {
         return this.likeOrDislike(id, true);
     }
 
-    @PostMapping("/{postId:[0-9]*}/comments/dislike/{id:[0-9]*}")
+    @PostMapping({"/{postId:[0-9]*}/comments/dislike/{id:[0-9]*}", "/{postId:[0-9]*}/comments/dislike/{id:[0-9]*}/"})
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public CommentView dislike(@PathVariable("id") Long id) {
         return this.likeOrDislike(id, false);
@@ -124,7 +125,7 @@ public class CommentController {
 
         if (commentLikes != null) {
             if (commentLikes.getIsLike() == like) {
-                throw new ForbiddenException(String.format("you can only %s once", like ? "like" : "dislike"));
+                throw new HttpClientErrorException(HttpStatus.FORBIDDEN, String.format("you can only %s once", like ? "like" : "dislike"));
             }
 
             commentLikes.setIsLike(like);

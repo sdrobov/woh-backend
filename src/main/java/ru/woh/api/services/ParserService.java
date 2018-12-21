@@ -1,9 +1,6 @@
 package ru.woh.api.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.stereotype.Service;
 import ru.woh.api.ParserConfiguration;
 
@@ -18,12 +15,12 @@ import java.net.URL;
 public class ParserService {
     private final ParserConfiguration parserConfiguration;
 
-    @NoArgsConstructor
-    @Getter
-    @Setter
     public static class ParserResponse {
         private String status;
         private String error;
+
+        public ParserResponse() {
+        }
 
         static ParserResponse fromJsonString(String json) {
             ObjectMapper mapper = new ObjectMapper();
@@ -37,6 +34,22 @@ public class ParserService {
             }
 
             return response;
+        }
+
+        public String getStatus() {
+            return this.status;
+        }
+
+        public String getError() {
+            return this.error;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
+
+        public void setError(String error) {
+            this.error = error;
         }
     }
 

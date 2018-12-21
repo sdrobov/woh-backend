@@ -1,8 +1,5 @@
 package ru.woh.api.models;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.Loader;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Type;
@@ -23,9 +20,6 @@ import java.util.Set;
 @Loader(namedQuery = "findCommentById")
 @NamedQuery(name = "findCommentById", query = "SELECT c FROM Comment c WHERE c.id = ?1 AND c.deletedAt IS NULL")
 @Where(clause = "deleted_at IS NULL")
-@NoArgsConstructor
-@Getter
-@Setter
 public class Comment implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,7 +62,98 @@ public class Comment implements Serializable {
     @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Set<CommentLikes> likes;
 
+    public Comment() {
+    }
+
     public CommentView view() {
         return new CommentView(this.id, this.text, this.createdAt, this.updatedAt, this.user, this.replyTo);
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public String getText() {
+        return this.text;
+    }
+
+    public Date getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    public Date getDeletedAt() {
+        return this.deletedAt;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public Post getPost() {
+        return this.post;
+    }
+
+    public Long getRating() {
+        return this.rating;
+    }
+
+    public Comment getReplyTo() {
+        return this.replyTo;
+    }
+
+    public Set<Comment> getReplies() {
+        return this.replies;
+    }
+
+    public Set<CommentLikes> getLikes() {
+        return this.likes;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setDeletedAt(Date deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
+    }
+
+    public void setRating(Long rating) {
+        this.rating = rating;
+    }
+
+    public void setReplyTo(Comment replyTo) {
+        this.replyTo = replyTo;
+    }
+
+    public void setReplies(Set<Comment> replies) {
+        this.replies = replies;
+    }
+
+    public void setLikes(Set<CommentLikes> likes) {
+        this.likes = likes;
     }
 }

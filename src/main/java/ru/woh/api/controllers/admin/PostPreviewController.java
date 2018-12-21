@@ -1,10 +1,11 @@
 package ru.woh.api.controllers.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import ru.woh.api.exceptions.NotFoundException;
+import org.springframework.web.client.HttpClientErrorException;
 import ru.woh.api.models.PostPreview;
 import ru.woh.api.models.Role;
 import ru.woh.api.models.repositories.PostPreviewRepository;
@@ -42,7 +43,7 @@ public class PostPreviewController {
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public PostPreviewView byId(@PathVariable("id") Long id) {
         return this.postPreviewRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException(String.format(
+            .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, String.format(
                 "post preview %d not found",
                 id
             )))
@@ -53,7 +54,7 @@ public class PostPreviewController {
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public List<PostPreviewView> bySource(@PathVariable("id") Long id) {
         var source = this.sourceRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException(String.format(
+            .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, String.format(
                 "source %d not found",
                 id
             )));

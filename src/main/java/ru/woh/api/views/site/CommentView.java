@@ -1,17 +1,11 @@
 package ru.woh.api.views.site;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import ru.woh.api.models.Comment;
 import ru.woh.api.models.User;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Date;
 
-@NoArgsConstructor
-@Getter
-@Setter
 public class CommentView {
     private Long id;
     private String text;
@@ -21,9 +15,65 @@ public class CommentView {
     private ReplyTo replyTo;
     private RatingView rating;
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
+    public CommentView() {
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public String getText() {
+        return this.text;
+    }
+
+    public Date getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    public UserView getUser() {
+        return this.user;
+    }
+
+    public ReplyTo getReplyTo() {
+        return this.replyTo;
+    }
+
+    public RatingView getRating() {
+        return this.rating;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setUser(UserView user) {
+        this.user = user;
+    }
+
+    public void setReplyTo(ReplyTo replyTo) {
+        this.replyTo = replyTo;
+    }
+
+    public void setRating(RatingView rating) {
+        this.rating = rating;
+    }
+
     public class ReplyTo {
         private Long id;
         private String text;
@@ -34,6 +84,41 @@ public class CommentView {
             this.id = id;
             this.text = text;
             this.user = user;
+            this.createdAt = createdAt;
+        }
+
+        public ReplyTo() {
+        }
+
+        public Long getId() {
+            return this.id;
+        }
+
+        public String getText() {
+            return this.text;
+        }
+
+        public UserView getUser() {
+            return this.user;
+        }
+
+        public Date getCreatedAt() {
+            return this.createdAt;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public void setText(String text) {
+            this.text = text;
+        }
+
+        public void setUser(UserView user) {
+            this.user = user;
+        }
+
+        public void setCreatedAt(Date createdAt) {
             this.createdAt = createdAt;
         }
     }

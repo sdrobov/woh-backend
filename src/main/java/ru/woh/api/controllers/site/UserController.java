@@ -7,10 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import ru.woh.api.exceptions.BadRequestException;
-import ru.woh.api.exceptions.ForbiddenException;
-import ru.woh.api.exceptions.NotFoundException;
-import ru.woh.api.exceptions.UserAlreadyExistsException;
+import org.springframework.web.client.HttpClientErrorException;
 import ru.woh.api.models.Role;
 import ru.woh.api.models.User;
 import ru.woh.api.models.repositories.UserRepository;
@@ -55,22 +52,22 @@ public class UserController {
         this.imageStorageService = imageStorageService;
     }
 
-    @GetMapping("/user")
+    @GetMapping({"/user", "/user/"})
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public UserView status() {
         return this.userService.getCurrenttUser().view();
     }
 
-    @GetMapping("/user/{id:[0-9]*}")
+    @GetMapping({"/user/{id:[0-9]*}", "/user/{id:[0-9]*}/"})
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public UserView byId(@PathVariable("id") Long id) {
-        return this.userRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format(
+        return this.userRepository.findById(id).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, String.format(
             "User #%d not found",
             id
         ))).view();
     }
 
-    @PostMapping("/user/login")
+    @PostMapping({"/user/login", "/user/login/"})
     @RolesAllowed({ Role.ROLE_ANONYMOUS })
     public UserExtView login(@RequestBody LoginRequest loginRequest) {
         User user = this.userService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
@@ -86,20 +83,20 @@ public class UserController {
         );
     }
 
-    @PostMapping("/user/register")
+    @PostMapping({"/user/register", "/user/register/"})
     @RolesAllowed({ Role.ROLE_ANONYMOUS })
     public ResponseEntity<UserView> register(@RequestBody RegistrationRequest registrationRequest) {
         User user = this.userService.getCurrenttUser();
         if (user != null) {
-            throw new BadRequestException("you are already authorized");
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "you are already authorized");
         }
 
         try {
             user = this.userService.authenticate(registrationRequest.getEmail(), registrationRequest.getPassword());
             if (user != null) {
-                throw new UserAlreadyExistsException("user already exists");
+                throw new HttpClientErrorException(HttpStatus.CONFLICT, "user already exists");
             }
-        } catch (NotFoundException e) { /* nop */ }
+        } catch (HttpClientErrorException e) { /* nop */ }
 
         user = new User();
         user.setEmail(registrationRequest.getEmail());
@@ -118,20 +115,20 @@ public class UserController {
         return ResponseEntity.created(URI.create("/user/")).body(user.view());
     }
 
-    @PostMapping("/user/save")
+    @PostMapping({"/user/save", "/user/save/"})
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public UserView save(@RequestBody UserView userView) {
         if (userView.getId() == null) {
-            throw new BadRequestException("user id required");
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "user id required");
         }
 
         User user = this.userRepository.findById(userView.getId())
-            .orElseThrow(() -> new NotFoundException(String.format("User #%d not found", userView.getId())));
+            .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, String.format("User #%d not found", userView.getId())));
 
         User currentUser = this.userService.getCurrenttUser();
 
         if (!currentUser.isModer() && !Objects.equals(currentUser.getId(), user.getId())) {
-            throw new ForbiddenException("You are not allowed to edit another user");
+            throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "You are not allowed to edit another user");
         }
 
         if (!Objects.equals(user.getName(), userView.getName())) {
@@ -147,7 +144,7 @@ public class UserController {
         return user.view();
     }
 
-    @PostMapping("/user/password")
+    @PostMapping({"/user/password", "/user/password/"})
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public ResponseEntity<Void> password(@RequestBody ChangePasswordRequest changePasswordRequest) {
         if (!changePasswordRequest.isValid()) {
@@ -162,7 +159,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/user/avatar/")
+    @PostMapping({"/user/avatar", "/user/avatar/"})
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public ResponseEntity<Void> avatar(@ModelAttribute AvatarChangeRequest avatarChangeRequest) {
         if (!avatarChangeRequest.isValid()) {
@@ -199,7 +196,7 @@ public class UserController {
         return ResponseEntity.created(URI.create(String.format("/image/%s", avatarId))).build();
     }
 
-    @PostMapping("/user/avatar/drop/")
+    @PostMapping({"/user/avatar/drop", "/user/avatar/drop/"})
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public ResponseEntity<Void> dropAvatar() {
         User currentUser = this.userService.getCurrenttUser();
