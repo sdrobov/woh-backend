@@ -5,6 +5,7 @@ import ru.woh.api.views.admin.TeaserView;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity(name = "Teaser")
 @Table(name = "teaser")
@@ -19,6 +20,10 @@ public class Teaser implements Serializable {
 
         @Column(name = "is_teaser", nullable = false)
         private Short isTeaser;
+
+        public TeaserPK() {
+
+        }
 
         public TeaserPK(Date from, Date to, Long postId, Short isTeaser) {
             this.from = from;
@@ -57,6 +62,24 @@ public class Teaser implements Serializable {
 
         public void setIsTeaser(Short isTeaser) {
             this.isTeaser = isTeaser;
+        }
+
+        @Override public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof TeaserPK)) {
+                return false;
+            }
+            TeaserPK teaserPK = (TeaserPK) o;
+            return from.equals(teaserPK.from) &&
+                to.equals(teaserPK.to) &&
+                postId.equals(teaserPK.postId) &&
+                isTeaser.equals(teaserPK.isTeaser);
+        }
+
+        @Override public int hashCode() {
+            return Objects.hash(from, to, postId, isTeaser);
         }
     }
 

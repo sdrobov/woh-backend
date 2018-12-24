@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import ru.woh.api.models.Post;
 import ru.woh.api.models.PostLikes;
+import ru.woh.api.models.Tag;
 import ru.woh.api.models.User;
 import ru.woh.api.models.repositories.PostLikesRepository;
 import ru.woh.api.models.repositories.PostRepository;
+import ru.woh.api.models.repositories.TagRepository;
 import ru.woh.api.views.site.PostListView;
 import ru.woh.api.views.site.PostView;
 import ru.woh.api.views.site.RatingView;
@@ -26,18 +28,21 @@ public class PostService {
     private final UserService userService;
     private final CommentService commentService;
     private final PostLikesRepository postLikesRepository;
+    private final TagRepository tagRepository;
 
     @Autowired
     public PostService(
         PostRepository postRepository,
         UserService userService,
         CommentService commentService,
-        PostLikesRepository postLikesRepository
+        PostLikesRepository postLikesRepository,
+        TagRepository tagRepository
     ) {
         this.postRepository = postRepository;
         this.userService = userService;
         this.commentService = commentService;
         this.postLikesRepository = postLikesRepository;
+        this.tagRepository = tagRepository;
     }
 
     private Page<Post> list(Integer page, Integer limit) {
@@ -56,10 +61,11 @@ public class PostService {
     }
 
     public Post one(Long id) {
-        return this.postRepository.findById(id).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, String.format(
-            "post #%d not found",
-            id
-        )));
+        return this.postRepository.findById(id)
+            .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, String.format(
+                "post #%d not found",
+                id
+            )));
     }
 
     public PostView view(Long id) {
@@ -87,9 +93,9 @@ public class PostService {
     }
 
     public PostListView byTag(Integer page, Integer limit, String tag) {
-        var posts = this.postRepository.findAllByTags(
+        var posts = this.postRepository.findAllByTags_Name(
             Collections.singleton(tag),
-            PageRequest.of(page, limit, new Sort(Sort.Direction.DESC, "createdAt"))
+            PageRequest.of(page, limit, new Sort(Sort.Direction.DESC, "publishedAt"))
         );
         var views = posts.getContent().stream().map(this::makeViewWithRating).collect(Collectors.toList());
 
@@ -127,5 +133,28 @@ public class PostService {
 
     public void delete(Post post) {
         this.postRepository.delete(post);
+    }
+
+
+    public Post updateWithView(Post post, PostView postView) {
+        post.setTitle(postView.getTitle());
+        post.setText(postView.getText());
+        post.setSource(postView.getSource());
+        post.setAnnounce(postView.getAnnounce());
+
+        if (postView.getTags() != null) {
+            post.setTags(postView.getTags()
+                .stream()
+                .map(String::trim)
+                .distinct()
+                .map(tagName -> this.tagRepository.findFirstByName(tagName).orElseGet(() -> {
+                    Tag tag = new Tag();
+                    tag.setName(tagName);
+                    return this.tagRepository.save(tag);
+                }))
+                .collect(Collectors.toSet()));
+        }
+
+        return post;
     }
 }

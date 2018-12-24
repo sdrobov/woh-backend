@@ -7,11 +7,7 @@ import java.util.Set;
 @Entity
 @Table(name = "role")
 public class Role implements Serializable {
-    public static final String ANONYMOUS = "ANONYMOUS";
-    public static final String USER = "USER";
-    public static final String MODER = "MODER";
-    public static final String ADMIN = "ADMIN";
-    public static final String PREFIX = "ROLE_%s";
+    static final String PREFIX = "ROLE_%s";
     public static final String ROLE_ANONYMOUS = "ROLE_ANONYMOUS";
     public static final String ROLE_USER = "ROLE_USER";
     public static final String ROLE_MODER = "ROLE_MODER";

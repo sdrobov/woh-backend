@@ -2,9 +2,9 @@ package ru.woh.api.views.site;
 
 public class UserView {
     protected Long id;
-    protected String email;
+    private String email;
     protected String name;
-    protected String avatar;
+    private String avatar;
     protected String role;
     protected String annotation;
 

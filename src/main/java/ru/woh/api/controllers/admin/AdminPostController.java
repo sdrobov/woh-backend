@@ -5,10 +5,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import ru.woh.api.models.Post;
 import ru.woh.api.models.Role;
-import ru.woh.api.models.Tag;
 import ru.woh.api.models.User;
 import ru.woh.api.models.repositories.PostRepository;
-import ru.woh.api.models.repositories.TagRepository;
+import ru.woh.api.services.DateTimeService;
 import ru.woh.api.services.PostService;
 import ru.woh.api.services.UserService;
 import ru.woh.api.views.admin.AdminPostView;
@@ -28,76 +27,45 @@ public class AdminPostController {
     private final UserService userService;
     private final PostService postService;
     private final PostRepository postRepository;
-    private final TagRepository tagRepository;
     private final static int defaultPageSize = 100;
 
     @Autowired
     public AdminPostController(
         UserService userService,
         PostService postService,
-        PostRepository postRepository, TagRepository tagRepository
+        PostRepository postRepository
     ) {
         this.userService = userService;
         this.postService = postService;
         this.postRepository = postRepository;
-        this.tagRepository = tagRepository;
     }
 
     @PostMapping({ "/{id:[0-9]*}", "/{id:[0-9]*}/" })
     @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public AdminPostView save(@PathVariable("id") Long id, @RequestBody PostView post) {
+    public AdminPostView save(@PathVariable("id") Long id, @RequestBody PostView postView) {
         User user = this.userService.getCurrenttUser();
 
-        Post postModel = this.postService.one(id);
+        Post post = this.postService.one(id);
 
-        postModel.setTitle(post.getTitle());
-        postModel.setText(post.getText());
-        postModel.setSource(post.getSource());
-        postModel.setModeratedAt(new Date());
-        postModel.setUpdatedAt(new Date());
-        postModel.setModerator(user);
-        return getAdminPostView(post, postModel);
-    }
+        post.setModeratedAt(new Date());
+        post.setUpdatedAt(new Date());
+        post.setModerator(user);
 
-    private AdminPostView getAdminPostView(
-        @RequestBody PostView post,
-        Post postModel
-    ) {
-        postModel.setAnnounce(post.getAnnounce());
-        if (post.getTags() != null) {
-            postModel.setTags(
-                post.getTags()
-                    .stream()
-                    .map(String::trim)
-                    .distinct()
-                    .map(tagName -> this.tagRepository.findFirstByName(tagName).orElseGet(() -> {
-                        Tag tag = new Tag();
-                        tag.setName(tagName);
-                        return this.tagRepository.save(tag);
-                    }))
-                    .collect(Collectors.toSet())
-            );
-        }
-
-        postModel = this.postService.save(postModel);
-
-        return postModel.adminView();
+        return this.postService.save(this.postService.updateWithView(post, postView)).adminView();
     }
 
     @PostMapping({ "/add", "/add/" })
     @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public AdminPostView addPost(@RequestBody PostView post) {
+    public AdminPostView addPost(@RequestBody PostView postView) {
         User user = this.userService.getCurrenttUser();
+        Post post = new Post();
 
-        Post postModel = new Post();
-        postModel.setTitle(post.getTitle());
-        postModel.setText(post.getText());
-        postModel.setSource(post.getSource());
-        postModel.setCreatedAt(new Date());
-        postModel.setModeratedAt(new Date());
-        postModel.setModerator(user);
-        postModel.setIsAllowed((short) 1);
-        return getAdminPostView(post, postModel);
+        post.setCreatedAt(new Date());
+        post.setModeratedAt(new Date());
+        post.setModerator(user);
+        post.setIsAllowed((short) 1);
+
+        return this.postService.save(this.postService.updateWithView(post, postView)).adminView();
     }
 
     @PostMapping({ "/{id:[0-9]*}/delete", "/{id:[0-9]*}/delete/" })
@@ -157,16 +125,9 @@ public class AdminPostController {
         @PathVariable("date") Date date,
         @RequestParam(value = "page", defaultValue = "0") Integer page
     ) {
-        var from = Date.from(LocalDateTime.ofInstant(date.toInstant(), ZoneId.of("UTC"))
-            .with(LocalTime.MIN)
-            .toInstant(ZoneOffset.UTC));
-        var to = Date.from(LocalDateTime.ofInstant(date.toInstant(), ZoneId.of("UTC"))
-            .with(LocalTime.MIN)
-            .toInstant(ZoneOffset.UTC));
-
         var posts = this.postRepository.findWaitingForPublishingAt(
-            from,
-            to,
+            DateTimeService.beginOfTheDay(date),
+            DateTimeService.endOfTheDay(date),
             PageRequest.of(page, AdminPostController.defaultPageSize)
         );
         var views = posts.getContent().stream().map(Post::view).collect(Collectors.toList());

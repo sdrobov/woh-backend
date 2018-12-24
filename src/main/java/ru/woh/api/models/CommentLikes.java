@@ -2,6 +2,7 @@ package ru.woh.api.models;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity(name = "CommentLikes")
 @Table(name = "comment_likes")
@@ -71,6 +72,22 @@ public class CommentLikes implements Serializable {
 
         public void setUserId(Long userId) {
             this.userId = userId;
+        }
+
+        @Override public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof CommentLikesPK)) {
+                return false;
+            }
+            CommentLikesPK that = (CommentLikesPK) o;
+            return commentId.equals(that.commentId) &&
+                userId.equals(that.userId);
+        }
+
+        @Override public int hashCode() {
+            return Objects.hash(commentId, userId);
         }
     }
 

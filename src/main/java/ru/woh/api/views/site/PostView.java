@@ -26,6 +26,9 @@ public class PostView {
     private String nearestImage;
     private Boolean canBeNearest;
 
+    public PostView() {
+    }
+
     public PostView(
         Long id,
         String title,

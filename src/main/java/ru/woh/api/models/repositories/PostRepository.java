@@ -3,24 +3,20 @@ package ru.woh.api.models.repositories;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 import ru.woh.api.models.Post;
+import ru.woh.api.services.DateTimeService;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 @Repository
 public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
-    @Query("SELECT p FROM Post p " +
-        "WHERE p.isAllowed = 1 " +
-        "AND p.publishedAt <= CURRENT_TIMESTAMP " +
-        "ORDER BY p.publishedAt DESC")
-    Page<Post> findAllAllowed(Pageable pageable);
+    Page<Post> findAllByIsAllowedAndPublishedAtLessThanEqual(Short isAllowed, Date publishedAt, Pageable pageable);
 
     @Query("SELECT p FROM Post p " +
         "LEFT JOIN Teaser t ON t.post = p AND t.from >= ?1 AND t.to <= ?2 " +
@@ -30,60 +26,83 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
         "ORDER BY p.publishedAt DESC")
     Page<Post> findAllNotTeasers(Date from, Date to, Pageable pageable);
 
-    default Page<Post> findAllExceptTodayTeasers(Pageable pageable) {
-        LocalDateTime now = LocalDateTime.now();
-        Date from = Date.from(now.with(LocalDateTime.MIN).toInstant(ZoneOffset.UTC));
-        Date to = Date.from(now.with(LocalDateTime.MAX).toInstant(ZoneOffset.UTC));
+    Page<Post> findAllByTags_Name(Set<String> tags, Pageable pageable);
 
-        return this.findAllNotTeasers(from, to, pageable);
+    List<Post> findAllByIsAllowedAndPublishedAtLessThanEqualAndIdNotAndCanBeNearest(
+        Short isAllowed,
+        Date publishedAt,
+        Long id,
+        Short canBeNearest,
+        Pageable pageable
+    );
+
+    List<Post> findAllByIsAllowedAndPublishedAtGreaterThanEqualAndIdNotAndCanBeNearest(
+        Short isAllowed,
+        Date publishedAt,
+        Long id,
+        Short canBeNearest,
+        Pageable pageable
+    );
+
+    Page<Post> findAllByIsAllowedTrueAndPublishedAtGreaterThanEqual(Date publishedAt, Pageable pageable);
+
+    Page<Post> findAllByIsAllowedTrueAndPublishedAtBetween(Date from, Date to, Pageable pageable);
+
+    Page<Post> findAllByIsAllowedFalseAndModeratedAtIsNull(Pageable pageable);
+
+    default Page<Post> findAllAllowed(Pageable pageable) {
+        return this.findAllByIsAllowedAndPublishedAtLessThanEqual((short) 1, new Date(), pageable);
     }
-
-    @Query("SELECT p FROM Post p " +
-        "WHERE p.isAllowed = 1 " +
-        "AND p.publishedAt <= CURRENT_TIMESTAMP " +
-        "AND p.tags IN ?1 " +
-        "ORDER BY p.publishedAt DESC")
-    Page<Post> findAllByTags(Set<String> tags, Pageable pageable);
-
-    @Query("SELECT p FROM Post p " +
-        "WHERE p.isAllowed = 1 " +
-        "AND p.publishedAt <= ?1 " +
-        "AND p.id <> ?2 " +
-        "AND p.canBeNearest = 1 " +
-        "ORDER BY p.publishedAt DESC")
-    List<Post> findAllPrev(Date publishedAt, Long id, Pageable pageable);
 
     default List<Post> findPrev(Date publishedAt, Long id) {
-        return this.findAllPrev(publishedAt, id, PageRequest.of(0, 3));
+        return this.findAllByIsAllowedAndPublishedAtLessThanEqualAndIdNotAndCanBeNearest(
+            (short) 1,
+            publishedAt,
+            id,
+            (short) 1,
+            PageRequest.of(0, 3)
+        );
     }
-
-    @Query("SELECT p FROM Post p " +
-        "WHERE p.isAllowed = 1 " +
-        "AND p.publishedAt >= ?1 " +
-        "AND p.id <> ?2 " +
-        "AND p.canBeNearest = 1 " +
-        "ORDER BY p.publishedAt ASC")
-    List<Post> findAllNext(Date publishedAt, Long id, Pageable pageable);
 
     default List<Post> findNext(Date publishedAt, Long id) {
-        return this.findAllNext(publishedAt, id, PageRequest.of(0, 3));
+        return this.findAllByIsAllowedAndPublishedAtGreaterThanEqualAndIdNotAndCanBeNearest(
+            (short) 1,
+            publishedAt,
+            id,
+            (short) 1,
+            PageRequest.of(0, 3)
+        );
     }
 
-    @Query("SELECT p FROM Post p " +
-        "WHERE p.isAllowed = 1 " +
-        "AND p.publishedAt >= CURRENT_TIMESTAMP " +
-        "ORDER BY p.publishedAt ASC")
-    Page<Post> findWaitingForPublishing(Pageable pageable);
+    default Page<Post> findAllExceptTodayTeasers(Pageable pageable) {
+        return this.findAllNotTeasers(
+            DateTimeService.beginOfTheDay(new Date()),
+            DateTimeService.endOfTheDay(new Date()),
+            pageable
+        );
+    }
 
-    @Query("SELECT p FROM Post p " +
-        "WHERE p.isAllowed = 1 " +
-        "AND p.publishedAt BETWEEN ?1 AND ?2 " +
-        "ORDER BY p.publishedAt ASC")
-    Page<Post> findWaitingForPublishingAt(Date publishedAtFrom, Date publishedAtTo, Pageable pageable);
+    default Page<Post> findWaitingForPublishing(Pageable pageable) {
+        PageRequest pageRequest = PageRequest.of(
+            pageable.getPageNumber(),
+            pageable.getPageSize(),
+            new Sort(Sort.Direction.ASC, "publishedAt")
+        );
 
-    @Query("SELECT p FROM Post p " +
-        "WHERE p.isAllowed = 0 " +
-        "AND p.moderatedAt IS NULL " +
-        "ORDER BY p.createdAt ASC")
-    Page<Post> findWaitingForModeration(Pageable pageable);
+        return this.findAllByIsAllowedTrueAndPublishedAtGreaterThanEqual(new Date(), pageRequest);
+    }
+
+    default Page<Post> findWaitingForPublishingAt(Date publishedAtFrom, Date publishedAtTo, Pageable pageable) {
+        PageRequest pageRequest = PageRequest.of(
+            pageable.getPageNumber(),
+            pageable.getPageSize(),
+            new Sort(Sort.Direction.ASC, "publishedAt")
+        );
+
+        return this.findAllByIsAllowedTrueAndPublishedAtBetween(publishedAtFrom, publishedAtTo, pageRequest);
+    }
+
+    default Page<Post> findWaitingForModeration(Pageable pageable) {
+        return this.findAllByIsAllowedFalseAndModeratedAtIsNull(pageable);
+    }
 }

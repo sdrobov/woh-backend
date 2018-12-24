@@ -1,7 +1,5 @@
 package ru.woh.api.models;
 
-import org.hibernate.annotations.Loader;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,9 +10,6 @@ import java.util.Date;
 
 @Entity(name = "PostPreviewView")
 @Table(name = "source_post_preview")
-@SQLDelete(sql = "UPDATE source_post_preview SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
-@Loader(namedQuery = "findPostPreviewById")
-@NamedQuery(name = "findPostPreviewById", query = "SELECT p FROM PostPreviewView p WHERE p.id = ?1 AND p.deletedAt IS NULL")
 @Where(clause = "deleted_at IS NULL")
 public class PostPreview {
     @Id

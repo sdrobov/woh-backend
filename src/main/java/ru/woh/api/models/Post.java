@@ -1,7 +1,5 @@
 package ru.woh.api.models;
 
-import org.hibernate.annotations.Loader;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedBy;
@@ -18,9 +16,6 @@ import java.util.Set;
 
 @Entity(name = "Post")
 @Table(name = "post")
-@SQLDelete(sql = "UPDATE post SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
-@Loader(namedQuery = "findPostById")
-@NamedQuery(name = "findPostById", query = "SELECT p FROM Post p WHERE p.id = ?1 AND p.deletedAt IS NULL")
 @Where(clause = "deleted_at IS NULL")
 public class Post implements Serializable {
     @Id

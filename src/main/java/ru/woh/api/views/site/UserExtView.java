@@ -1,7 +1,10 @@
 package ru.woh.api.views.site;
 
 public class UserExtView extends UserView {
-    protected String token;
+    private String token;
+
+    public UserExtView() {
+    }
 
     public UserExtView(
         Long id,
