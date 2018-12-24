@@ -13,6 +13,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 bootJar {
+    launchScript()
     baseName = 'woh-backend'
     version =  '0.0.1-SNAPSHOT'
 }
