@@ -117,7 +117,7 @@ public class UserController {
 
     @PostMapping({"/user/save", "/user/save/"})
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public UserView save(@RequestBody UserView userView) {
+    public UserView edit(@RequestBody UserView userView) {
         if (userView.getId() == null) {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "user id required");
         }

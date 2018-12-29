@@ -1,6 +1,9 @@
 # WoH.ru backend
 
 ## API
+https://documenter.getpostman.com/view/5632150/RznBMffe
+
+## API (deprecated)
 
 - [User API](#user-api)
   * [GET `/user`](#get-user)

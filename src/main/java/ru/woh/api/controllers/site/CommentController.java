@@ -69,7 +69,7 @@ public class CommentController {
 
     @PostMapping({"/{id:[0-9]*}/comments/edit", "/{id:[0-9]*}/comments/edit/"})
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public CommentView editComment(@RequestBody CommentView comment) {
+    public CommentView edit(@RequestBody CommentView comment) {
         Comment commentModel = this.commentService.one(comment.getId());
 
         if (!this.userService.getCurrenttUser().isModer()) {
@@ -88,7 +88,7 @@ public class CommentController {
 
     @PostMapping({"/{postId:[0-9]*}/comments/delete/{id:[0-9]*}", "/{postId:[0-9]*}/comments/delete/{id:[0-9]*}/"})
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public void deleteComment(@PathVariable("id") Long id) {
+    public void delete(@PathVariable("id") Long id) {
         Comment commentModel = this.commentService.one(id);
 
         if (!this.userService.getCurrenttUser().isModer()) {

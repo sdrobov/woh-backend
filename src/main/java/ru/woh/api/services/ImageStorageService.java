@@ -65,6 +65,9 @@ public class ImageStorageService {
 
     public void dropImage(String id) {
         var image = this.gridFsService.findById(id);
-        this.gridFsService.delete(image);
+
+        if (image != null) {
+            this.gridFsService.delete(image);
+        }
     }
 }
