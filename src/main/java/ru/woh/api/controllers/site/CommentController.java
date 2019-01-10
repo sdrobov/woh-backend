@@ -34,7 +34,7 @@ public class CommentController {
         this.commentLikesRepository = commentLikesRepository;
     }
 
-    @GetMapping({"/{id:[0-9]*}/comments", "/{id:[0-9]*}/comments/"})
+    @GetMapping({ "/{id:[0-9]*}/comments", "/{id:[0-9]*}/comments/" })
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public List<CommentView> list(
         @PathVariable("id") Long postId,
@@ -45,7 +45,7 @@ public class CommentController {
         return this.commentService.list(post, page, MAX_COMMENTS);
     }
 
-    @PostMapping({"/{id:[0-9]*}/comments", "/{id:[0-9]*}/comments/"})
+    @PostMapping({ "/{id:[0-9]*}/comments", "/{id:[0-9]*}/comments/" })
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public List<CommentView> add(
         @PathVariable("id") Long postId,
@@ -67,7 +67,7 @@ public class CommentController {
     }
 
 
-    @PostMapping({"/{id:[0-9]*}/comments/edit", "/{id:[0-9]*}/comments/edit/"})
+    @PostMapping({ "/{id:[0-9]*}/comments/edit", "/{id:[0-9]*}/comments/edit/" })
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public CommentView edit(@RequestBody CommentView comment) {
         Comment commentModel = this.commentService.one(comment.getId());
@@ -86,7 +86,7 @@ public class CommentController {
         return this.commentService.makeCommentViewWithRating(commentModel);
     }
 
-    @PostMapping({"/{postId:[0-9]*}/comments/delete/{id:[0-9]*}", "/{postId:[0-9]*}/comments/delete/{id:[0-9]*}/"})
+    @PostMapping({ "/{postId:[0-9]*}/comments/delete/{id:[0-9]*}", "/{postId:[0-9]*}/comments/delete/{id:[0-9]*}/" })
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public void delete(@PathVariable("id") Long id) {
         Comment commentModel = this.commentService.one(id);
@@ -100,13 +100,13 @@ public class CommentController {
         this.commentService.delete(commentModel);
     }
 
-    @PostMapping({"/{postId:[0-9]*}/comments/like/{id:[0-9]*}", "/{postId:[0-9]*}/comments/like/{id:[0-9]*}/"})
+    @PostMapping({ "/{postId:[0-9]*}/comments/like/{id:[0-9]*}", "/{postId:[0-9]*}/comments/like/{id:[0-9]*}/" })
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public CommentView like(@PathVariable("id") Long id) {
         return this.likeOrDislike(id, true);
     }
 
-    @PostMapping({"/{postId:[0-9]*}/comments/dislike/{id:[0-9]*}", "/{postId:[0-9]*}/comments/dislike/{id:[0-9]*}/"})
+    @PostMapping({ "/{postId:[0-9]*}/comments/dislike/{id:[0-9]*}", "/{postId:[0-9]*}/comments/dislike/{id:[0-9]*}/" })
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public CommentView dislike(@PathVariable("id") Long id) {
         return this.likeOrDislike(id, false);
@@ -116,29 +116,24 @@ public class CommentController {
     private CommentView likeOrDislike(Long id, Boolean like) {
         Comment comment = this.commentService.one(id);
         User user = this.userService.getCurrenttUser();
-        int mod = 1;
 
         CommentLikes commentLikes = this.commentLikesRepository.findById(new CommentLikes.CommentLikesPK(
             comment.getId(),
             user.getId()
-        )).orElse(null);
+        )).orElse(new CommentLikes(new CommentLikes.CommentLikesPK(comment.getId(), user.getId()), like));
 
-        if (commentLikes != null) {
-            if (commentLikes.getIsLike() == like) {
-                throw new HttpClientErrorException(HttpStatus.FORBIDDEN, String.format("you can only %s once", like ? "like" : "dislike"));
-            }
-
-            commentLikes.setIsLike(like);
-            mod += 1;
-        } else {
-            commentLikes = new CommentLikes(new CommentLikes.CommentLikesPK(comment.getId(), user.getId()), true);
+        if (this.commentLikesRepository.existsById(commentLikes.getPk()) && commentLikes.getIsLike() == like) {
+            throw new HttpClientErrorException(
+                HttpStatus.FORBIDDEN,
+                String.format("you can only %s once", like ? "like" : "dislike")
+            );
         }
 
+        commentLikes.setIsLike(like);
         this.commentLikesRepository.save(commentLikes);
 
-        comment.setRating((comment.getRating() != null ? comment.getRating() : 0) + (like ? mod : 0 - mod));
-        comment = this.commentService.save(comment);
+        comment.modifyRating(like);
 
-        return this.commentService.makeCommentViewWithRating(comment);
+        return this.commentService.makeCommentViewWithRating(this.commentService.save(comment));
     }
 }

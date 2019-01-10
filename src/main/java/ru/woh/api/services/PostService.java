@@ -7,10 +7,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import ru.woh.api.models.Post;
-import ru.woh.api.models.PostLikes;
-import ru.woh.api.models.Tag;
-import ru.woh.api.models.User;
+import ru.woh.api.models.*;
+import ru.woh.api.models.repositories.CategoryRepository;
 import ru.woh.api.models.repositories.PostLikesRepository;
 import ru.woh.api.models.repositories.PostRepository;
 import ru.woh.api.models.repositories.TagRepository;
@@ -29,6 +27,7 @@ public class PostService {
     private final CommentService commentService;
     private final PostLikesRepository postLikesRepository;
     private final TagRepository tagRepository;
+    private final CategoryRepository categoryRepository;
 
     @Autowired
     public PostService(
@@ -36,13 +35,15 @@ public class PostService {
         UserService userService,
         CommentService commentService,
         PostLikesRepository postLikesRepository,
-        TagRepository tagRepository
+        TagRepository tagRepository,
+        CategoryRepository categoryRepository
     ) {
         this.postRepository = postRepository;
         this.userService = userService;
         this.commentService = commentService;
         this.postLikesRepository = postLikesRepository;
         this.tagRepository = tagRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     private Page<Post> list(Integer page, Integer limit) {
@@ -102,6 +103,16 @@ public class PostService {
         return new PostListView(posts.getTotalElements(), posts.getTotalPages(), page, views);
     }
 
+    public PostListView byCategory(Integer page, Integer limit, String category) {
+        var posts = this.postRepository.findAllByCategories_Name(
+            Collections.singleton(category),
+            PageRequest.of(page, limit, new Sort(Sort.Direction.DESC, "publishedAt"))
+        );
+        var views = posts.getContent().stream().map(this::makeViewWithRating).collect(Collectors.toList());
+
+        return new PostListView(posts.getTotalElements(), posts.getTotalPages(), page, views);
+    }
+
     private PostView makeViewWithRating(Post post) {
         User user = this.userService.getCurrenttUser();
         Boolean isModer = user != null && user.isModer();
@@ -135,7 +146,6 @@ public class PostService {
         this.postRepository.delete(post);
     }
 
-
     public Post updateWithView(Post post, PostView postView) {
         post.setTitle(postView.getTitle());
         post.setText(postView.getText());
@@ -150,7 +160,22 @@ public class PostService {
                 .map(tagName -> this.tagRepository.findFirstByName(tagName).orElseGet(() -> {
                     Tag tag = new Tag();
                     tag.setName(tagName);
+
                     return this.tagRepository.save(tag);
+                }))
+                .collect(Collectors.toSet()));
+        }
+
+        if (postView.getCategories() != null) {
+            post.setCategories(postView.getCategories()
+                .stream()
+                .map(String::trim)
+                .distinct()
+                .map(categoryName -> this.categoryRepository.findFirstByName(categoryName).orElseGet(() -> {
+                    Category category = new Category();
+                    category.setName(categoryName);
+
+                    return this.categoryRepository.save(category);
                 }))
                 .collect(Collectors.toSet()));
         }

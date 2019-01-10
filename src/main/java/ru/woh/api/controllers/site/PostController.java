@@ -51,6 +51,15 @@ public class PostController {
         return this.postService.byTag(page, PostController.defaultPageSize, tag);
     }
 
+    @GetMapping({"/by-category/{category:.*}", "/by-category/{category:.*}/"})
+    @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
+    public PostListView byCategory(
+        @PathVariable("category") String category,
+        @RequestParam(value = "page", defaultValue = "0") Integer page
+    ) {
+        return this.postService.byCategory(page, PostController.defaultPageSize, category);
+    }
+
     @GetMapping({"/{id:[0-9]*}", "/{id:[0-9]*}/"})
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public PostView one(@PathVariable("id") Long id) {
@@ -86,25 +95,19 @@ public class PostController {
     private PostView likeOrDislike(Long id, Boolean like) {
         Post post = this.postService.one(id);
         User user = this.userService.getCurrenttUser();
-        int mod = 1;
 
         PostLikes postLike = this.postLikesRepository.findById(new PostLikes.PostLikesPK(post.getId(), user.getId()))
-            .orElse(null);
+            .orElse(new PostLikes(new PostLikes.PostLikesPK(post.getId(), user.getId()), like));
 
-        if (postLike != null) {
-            if (postLike.getIsLike() == like) {
-                throw new HttpClientErrorException(HttpStatus.FORBIDDEN, String.format("you can only %s once", like ? "like" : "dislike"));
-            }
-
-            postLike.setIsLike(like);
-            mod += 1;
-        } else {
-            postLike = new PostLikes(new PostLikes.PostLikesPK(post.getId(), user.getId()), like);
+        if (this.postLikesRepository.existsById(postLike.getPk()) && postLike.getIsLike() == like) {
+            throw new HttpClientErrorException(HttpStatus.FORBIDDEN, String.format("you can only %s once", like ? "like" : "dislike"));
         }
+
+        postLike.setIsLike(like);
 
         this.postLikesRepository.save(postLike);
 
-        post.setRating((post.getRating() != null ? post.getRating() : 0) + (like ? mod : 0 - mod));
+        post.modifyRating(like);
         this.postService.save(post);
 
         return this.postService.view(id);

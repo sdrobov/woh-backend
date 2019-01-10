@@ -93,7 +93,7 @@ public class Comment implements Serializable {
     }
 
     public Long getRating() {
-        return this.rating;
+        return this.rating != null ? this.rating : 0;
     }
 
     public Comment getReplyTo() {
@@ -138,6 +138,10 @@ public class Comment implements Serializable {
 
     public void setRating(Long rating) {
         this.rating = rating;
+    }
+
+    public void modifyRating(Boolean like) {
+        this.rating = this.getRating() + (like ? 1 : -1);
     }
 
     public void setReplyTo(Comment replyTo) {

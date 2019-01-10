@@ -1,5 +1,6 @@
 package ru.woh.api.views.site;
 
+import ru.woh.api.models.Category;
 import ru.woh.api.models.Tag;
 import ru.woh.api.models.User;
 
@@ -18,6 +19,7 @@ public class PostView {
     private Date publishedAt;
     private List<CommentView> comments;
     private List<String> tags;
+    private List<String> categories;
     private RatingView rating;
     private Long totalComments;
     private UserView proposedBy;
@@ -37,7 +39,7 @@ public class PostView {
         Date createdAt,
         Date publishedAt,
         Set<Tag> tags,
-        String announce,
+        Set<Category> categories, String announce,
         User proposedBy,
         String teaserImage,
         String featuredImage, String nearestImage, Boolean canBeNearest
@@ -45,11 +47,18 @@ public class PostView {
         this.id = id;
         this.title = title;
         this.text = text;
+        this.categories = categories != null ? categories.stream()
+            .map(Category::getName)
+            .sorted()
+            .collect(Collectors.toList()) : null;
         this.announce = announce;
         this.source = source;
         this.createdAt = createdAt;
         this.publishedAt = publishedAt;
-        this.tags = tags != null ? tags.stream().map(Tag::getName).sorted().collect(Collectors.toList()) : null;
+        this.tags = tags != null ? tags.stream()
+            .map(Tag::getName)
+            .sorted()
+            .collect(Collectors.toList()) : null;
         this.proposedBy = proposedBy != null ? proposedBy.view() : null;
         this.teaserImage = teaserImage;
         this.featuredImage = featuredImage;
@@ -183,5 +192,13 @@ public class PostView {
 
     public void setCanBeNearest(Boolean canBeNearest) {
         this.canBeNearest = canBeNearest;
+    }
+
+    public List<String> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<String> categories) {
+        this.categories = categories;
     }
 }

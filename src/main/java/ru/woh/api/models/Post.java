@@ -88,6 +88,12 @@ public class Post implements Serializable {
         inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
 
+    @ManyToMany(cascade = CascadeType.DETACH)
+    @JoinTable(name = "categories_ref_posts",
+        joinColumns = { @JoinColumn(name = "post_id") },
+        inverseJoinColumns = { @JoinColumn(name = "category_id") })
+    private Set<Category> categories = new HashSet<>();
+
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Set<PostLikes> likes;
 
@@ -109,7 +115,7 @@ public class Post implements Serializable {
             this.createdAt,
             this.publishedAt,
             this.tags,
-            this.announce,
+            this.categories, this.announce,
             this.proposedBy,
             this.teaserImage,
             this.featuredImage,
@@ -127,6 +133,7 @@ public class Post implements Serializable {
             this.createdAt,
             this.publishedAt,
             this.tags,
+            this.categories,
             this.announce,
             this.proposedBy,
             this.teaserImage,
@@ -217,7 +224,7 @@ public class Post implements Serializable {
     }
 
     public Long getRating() {
-        return this.rating;
+        return this.rating != null ? this.rating : 0;
     }
 
     public Source getSourceSite() {
@@ -292,6 +299,10 @@ public class Post implements Serializable {
         this.rating = rating;
     }
 
+    public void modifyRating(Boolean like) {
+        this.rating = this.getRating() + (like ? 1 : -1);
+    }
+
     public void setSourceSite(Source sourceSite) {
         this.sourceSite = sourceSite;
     }
@@ -326,5 +337,13 @@ public class Post implements Serializable {
 
     public void setCanBeNearest(Short canBeNearest) {
         this.canBeNearest = canBeNearest;
+    }
+
+    public Set<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(Set<Category> categories) {
+        this.categories = categories;
     }
 }

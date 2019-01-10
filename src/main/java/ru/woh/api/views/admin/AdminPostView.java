@@ -1,9 +1,9 @@
 package ru.woh.api.views.admin;
 
+import ru.woh.api.models.Category;
 import ru.woh.api.models.Tag;
 import ru.woh.api.models.User;
 import ru.woh.api.views.site.PostView;
-import ru.woh.api.views.site.RatingView;
 import ru.woh.api.views.site.UserView;
 
 import java.util.Date;
@@ -24,7 +24,7 @@ public class AdminPostView extends PostView {
         Date createdAt,
         Date publishedAt,
         Set<Tag> tags,
-        String announce,
+        Set<Category> categories, String announce,
         User proposedBy,
         String teaserImage,
         String featuredImage,
@@ -43,7 +43,7 @@ public class AdminPostView extends PostView {
             createdAt,
             publishedAt,
             tags,
-            announce,
+            categories, announce,
             proposedBy,
             teaserImage,
             featuredImage,
