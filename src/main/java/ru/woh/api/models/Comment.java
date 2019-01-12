@@ -140,8 +140,8 @@ public class Comment implements Serializable {
         this.rating = rating;
     }
 
-    public void modifyRating(Boolean like) {
-        this.rating = this.getRating() + (like ? 1 : -1);
+    public void modifyRating(Integer mod) {
+        this.rating = this.getRating() + mod;
     }
 
     public void setReplyTo(Comment replyTo) {

@@ -89,15 +89,15 @@ public class CommentController {
     @PostMapping({ "/{postId:[0-9]*}/comments/delete/{id:[0-9]*}", "/{postId:[0-9]*}/comments/delete/{id:[0-9]*}/" })
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public void delete(@PathVariable("id") Long id) {
-        Comment commentModel = this.commentService.one(id);
+        Comment comment = this.commentService.one(id);
 
         if (!this.userService.getCurrenttUser().isModer()) {
-            if (commentModel.getUser() != this.userService.getCurrenttUser()) {
+            if (comment.getUser() != this.userService.getCurrenttUser()) {
                 throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "you can delete only your own comments!");
             }
         }
 
-        this.commentService.delete(commentModel);
+        this.commentService.delete(comment);
     }
 
     @PostMapping({ "/{postId:[0-9]*}/comments/like/{id:[0-9]*}", "/{postId:[0-9]*}/comments/like/{id:[0-9]*}/" })
@@ -120,19 +120,25 @@ public class CommentController {
         CommentLikes commentLikes = this.commentLikesRepository.findById(new CommentLikes.CommentLikesPK(
             comment.getId(),
             user.getId()
-        )).orElse(new CommentLikes(new CommentLikes.CommentLikesPK(comment.getId(), user.getId()), like));
+        )).orElse(null);
 
-        if (this.commentLikesRepository.existsById(commentLikes.getPk()) && commentLikes.getIsLike() == like) {
-            throw new HttpClientErrorException(
-                HttpStatus.FORBIDDEN,
-                String.format("you can only %s once", like ? "like" : "dislike")
-            );
+        if (commentLikes != null && commentLikes.getIsLike() == like) {
+            this.commentLikesRepository.delete(commentLikes);
+
+            comment.modifyRating(like ? -1 : 1);
+        } else {
+            if (commentLikes == null) {
+                commentLikes = new CommentLikes(new CommentLikes.CommentLikesPK(comment.getId(), user.getId()), like);
+
+                comment.modifyRating(like ? 1 : -1);
+            } else {
+                commentLikes.setIsLike(like);
+
+                comment.modifyRating(like ? 2 : -2);
+            }
+
+            this.commentLikesRepository.save(commentLikes);
         }
-
-        commentLikes.setIsLike(like);
-        this.commentLikesRepository.save(commentLikes);
-
-        comment.modifyRating(like);
 
         return this.commentService.makeCommentViewWithRating(this.commentService.save(comment));
     }

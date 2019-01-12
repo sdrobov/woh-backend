@@ -42,31 +42,13 @@ public class PostController {
         return this.postService.listView(page, PostController.defaultPageSize);
     }
 
-    @GetMapping({"/by-tag/{tag:.*}", "/by-tag/{tag:.*}/"})
-    @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public PostListView byTag(
-        @PathVariable("tag") String tag,
-        @RequestParam(value = "page", defaultValue = "0") Integer page
-    ) {
-        return this.postService.byTag(page, PostController.defaultPageSize, tag);
-    }
-
-    @GetMapping({"/by-category/{category:.*}", "/by-category/{category:.*}/"})
-    @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public PostListView byCategory(
-        @PathVariable("category") String category,
-        @RequestParam(value = "page", defaultValue = "0") Integer page
-    ) {
-        return this.postService.byCategory(page, PostController.defaultPageSize, category);
-    }
-
-    @GetMapping({"/{id:[0-9]*}", "/{id:[0-9]*}/"})
+    @GetMapping({ "/{id:[0-9]*}", "/{id:[0-9]*}/" })
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public PostView one(@PathVariable("id") Long id) {
         return this.postService.view(id);
     }
 
-    @GetMapping({"/{id:[0-9]*}/nearest", "/{id:[0-9]*}/nearest/"})
+    @GetMapping({ "/{id:[0-9]*}/nearest", "/{id:[0-9]*}/nearest/" })
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public List<PostView> nearest(@PathVariable("id") Long id) {
         var post = this.postService.view(id);
@@ -78,14 +60,14 @@ public class PostController {
         return posts;
     }
 
-    @PostMapping({"/{id:[0-9]*}/like", "/{id:[0-9]*}/like/"})
+    @PostMapping({ "/{id:[0-9]*}/like", "/{id:[0-9]*}/like/" })
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public PostView like(@PathVariable("id") Long id) {
         return this.likeOrDislike(id, true);
     }
 
 
-    @PostMapping({"/{id:[0-9]*}/dislike", "/{id:[0-9]*}/dislike/"})
+    @PostMapping({ "/{id:[0-9]*}/dislike", "/{id:[0-9]*}/dislike/" })
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public PostView dislike(@PathVariable("id") Long id) {
         return this.likeOrDislike(id, false);
@@ -97,17 +79,26 @@ public class PostController {
         User user = this.userService.getCurrenttUser();
 
         PostLikes postLike = this.postLikesRepository.findById(new PostLikes.PostLikesPK(post.getId(), user.getId()))
-            .orElse(new PostLikes(new PostLikes.PostLikesPK(post.getId(), user.getId()), like));
+            .orElse(null);
 
-        if (this.postLikesRepository.existsById(postLike.getPk()) && postLike.getIsLike() == like) {
-            throw new HttpClientErrorException(HttpStatus.FORBIDDEN, String.format("you can only %s once", like ? "like" : "dislike"));
+        if (postLike != null && postLike.getIsLike() == like) {
+            this.postLikesRepository.delete(postLike);
+
+            post.modifyRating(like ? -1 : 1);
+        } else {
+            if (postLike == null) {
+                postLike = new PostLikes(new PostLikes.PostLikesPK(post.getId(), user.getId()), like);
+
+                post.modifyRating(like ? 1 : -1);
+            } else {
+                postLike.setIsLike(like);
+
+                post.modifyRating(like ? 2 : -2);
+            }
+
+            this.postLikesRepository.save(postLike);
         }
 
-        postLike.setIsLike(like);
-
-        this.postLikesRepository.save(postLike);
-
-        post.modifyRating(like);
         this.postService.save(post);
 
         return this.postService.view(id);

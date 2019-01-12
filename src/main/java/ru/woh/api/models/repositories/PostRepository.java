@@ -107,4 +107,10 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
     default Page<Post> findWaitingForModeration(Pageable pageable) {
         return this.findAllByIsAllowedFalseAndModeratedAtIsNull(pageable);
     }
+
+    default void delete(Post post) {
+        post.setDeletedAt(new Date());
+
+        this.save(post);
+    }
 }
