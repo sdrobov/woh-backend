@@ -107,7 +107,7 @@ public class PostService {
 
     public PostListView byCategory(Integer page, Integer limit, String category) {
         var categories = Set.of(category.split(","));
-        var posts = this.postRepository.findAllByCategories_Name(
+        var posts = this.postRepository.findAllByCategories_NameIn(
             categories,
             PageRequest.of(page, limit, new Sort(Sort.Direction.DESC, "publishedAt"))
         );
