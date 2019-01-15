@@ -7,7 +7,7 @@ spring:
     open-in-view: true
     show-sql: true
   datasource:
-    url: jdbc:mysql://localhost/woh?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    url: jdbc:mysql://localhost/woh?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&characterEncoding=utf8
     username: woh
     password: qwerty
     initialization-mode: never
@@ -31,7 +31,7 @@ parser:
 spring:
   profiles: container
   datasource:
-    url: jdbc:mysql://${DATABASE_HOST}/${DATABASE_NAME}?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    url: jdbc:mysql://${DATABASE_HOST}/${DATABASE_NAME}?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&characterEncoding=utf8
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
     initialization-mode: never

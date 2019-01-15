@@ -8,18 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import ru.woh.api.models.*;
-import ru.woh.api.models.repositories.CategoryRepository;
-import ru.woh.api.models.repositories.PostLikesRepository;
-import ru.woh.api.models.repositories.PostRepository;
-import ru.woh.api.models.repositories.TagRepository;
+import ru.woh.api.models.repositories.*;
 import ru.woh.api.views.site.PostListView;
 import ru.woh.api.views.site.PostView;
 import ru.woh.api.views.site.RatingView;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +24,7 @@ public class PostService {
     private final PostLikesRepository postLikesRepository;
     private final TagRepository tagRepository;
     private final CategoryRepository categoryRepository;
+    private final PostCategoryRepository postCategoryRepository;
 
     @Autowired
     public PostService(
@@ -38,7 +33,8 @@ public class PostService {
         CommentService commentService,
         PostLikesRepository postLikesRepository,
         TagRepository tagRepository,
-        CategoryRepository categoryRepository
+        CategoryRepository categoryRepository,
+        PostCategoryRepository postCategoryRepository
     ) {
         this.postRepository = postRepository;
         this.userService = userService;
@@ -46,6 +42,7 @@ public class PostService {
         this.postLikesRepository = postLikesRepository;
         this.tagRepository = tagRepository;
         this.categoryRepository = categoryRepository;
+        this.postCategoryRepository = postCategoryRepository;
     }
 
     private Page<Post> list(Integer page, Integer limit) {
@@ -107,10 +104,54 @@ public class PostService {
 
     public PostListView byCategory(Integer page, Integer limit, String category) {
         var categories = Set.of(category.split(","));
-        var posts = this.postRepository.findAllByCategories_NameIn(
-            categories,
-            PageRequest.of(page, limit, new Sort(Sort.Direction.DESC, "publishedAt"))
-        );
+        Page<Post> posts;
+
+        if (categories.size() > 1) {
+            var categoryIds = this.categoryRepository.findAllByNameIn(categories)
+                .stream()
+                .map(Category::getId)
+                .collect(Collectors.toSet());
+
+            var postCategories = new HashMap<Long, List<Long>>();
+            this.postCategoryRepository.findAllByCategoryIdIn(categoryIds)
+                .forEach(postCategory -> {
+                    postCategories.computeIfPresent(postCategory.getPostId(), (postId, currentPostCategories) -> {
+                        if (!currentPostCategories.contains(postCategory.getCategoryId())) {
+                            currentPostCategories.add(postCategory.getCategoryId());
+                        }
+
+                        return currentPostCategories;
+                    });
+
+                    postCategories.computeIfAbsent(
+                        postCategory.getPostId(),
+                        postId -> {
+                            List<Long> currentPostCategories = new ArrayList<>();
+                            currentPostCategories.add(postCategory.getCategoryId());
+
+                            return currentPostCategories;
+                        }
+                    );
+                });
+
+            List<Long> postIds = new ArrayList<>();
+            postCategories.forEach((postId, categoriesId) -> {
+                if (categoriesId.containsAll(categoryIds)) {
+                    postIds.add(postId);
+                }
+            });
+
+            posts = this.postRepository.findAllByIdIn(
+                postIds,
+                PageRequest.of(page, limit, new Sort(Sort.Direction.DESC, "publishedAt"))
+            );
+        } else {
+            posts = this.postRepository.findAllByCategories_NameIn(
+                categories,
+                PageRequest.of(page, limit, new Sort(Sort.Direction.DESC, "publishedAt"))
+            );
+        }
+
         var views = posts.getContent().stream().map(this::makeViewWithRating).collect(Collectors.toList());
 
         return new PostListView(posts.getTotalElements(), posts.getTotalPages(), page, views);

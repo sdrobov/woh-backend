@@ -30,6 +30,8 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
 
     Page<Post> findAllByCategories_NameIn(Set<String> categories, Pageable pageable);
 
+    Page<Post> findAllByIdIn(List<Long> ids, Pageable pageable);
+
     List<Post> findAllByIsAllowedAndPublishedAtLessThanEqualAndIdNotAndCanBeNearest(
         Short isAllowed,
         Date publishedAt,

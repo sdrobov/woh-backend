@@ -46,7 +46,6 @@ public class CategoryController {
             .stream()
             .map(Category::getName)
             .map(String::trim)
-            .map(String::toLowerCase)
             .distinct()
             .collect(Collectors.toList());
     }
