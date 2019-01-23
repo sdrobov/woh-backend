@@ -1,6 +1,5 @@
 package ru.woh.api.handlers;
 
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -37,7 +36,7 @@ public class ErrorHandler {
     private ResponseEntity<ErrorView> getErrorViewResponseEntity(
         int statusCode,
         String errorMessage,
-        @NotNull Throwable e
+        Throwable e
     ) {
         e.printStackTrace();
         this.logger.error(e.getMessage(), e);
