@@ -10,7 +10,14 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Period;
+import java.time.temporal.TemporalAmount;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.TimeZone;
 
 @Service
 public class ImageStorageService {
@@ -60,7 +67,17 @@ public class ImageStorageService {
             ? gridfsFile.getMetadata().get(HttpHeaders.CONTENT_TYPE, "octet/stream")
             : "octet/stream";
 
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, contentType).body(image);
+        var dateFormat = new SimpleDateFormat("EEE, dd-MMM-yyyy HH:mm:ss zzz", Locale.US);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+        var expires = Date.from(new Date().toInstant().plus(Period.ofDays(365 * 10)));
+        var lastModified = gridfsFile.getUploadDate() != null ? gridfsFile.getUploadDate() : new Date();
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_TYPE, contentType)
+            .header(HttpHeaders.EXPIRES, dateFormat.format(expires))
+            .header(HttpHeaders.LAST_MODIFIED, dateFormat.format(lastModified))
+            .body(image);
     }
 
     public void dropImage(String id) {

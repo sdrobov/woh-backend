@@ -9,53 +9,47 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 public class AvatarChangeRequest {
-    protected MultipartFile file;
-    protected Integer x1;
-    protected Integer y1;
-    protected Integer x2;
-    protected Integer y2;
-    protected Integer h;
-    protected Integer w;
+    private MultipartFile file;
+    private Integer x1;
+    private Integer y1;
+    private Integer x2;
+    private Integer y2;
+    private Integer h;
+    private Integer w;
 
     public AvatarChangeRequest() {
     }
 
     public Boolean isValid() {
         return !this.file.isEmpty()
-            && this.x1 != null
-            && this.y1 != null
-            && this.x2 != null
-            && this.y2 != null
-            && this.h != null
-            && this.w != null;
+            && this.x1 != null && this.x1 > 0
+            && this.y1 != null && this.y1 > 0
+            && this.x2 != null && this.x2 > 0
+            && this.y2 != null && this.y2 > 0
+            && this.h != null && this.h > 0
+            && this.w != null && this.w > 0;
     }
 
-    public BufferedImage getBufferedImage() {
-        try {
-            BufferedImage originalAvatar = ImageIO.read(new ByteArrayInputStream(this.file.getBytes()));
-            int newWidth, newHeight;
-            newWidth = newHeight = Math.max(this.w, this.h);
+    public BufferedImage getBufferedImage() throws IOException {
+        BufferedImage originalAvatar = ImageIO.read(new ByteArrayInputStream(this.file.getBytes()));
+        int newWidth, newHeight;
+        newWidth = newHeight = Math.max(this.w, this.h);
 
-            BufferedImage crop1 = originalAvatar.getSubimage(this.x1, this.y1, newWidth, newHeight);
-            BufferedImage crop2 = null;
-            if (crop1.getWidth() > 1000 || crop1.getHeight() > 1000) {
-                crop2 = new BufferedImage(1000, 1000, crop1.getType());
-                Graphics2D graphics2D = crop2.createGraphics();
+        BufferedImage crop1 = originalAvatar.getSubimage(this.x1, this.y1, newWidth, newHeight);
+        BufferedImage crop2 = null;
+        if (crop1.getWidth() > 1000 || crop1.getHeight() > 1000) {
+            crop2 = new BufferedImage(1000, 1000, crop1.getType());
+            Graphics2D graphics2D = crop2.createGraphics();
 
-                if (crop2.getType() == BufferedImage.TYPE_INT_ARGB) {
-                    graphics2D.setComposite(AlphaComposite.Src);
-                }
-
-                graphics2D.drawImage(crop1, 0, 0, 1000, 1000, null);
-                graphics2D.dispose();
+            if (crop2.getType() == BufferedImage.TYPE_INT_ARGB) {
+                graphics2D.setComposite(AlphaComposite.Src);
             }
 
-            return crop2 != null ? crop2 : crop1;
-        } catch (IOException e) {
-            e.printStackTrace();
+            graphics2D.drawImage(crop1, 0, 0, 1000, 1000, null);
+            graphics2D.dispose();
         }
 
-        return null;
+        return crop2 != null ? crop2 : crop1;
     }
 
     public MultipartFile getFile() {

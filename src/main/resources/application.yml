@@ -22,6 +22,14 @@ spring:
     multipart:
       max-file-size: 2MB
       max-request-size: 10MB
+
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+      hibernate: DEBUG
+
 parser:
   host: localhost
   port: 3000
@@ -40,6 +48,16 @@ spring:
       host: ${MONGO_HOST}
       database: ${MONGO_DB}
       grid-fs-database: ${MONGO_DB}
+  jpa:
+    show-sql: false
+
+logging:
+  level:
+    org:
+      springframework:
+        web: ERROR
+      hibernate: ERROR
+
 parser:
   host: ${PARSER_HOST}
   port: ${PARSER_PORT}

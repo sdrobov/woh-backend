@@ -23,6 +23,7 @@ import ru.woh.api.views.site.UserView;
 
 import javax.annotation.security.RolesAllowed;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
@@ -161,7 +162,7 @@ public class UserController {
 
     @PostMapping({"/user/avatar", "/user/avatar/"})
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public ResponseEntity<Void> avatar(@ModelAttribute AvatarChangeRequest avatarChangeRequest) {
+    public ResponseEntity<Void> avatar(@ModelAttribute AvatarChangeRequest avatarChangeRequest) throws IOException {
         if (!avatarChangeRequest.isValid()) {
             return ResponseEntity.badRequest().build();
         }
