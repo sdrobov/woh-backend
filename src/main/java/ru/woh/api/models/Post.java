@@ -52,7 +52,7 @@ public class Post implements Serializable {
     private Date publishedAt;
 
     @Column(name = "is_allowed")
-    private Short isAllowed;
+    private Short isAllowed = 0;
 
     @Column(name = "moderated_at")
     @Temporal(TemporalType.TIMESTAMP)
@@ -68,7 +68,7 @@ public class Post implements Serializable {
     private String nearestImage;
 
     @Column(name = "can_be_nearest")
-    private Short canBeNearest;
+    private Short canBeNearest = 1;
 
     @ManyToOne
     @JoinColumn(name = "moderator_id")

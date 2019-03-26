@@ -8,8 +8,8 @@ spring:
     show-sql: true
   datasource:
     url: jdbc:mysql://localhost/woh?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&characterEncoding=utf8
-    username: woh
-    password: qwerty
+    username: sdrobov
+    password: xwh8uinp
     initialization-mode: never
   session:
     store-type: mongodb
