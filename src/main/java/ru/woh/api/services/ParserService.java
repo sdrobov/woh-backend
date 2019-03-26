@@ -3,6 +3,7 @@ package ru.woh.api.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import ru.woh.api.ParserConfiguration;
+import ru.woh.api.models.Source;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -57,8 +58,12 @@ public class ParserService {
         this.parserConfiguration = parserConfiguration;
     }
 
-    public Boolean parseSource() {
-        URL url = this.parserConfiguration.getParserUrl();
+    public Boolean parseSource(Source source) {
+        URL url = this.parserConfiguration.getParserUrl(source);
+        if (url == null) {
+            return false;
+        }
+
         HttpURLConnection connection;
         try {
             connection = (HttpURLConnection) url.openConnection();

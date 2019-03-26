@@ -3,6 +3,7 @@ package ru.woh.api;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import ru.woh.api.models.Source;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -17,8 +18,8 @@ public class ParserConfiguration {
     public ParserConfiguration() {
     }
 
-    public URL getParserUrl() {
-        String urlString = String.format("http://%s:%s", this.host, this.port);
+    public URL getParserUrl(Source source) {
+        String urlString = String.format("http://%s:%s/?sourceId=%d", this.host, this.port, source.getId());
 
         URL url;
         try {

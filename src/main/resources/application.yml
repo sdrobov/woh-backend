@@ -5,19 +5,19 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     open-in-view: true
-    show-sql: true
+    show-sql: ${SHOW_SQL}
   datasource:
-    url: jdbc:mysql://localhost/woh?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&characterEncoding=utf8
-    username: sdrobov
-    password: xwh8uinp
+    url: jdbc:mysql://${DATABASE_HOST}/${DATABASE_NAME}?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&characterEncoding=utf8
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
     initialization-mode: never
   session:
     store-type: mongodb
   data:
     mongodb:
-      host: localhost
-      database: woh
-      grid-fs-database: woh
+      host: ${MONGO_HOST}
+      database: ${MONGO_DB}
+      grid-fs-database: ${MONGO_DB}
   servlet:
     multipart:
       max-file-size: 2MB
@@ -27,36 +27,8 @@ logging:
   level:
     org:
       springframework:
-        web: DEBUG
-      hibernate: DEBUG
-
-parser:
-  host: localhost
-  port: 3000
-
----
-
-spring:
-  profiles: container
-  datasource:
-    url: jdbc:mysql://${DATABASE_HOST}/${DATABASE_NAME}?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&characterEncoding=utf8
-    username: ${DATABASE_USER}
-    password: ${DATABASE_PASSWORD}
-    initialization-mode: never
-  data:
-    mongodb:
-      host: ${MONGO_HOST}
-      database: ${MONGO_DB}
-      grid-fs-database: ${MONGO_DB}
-  jpa:
-    show-sql: false
-
-logging:
-  level:
-    org:
-      springframework:
-        web: ERROR
-      hibernate: ERROR
+        web: ${ERROR_LEVEL}
+      hibernate: ${ERROR_LEVEL}
 
 parser:
   host: ${PARSER_HOST}
