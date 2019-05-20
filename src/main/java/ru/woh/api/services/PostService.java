@@ -46,18 +46,11 @@ public class PostService {
     }
 
     private Page<Post> list(Integer page, Integer limit) {
-        User user = this.userService.getCurrenttUser();
-        boolean isModer = user != null && user.isModer();
-
-        return (
-            isModer
-                ? this.postRepository.findAll(PageRequest.of(page, limit, new Sort(Sort.Direction.DESC, "createdAt")))
-                : this.postRepository.findAllExceptTodayTeasers(PageRequest.of(
-                    page,
-                    limit,
-                    new Sort(Sort.Direction.DESC, "createdAt")
-                ))
-        );
+        return this.postRepository.findAllExceptTodayTeasers(PageRequest.of(
+            page,
+            limit,
+            new Sort(Sort.Direction.DESC, "createdAt")
+        ));
     }
 
     public Post one(Long id) {
