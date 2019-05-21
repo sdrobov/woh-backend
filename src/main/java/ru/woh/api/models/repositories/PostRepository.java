@@ -52,7 +52,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
 
     Page<Post> findAllByIsAllowedTrueAndPublishedAtBetween(Date from, Date to, Pageable pageable);
 
-    Page<Post> findAllByIsAllowedFalseAndModeratedAtIsNull(Pageable pageable);
+    Page<Post> findAllByModeratedAtIsNullAndIsAllowedEquals(Short isAllowed, Pageable pageable);
 
     default Page<Post> findAllAllowed(Pageable pageable) {
         return this.findAllByIsAllowedAndPublishedAtLessThanEqual((short) 1, new Date(), pageable);
@@ -107,7 +107,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
     }
 
     default Page<Post> findWaitingForModeration(Pageable pageable) {
-        return this.findAllByIsAllowedFalseAndModeratedAtIsNull(pageable);
+        return this.findAllByModeratedAtIsNullAndIsAllowedEquals((short) 0, pageable);
     }
 
     default void delete(Post post) {
