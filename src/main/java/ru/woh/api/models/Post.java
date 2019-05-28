@@ -150,6 +150,7 @@ public class Post implements Serializable {
     public void approve(User moderator) {
         this.isAllowed = 1;
         this.moderatedAt = new Date();
+        this.publishedAt = new Date();
         this.moderator = moderator;
     }
 

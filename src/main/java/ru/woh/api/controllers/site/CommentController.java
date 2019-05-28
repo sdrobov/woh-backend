@@ -13,6 +13,7 @@ import ru.woh.api.views.site.CommentView;
 import javax.annotation.security.RolesAllowed;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 public class CommentController {
@@ -73,8 +74,8 @@ public class CommentController {
         Comment commentModel = this.commentService.one(comment.getId());
 
         if (!this.userService.getCurrenttUser().isModer()) {
-            if (commentModel.getUser() != this.userService.getCurrenttUser()) {
-                throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "you can delete only your own comments!");
+            if (!Objects.equals(commentModel.getUser().getId(), this.userService.getCurrenttUser().getId())) {
+                throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "you can edit only your own comments!");
             }
         }
 
@@ -92,7 +93,7 @@ public class CommentController {
         Comment comment = this.commentService.one(id);
 
         if (!this.userService.getCurrenttUser().isModer()) {
-            if (comment.getUser() != this.userService.getCurrenttUser()) {
+            if (!Objects.equals(comment.getUser().getId(), this.userService.getCurrenttUser().getId())) {
                 throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "you can delete only your own comments!");
             }
         }
@@ -112,7 +113,6 @@ public class CommentController {
         return this.likeOrDislike(id, false);
     }
 
-    @SuppressWarnings("Duplicates")
     private CommentView likeOrDislike(Long id, Boolean like) {
         Comment comment = this.commentService.one(id);
         User user = this.userService.getCurrenttUser();

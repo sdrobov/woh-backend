@@ -48,11 +48,11 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
         Pageable pageable
     );
 
-    Page<Post> findAllByIsAllowedTrueAndPublishedAtGreaterThanEqual(Date publishedAt, Pageable pageable);
+    Page<Post> findAllByIsAllowedAndPublishedAtGreaterThanEqual(Short isAllowed, Date publishedAt, Pageable pageable);
 
-    Page<Post> findAllByIsAllowedTrueAndPublishedAtBetween(Date from, Date to, Pageable pageable);
+    Page<Post> findAllByIsAllowedAndPublishedAtBetween(Short isAllowed, Date from, Date to, Pageable pageable);
 
-    Page<Post> findAllByModeratedAtIsNullAndIsAllowedEquals(Short isAllowed, Pageable pageable);
+    Page<Post> findAllByIsAllowedAndModeratedAtIsNull(Short isAllowed, Pageable pageable);
 
     default Page<Post> findAllAllowed(Pageable pageable) {
         return this.findAllByIsAllowedAndPublishedAtLessThanEqual((short) 1, new Date(), pageable);
@@ -93,7 +93,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
             new Sort(Sort.Direction.ASC, "publishedAt")
         );
 
-        return this.findAllByIsAllowedTrueAndPublishedAtGreaterThanEqual(new Date(), pageRequest);
+        return this.findAllByIsAllowedAndPublishedAtGreaterThanEqual((short)1, new Date(), pageRequest);
     }
 
     default Page<Post> findWaitingForPublishingAt(Date publishedAtFrom, Date publishedAtTo, Pageable pageable) {
@@ -103,11 +103,11 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
             new Sort(Sort.Direction.ASC, "publishedAt")
         );
 
-        return this.findAllByIsAllowedTrueAndPublishedAtBetween(publishedAtFrom, publishedAtTo, pageRequest);
+        return this.findAllByIsAllowedAndPublishedAtBetween((short)1, publishedAtFrom, publishedAtTo, pageRequest);
     }
 
     default Page<Post> findWaitingForModeration(Pageable pageable) {
-        return this.findAllByModeratedAtIsNullAndIsAllowedEquals((short) 0, pageable);
+        return this.findAllByIsAllowedAndModeratedAtIsNull((short)0, pageable);
     }
 
     default void delete(Post post) {
