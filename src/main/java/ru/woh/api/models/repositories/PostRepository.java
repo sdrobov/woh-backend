@@ -50,6 +50,9 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
 
     Page<Post> findAllByIsAllowedAndPublishedAtGreaterThanEqual(Short isAllowed, Date publishedAt, Pageable pageable);
 
+    @Query("SELECT p FROM Post p " +
+        "WHERE p.isAllowed = ?1 " +
+        "AND (p.publishedAt between ?2 and ?3 OR p.publishedAt IS NULL)")
     Page<Post> findAllByIsAllowedAndPublishedAtBetween(Short isAllowed, Date from, Date to, Pageable pageable);
 
     Page<Post> findAllByIsAllowedAndModeratedAtIsNull(Short isAllowed, Pageable pageable);
@@ -93,7 +96,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
             new Sort(Sort.Direction.ASC, "publishedAt")
         );
 
-        return this.findAllByIsAllowedAndPublishedAtGreaterThanEqual((short)1, new Date(), pageRequest);
+        return this.findAllByIsAllowedAndPublishedAtGreaterThanEqual((short) 1, new Date(), pageRequest);
     }
 
     default Page<Post> findWaitingForPublishingAt(Date publishedAtFrom, Date publishedAtTo, Pageable pageable) {
@@ -103,11 +106,14 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
             new Sort(Sort.Direction.ASC, "publishedAt")
         );
 
-        return this.findAllByIsAllowedAndPublishedAtBetween((short)1, publishedAtFrom, publishedAtTo, pageRequest);
+        return this.findAllByIsAllowedAndPublishedAtBetween((short) 1,
+            publishedAtFrom,
+            publishedAtTo,
+            pageRequest);
     }
 
     default Page<Post> findWaitingForModeration(Pageable pageable) {
-        return this.findAllByIsAllowedAndModeratedAtIsNull((short)0, pageable);
+        return this.findAllByIsAllowedAndModeratedAtIsNull((short) 0, pageable);
     }
 
     default void delete(Post post) {

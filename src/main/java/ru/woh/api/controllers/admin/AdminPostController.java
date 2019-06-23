@@ -23,7 +23,7 @@ public class AdminPostController {
     private final UserService userService;
     private final PostService postService;
     private final PostRepository postRepository;
-    private final static int defaultPageSize = 100;
+    private final static int defaultPageSize = 20;
 
     @Autowired
     public AdminPostController(

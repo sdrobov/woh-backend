@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class TagController {
     private final PostService postService;
     private final TagRepository tagRepository;
-    private static final int defaultPageSize = 5;
+    private static final int defaultPageSize = 20;
 
     @Autowired
     public TagController(PostService postService, TagRepository tagRepository) {

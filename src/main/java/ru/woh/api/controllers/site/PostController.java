@@ -23,7 +23,7 @@ public class PostController {
     private final PostService postService;
     private final UserService userService;
     private final PostLikesRepository postLikesRepository;
-    private static final int defaultPageSize = 5;
+    private static final int defaultPageSize = 20;
 
     @Autowired
     public PostController(

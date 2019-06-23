@@ -64,6 +64,7 @@ public class PostView {
         this.featuredImage = featuredImage;
         this.nearestImage = nearestImage;
         this.canBeNearest = canBeNearest;
+        this.rating = new RatingView();
     }
 
     public Long getId() {

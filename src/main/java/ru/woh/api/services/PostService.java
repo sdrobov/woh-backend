@@ -25,6 +25,7 @@ public class PostService {
     private final TagRepository tagRepository;
     private final CategoryRepository categoryRepository;
     private final PostCategoryRepository postCategoryRepository;
+    private final ImageStorageService imageStorageService;
 
     @Autowired
     public PostService(
@@ -34,8 +35,8 @@ public class PostService {
         PostLikesRepository postLikesRepository,
         TagRepository tagRepository,
         CategoryRepository categoryRepository,
-        PostCategoryRepository postCategoryRepository
-    ) {
+        PostCategoryRepository postCategoryRepository,
+        ImageStorageService imageStorageService) {
         this.postRepository = postRepository;
         this.userService = userService;
         this.commentService = commentService;
@@ -43,6 +44,7 @@ public class PostService {
         this.tagRepository = tagRepository;
         this.categoryRepository = categoryRepository;
         this.postCategoryRepository = postCategoryRepository;
+        this.imageStorageService = imageStorageService;
     }
 
     private Page<Post> list(Integer page, Integer limit) {
@@ -215,6 +217,46 @@ public class PostService {
                     return this.categoryRepository.save(category);
                 }))
                 .collect(Collectors.toSet()));
+        }
+
+        if (postView.getTeaserImage() != null) {
+            var teaserImage = ImageStorageService.fromBase64(postView.getTeaserImage());
+            if (teaserImage != null) {
+                var teaserImageId = this.imageStorageService.storeBufferedImage(teaserImage,
+                    "post-teaser-" + post.getId(),
+                    "jpeg",
+                    new HashMap<>());
+
+                post.setTeaserImage(teaserImageId);
+            }
+        }
+
+        if (postView.getFeaturedImage() != null) {
+            var featuredImage = ImageStorageService.fromBase64(postView.getFeaturedImage());
+            if (featuredImage != null) {
+                var featuredImageId = this.imageStorageService.storeBufferedImage(featuredImage,
+                    "post-featured-" + post.getId(),
+                    "jpeg",
+                    new HashMap<>());
+
+                post.setFeaturedImage(featuredImageId);
+            }
+        }
+
+        if (postView.getNearestImage() != null) {
+            var nearestImage = ImageStorageService.fromBase64(postView.getNearestImage());
+            if (nearestImage != null) {
+                var nearestImageId = this.imageStorageService.storeBufferedImage(nearestImage,
+                    "post-nearest-" + post.getId(),
+                    "jpeg",
+                    new HashMap<>());
+
+                post.setNearestImage(nearestImageId);
+            }
+        }
+
+        if (postView.getPublishedAt() != null) {
+            post.setPublishedAt(postView.getPublishedAt());
         }
 
         return post;

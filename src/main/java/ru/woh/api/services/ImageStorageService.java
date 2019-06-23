@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
+import javax.xml.bind.DatatypeConverter;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -85,6 +86,22 @@ public class ImageStorageService {
 
         if (image != null) {
             this.gridFsService.delete(image);
+        }
+    }
+
+    static BufferedImage fromBase64(String base64Encoded) {
+        var encoded = base64Encoded.indexOf(',') > 0 ? base64Encoded.split(",")[1] : base64Encoded;
+
+        var bytes = DatatypeConverter.parseBase64Binary(encoded);
+        var bais = new ByteArrayInputStream(bytes);
+
+        try {
+            var image = ImageIO.read(bais);
+            bais.close();
+
+            return image;
+        } catch (IOException e) {
+            return null;
         }
     }
 }
