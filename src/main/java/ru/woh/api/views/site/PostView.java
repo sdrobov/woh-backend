@@ -1,6 +1,7 @@
 package ru.woh.api.views.site;
 
 import ru.woh.api.models.Category;
+import ru.woh.api.models.Source;
 import ru.woh.api.models.Tag;
 import ru.woh.api.models.User;
 
@@ -14,7 +15,7 @@ public class PostView {
     private String title;
     protected String text;
     private String announce;
-    protected String source;
+    protected SourceView source;
     protected Date createdAt;
     private Date publishedAt;
     private List<CommentView> comments;
@@ -35,7 +36,7 @@ public class PostView {
         Long id,
         String title,
         String text,
-        String source,
+        Source source,
         Date createdAt,
         Date publishedAt,
         Set<Tag> tags,
@@ -52,7 +53,7 @@ public class PostView {
             .sorted()
             .collect(Collectors.toList()) : null;
         this.announce = announce;
-        this.source = source;
+        this.source = source != null ? SourceView.fromSource(source) : null;
         this.createdAt = createdAt;
         this.publishedAt = publishedAt;
         this.tags = tags != null ? tags.stream()
@@ -83,7 +84,7 @@ public class PostView {
         return this.announce;
     }
 
-    public String getSource() {
+    public SourceView getSource() {
         return this.source;
     }
 
@@ -131,7 +132,7 @@ public class PostView {
         this.announce = announce;
     }
 
-    public void setSource(String source) {
+    public void setSource(SourceView source) {
         this.source = source;
     }
 

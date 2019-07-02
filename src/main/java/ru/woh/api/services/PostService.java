@@ -26,6 +26,7 @@ public class PostService {
     private final CategoryRepository categoryRepository;
     private final PostCategoryRepository postCategoryRepository;
     private final ImageStorageService imageStorageService;
+    private final SourceRepository sourceRepository;
 
     @Autowired
     public PostService(
@@ -36,7 +37,7 @@ public class PostService {
         TagRepository tagRepository,
         CategoryRepository categoryRepository,
         PostCategoryRepository postCategoryRepository,
-        ImageStorageService imageStorageService) {
+        ImageStorageService imageStorageService, SourceRepository sourceRepository) {
         this.postRepository = postRepository;
         this.userService = userService;
         this.commentService = commentService;
@@ -45,6 +46,7 @@ public class PostService {
         this.categoryRepository = categoryRepository;
         this.postCategoryRepository = postCategoryRepository;
         this.imageStorageService = imageStorageService;
+        this.sourceRepository = sourceRepository;
     }
 
     private Page<Post> list(Integer page, Integer limit) {
@@ -186,9 +188,16 @@ public class PostService {
     }
 
     public Post updateWithView(Post post, PostView postView) {
+        var source = this.sourceRepository.findById(postView.getSource().getId())
+            .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, String.format(
+                "source #%d not found",
+                postView.getSource().getId()
+            )));
+
         post.setTitle(postView.getTitle());
         post.setText(postView.getText());
-        post.setSource(postView.getSource());
+        post.setSource(source.getName());
+        post.setSourceSite(source);
         post.setAnnounce(postView.getAnnounce());
 
         if (postView.getTags() != null) {
@@ -227,7 +236,7 @@ public class PostService {
                     "jpeg",
                     new HashMap<>());
 
-                post.setTeaserImage(teaserImageId);
+                post.setTeaserImage(String.format("/image/%s", teaserImageId));
             }
         }
 
@@ -239,7 +248,7 @@ public class PostService {
                     "jpeg",
                     new HashMap<>());
 
-                post.setFeaturedImage(featuredImageId);
+                post.setFeaturedImage(String.format("/image/%s", featuredImageId));
             }
         }
 
@@ -251,7 +260,7 @@ public class PostService {
                     "jpeg",
                     new HashMap<>());
 
-                post.setNearestImage(nearestImageId);
+                post.setNearestImage(String.format("/image/%s", nearestImageId));
             }
         }
 

@@ -1,6 +1,7 @@
 package ru.woh.api.views.admin;
 
 import ru.woh.api.models.Category;
+import ru.woh.api.models.Source;
 import ru.woh.api.models.Tag;
 import ru.woh.api.models.User;
 import ru.woh.api.views.site.PostView;
@@ -20,7 +21,7 @@ public class AdminPostView extends PostView {
         Long id,
         String title,
         String text,
-        String source,
+        Source source,
         Date createdAt,
         Date publishedAt,
         Set<Tag> tags,
