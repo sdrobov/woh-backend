@@ -188,17 +188,20 @@ public class PostService {
     }
 
     public Post updateWithView(Post post, PostView postView) {
-        var source = this.sourceRepository.findById(postView.getSource().getId())
-            .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, String.format(
-                "source #%d not found",
-                postView.getSource().getId()
-            )));
-
         post.setTitle(postView.getTitle());
         post.setText(postView.getText());
-        post.setSource(source.getName());
-        post.setSourceSite(source);
         post.setAnnounce(postView.getAnnounce());
+
+        if (postView.getSource() != null) {
+            var source = this.sourceRepository.findById(postView.getSource().getId())
+                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, String.format(
+                    "source #%d not found",
+                    postView.getSource().getId()
+                )));
+
+            post.setSource(source.getName());
+            post.setSourceSite(source);
+        }
 
         if (postView.getTags() != null) {
             post.setTags(postView.getTags()
