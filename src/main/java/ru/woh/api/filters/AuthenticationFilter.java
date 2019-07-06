@@ -11,11 +11,11 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
 
-    public JWTAuthenticationFilter(
+    public AuthenticationFilter(
         UserService userService, AuthenticationManager authenticationManager
     ) {
         this.userService = userService;

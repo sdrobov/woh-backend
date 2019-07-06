@@ -10,11 +10,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import ru.woh.api.filters.JWTAuthenticationFilter;
-import ru.woh.api.filters.JWTAuthorizationFilter;
+import ru.woh.api.filters.AuthenticationFilter;
+import ru.woh.api.filters.AuthorizationFilter;
+import ru.woh.api.filters.CorsFilter;
 import ru.woh.api.services.UserService;
 
 @EnableWebSecurity
@@ -38,18 +40,22 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Bean
+    CorsFilter corsFilter() {
+        return new CorsFilter();
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf()
-            .disable()
+        http.addFilterBefore(corsFilter(), SessionManagementFilter.class)
+            .csrf().disable()
             .authorizeRequests()
             .antMatchers(HttpMethod.POST, "/user/login", "/user/register").permitAll()
             .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-            .anyRequest()
-            .hasAnyRole("ANONYMOUS", "USER", "MODER", "ADMIN")
+            .anyRequest().hasAnyRole("ANONYMOUS", "USER", "MODER", "ADMIN")
             .and()
-            .addFilter(new JWTAuthenticationFilter(userService, authenticationManager()))
-            .addFilter(new JWTAuthorizationFilter(authenticationManager(), userService))
+            .addFilter(new AuthenticationFilter(userService, authenticationManager()))
+            .addFilter(new AuthorizationFilter(authenticationManager(), userService))
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         ;

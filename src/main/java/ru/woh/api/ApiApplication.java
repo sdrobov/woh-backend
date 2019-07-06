@@ -16,7 +16,6 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -35,18 +34,6 @@ public class ApiApplication {
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry
-                    .addMapping("/**")
-                    .allowedOrigins("*")
-                    .allowCredentials(true)
-                    .allowedHeaders("*")
-                    .allowedMethods("*")
-                    .exposedHeaders("Content-Length", "Content-Range")
-                    .maxAge(1728000);
-            }
-
             @Override
             public void configurePathMatch(PathMatchConfigurer configurer) {
                 configurer.setUseTrailingSlashMatch(false);
