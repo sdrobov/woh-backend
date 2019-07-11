@@ -18,4 +18,10 @@ public interface TeaserRepository extends PagingAndSortingRepository<Teaser, Tea
     List<Teaser> findActualFeatured(Date now);
 
     List<Teaser> findAllByPost(Post post);
+
+    List<Teaser> findAllByFromIsGreaterThanEqual(Date from);
+
+    default List<Teaser> findFromFuture() {
+        return this.findAllByFromIsGreaterThanEqual(new Date());
+    }
 }

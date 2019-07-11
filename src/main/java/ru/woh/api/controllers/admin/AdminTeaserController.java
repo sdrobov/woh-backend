@@ -4,21 +4,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import ru.woh.api.models.Post;
 import ru.woh.api.models.Role;
 import ru.woh.api.models.Teaser;
 import ru.woh.api.models.repositories.PostRepository;
 import ru.woh.api.models.repositories.TeaserRepository;
-import ru.woh.api.views.admin.TeaserListView;
+import ru.woh.api.views.admin.AdminPostView;
 import ru.woh.api.views.admin.TeaserView;
+import ru.woh.api.views.site.PostListView;
+import ru.woh.api.views.site.PostView;
 
 import javax.annotation.security.RolesAllowed;
-import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +36,7 @@ public class AdminTeaserController {
 
     @PostMapping({"/teasers", "/teasers/"})
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
-    public TeaserView add(TeaserView teaserView) {
+    public PostView add(TeaserView teaserView) {
         Post post = this.postRepository.findById(teaserView.getPost().getId())
             .orElseThrow(() -> new HttpClientErrorException(
                 HttpStatus.NOT_FOUND, String.format("Post #%d not found", teaserView.getPost().getId())));
@@ -50,7 +48,7 @@ public class AdminTeaserController {
         teaser.setPost(post);
         teaser.autoCreatePk();
 
-        return this.teaserRepository.save(teaser).adminView();
+        return this.teaserRepository.save(teaser).getPost().adminView();
     }
 
     @PostMapping({"/teasers/delete", "/teasers/delete/"})
@@ -73,29 +71,44 @@ public class AdminTeaserController {
 
     @GetMapping({"/teasers/all", "/teasers/all/"})
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
-    public TeaserListView all(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public PostListView all(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         var result = this.teaserRepository.findAll(PageRequest.of(page, 20));
 
-        var teaserListView = new TeaserListView();
-        teaserListView.setCurrentPage(page);
-        teaserListView.setTeasers(result.get().map(Teaser::adminView).collect(Collectors.toList()));
-        teaserListView.setTotalCount(result.getTotalElements());
-        teaserListView.setTotalPages(result.getTotalPages());
+        var postListView = new PostListView();
+        postListView.setCurrentPage(page);
+        postListView.setPosts(
+            result.get()
+                .map(Teaser::getPost)
+                .map(Post::adminView)
+                .collect(Collectors.toList())
+        );
+        postListView.setTotalCount(result.getTotalElements());
+        postListView.setTotalPages(result.getTotalPages());
 
-        return teaserListView;
+        return postListView;
     }
 
     @GetMapping({"/teasers/{id:[0-9]*}", "/teasers/{id:[0-9]*}/"})
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
-    public List<TeaserView> byPostId(@PathParam("id") Long id) {
+    public List<AdminPostView> byPostId(@PathVariable("id") Long id) {
         var post = this.postRepository.findById(id)
             .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND,
                 String.format("Post #%d not found", id)));
 
-        return this.teaserRepository
-            .findAllByPost(post)
+        return this.teaserRepository.findAllByPost(post)
             .stream()
-            .map(Teaser::adminView)
+            .map(Teaser::getPost)
+            .map(Post::adminView)
+            .collect(Collectors.toList());
+    }
+
+    @GetMapping({"/teasers/future", "/teasers/future/"})
+    @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
+    public List<AdminPostView> future() {
+        return this.teaserRepository.findFromFuture()
+            .stream()
+            .map(Teaser::getPost)
+            .map(Post::adminView)
             .collect(Collectors.toList());
     }
 }

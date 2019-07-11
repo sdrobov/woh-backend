@@ -1,7 +1,5 @@
 package ru.woh.api.models;
 
-import ru.woh.api.views.admin.TeaserView;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -99,10 +97,6 @@ public class Teaser implements Serializable {
 
     @Column(name = "is_teaser", insertable = false, updatable = false)
     private Short isTeaser;
-
-    public TeaserView adminView() {
-        return new TeaserView(this.from, this.to, this.post, this.isTeaser == 1);
-    }
 
     public void autoCreatePk() {
         this.pk = new TeaserPK(this.from, this.to, this.post.getId(), this.isTeaser);
