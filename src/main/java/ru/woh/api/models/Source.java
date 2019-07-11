@@ -37,7 +37,7 @@ public class Source implements Serializable {
     @Column(name = "is_locked")
     private Integer isLocked;
 
-    @OneToMany(mappedBy = "sourceSite", fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
+    @OneToMany(mappedBy = "sourceSite")
     private Set<Post> posts;
 
     public Source() {

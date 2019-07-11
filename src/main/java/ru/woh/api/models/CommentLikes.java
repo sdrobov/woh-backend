@@ -7,41 +7,6 @@ import java.util.Objects;
 @Entity(name = "CommentLikes")
 @Table(name = "comment_likes")
 public class CommentLikes implements Serializable {
-    public CommentLikes() {
-    }
-
-    public CommentLikesPK getPk() {
-        return this.pk;
-    }
-
-    public Comment getComment() {
-        return this.comment;
-    }
-
-    public User getUser() {
-        return this.user;
-    }
-
-    public Boolean getIsLike() {
-        return this.isLike;
-    }
-
-    public void setPk(CommentLikesPK pk) {
-        this.pk = pk;
-    }
-
-    public void setComment(Comment comment) {
-        this.comment = comment;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public void setIsLike(Boolean isLike) {
-        this.isLike = isLike;
-    }
-
     @Embeddable
     public static class CommentLikesPK implements Serializable {
         @Column(name = "comment_id", nullable = false)
@@ -95,11 +60,11 @@ public class CommentLikes implements Serializable {
     @Column(unique = true)
     private CommentLikesPK pk;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "comment_id", insertable = false, updatable = false)
     private Comment comment;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 
@@ -110,4 +75,57 @@ public class CommentLikes implements Serializable {
         this.pk = pk;
         this.isLike = isLike;
     }
+
+    public CommentLikes() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        CommentLikes that = (CommentLikes) o;
+        return pk.equals(that.pk);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pk);
+    }
+
+    public CommentLikesPK getPk() {
+        return this.pk;
+    }
+
+    public Comment getComment() {
+        return this.comment;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public Boolean getIsLike() {
+        return this.isLike;
+    }
+
+    public void setPk(CommentLikesPK pk) {
+        this.pk = pk;
+    }
+
+    public void setComment(Comment comment) {
+        this.comment = comment;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setIsLike(Boolean isLike) {
+        this.isLike = isLike;
+    }
+
 }

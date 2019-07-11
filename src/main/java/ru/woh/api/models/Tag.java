@@ -16,13 +16,13 @@ public class Tag implements Serializable {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "tags_ref_users",
         joinColumns = {@JoinColumn(name = "tag_id")},
         inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private Set<User> users = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "tags_ref_posts",
         joinColumns = {@JoinColumn(name = "tag_id")},
         inverseJoinColumns = {@JoinColumn(name = "post_id")})

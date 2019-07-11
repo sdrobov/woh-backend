@@ -34,7 +34,7 @@ public class PostPreview {
     @Temporal(TemporalType.TIMESTAMP)
     private Date deletedAt;
 
-    @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "source_id")
     private Source source;
 

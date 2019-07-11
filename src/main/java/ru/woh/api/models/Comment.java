@@ -47,14 +47,14 @@ public class Comment implements Serializable {
 
     private Long rating;
 
-    @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "reply_comment_id")
     private Comment replyTo;
 
-    @OneToMany(mappedBy = "replyTo", cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "replyTo")
     private Set<Comment> replies;
 
-    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "comment")
     private Set<CommentLikes> likes;
 
     public Comment() {

@@ -80,31 +80,31 @@ public class Post implements Serializable {
     @JoinColumn(name = "proposed_by")
     private User proposedBy;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post")
     private Set<Comment> comments = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.DETACH)
+    @ManyToMany
     @JoinTable(name = "tags_ref_posts",
         joinColumns = { @JoinColumn(name = "post_id") },
         inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.DETACH)
+    @ManyToMany
     @JoinTable(name = "categories_ref_posts",
         joinColumns = { @JoinColumn(name = "post_id") },
         inverseJoinColumns = { @JoinColumn(name = "category_id") })
     private Set<Category> categories = new HashSet<>();
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "post")
     private Set<PostLikes> likes;
 
     private Long rating;
 
-    @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "source_id")
     private Source sourceSite;
 
-    @OneToMany(cascade = CascadeType.DETACH, fetch = FetchType.LAZY, mappedBy = "post")
+    @OneToMany(mappedBy = "post")
     private List<Teaser> teasers;
 
     public Post() {

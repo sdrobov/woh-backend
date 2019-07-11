@@ -147,4 +147,21 @@ public class Teaser implements Serializable {
     public void setPk(TeaserPK pk) {
         this.pk = pk;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Teaser teaser = (Teaser) o;
+        return pk.equals(teaser.pk);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pk);
+    }
 }

@@ -7,38 +7,6 @@ import java.util.Objects;
 @Entity(name = "PostLikes")
 @Table(name = "post_likes")
 public class PostLikes implements Serializable {
-    public PostLikesPK getPk() {
-        return this.pk;
-    }
-
-    public Post getPost() {
-        return this.post;
-    }
-
-    public User getUser() {
-        return this.user;
-    }
-
-    public Boolean getIsLike() {
-        return this.isLike;
-    }
-
-    public void setPk(PostLikesPK pk) {
-        this.pk = pk;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public void setIsLike(Boolean isLike) {
-        this.isLike = isLike;
-    }
-
     @Embeddable
     public static class PostLikesPK implements Serializable {
         @Column(name = "post_id", nullable = false)
@@ -93,11 +61,11 @@ public class PostLikes implements Serializable {
     @Column(unique = true)
     private PostLikesPK pk;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "post_id", insertable = false, updatable = false)
     private Post post;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 
@@ -111,5 +79,54 @@ public class PostLikes implements Serializable {
     public PostLikes(PostLikesPK pk, Boolean isLike) {
         this.pk = pk;
         this.isLike = isLike;
+    }
+
+    public PostLikesPK getPk() {
+        return this.pk;
+    }
+
+    public Post getPost() {
+        return this.post;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public Boolean getIsLike() {
+        return this.isLike;
+    }
+
+    public void setPk(PostLikesPK pk) {
+        this.pk = pk;
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setIsLike(Boolean isLike) {
+        this.isLike = isLike;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        PostLikes postLikes = (PostLikes) o;
+        return pk.equals(postLikes.pk);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pk);
     }
 }
