@@ -1,9 +1,6 @@
 package ru.woh.api.views.admin;
 
-import ru.woh.api.models.Category;
-import ru.woh.api.models.Source;
-import ru.woh.api.models.Tag;
-import ru.woh.api.models.User;
+import ru.woh.api.models.*;
 import ru.woh.api.views.site.PostView;
 import ru.woh.api.views.site.UserView;
 
@@ -17,40 +14,39 @@ public class AdminPostView extends PostView {
     private Boolean isAllowed;
     private Boolean isModerated;
 
-    public AdminPostView(
-        Long id,
-        String title,
-        String text,
-        Source source,
-        Date createdAt,
-        Date publishedAt,
-        Set<Tag> tags,
-        Set<Category> categories, String announce,
-        User proposedBy,
-        String teaserImage,
-        String featuredImage,
-        String nearestImage,
-        Boolean canBeNearest,
-        Date updatedAt,
-        Date moderatedAt,
-        User moderator,
-        Boolean isAllowed
-    ) {
-        super(
-            id,
+    public AdminPostView(Long id,
+                         String title,
+                         String text,
+                         Source source,
+                         Date createdAt,
+                         Date publishedAt,
+                         Set<Tag> tags,
+                         Set<Category> categories,
+                         String announce,
+                         User proposedBy,
+                         String teaserImage,
+                         String featuredImage,
+                         String nearestImage,
+                         Boolean canBeNearest,
+                         Teaser teaser,
+                         Date updatedAt,
+                         Date moderatedAt,
+                         User moderator, Boolean isAllowed) {
+        super(id,
             title,
             text,
             source,
             createdAt,
             publishedAt,
             tags,
-            categories, announce,
+            categories,
+            announce,
             proposedBy,
             teaserImage,
             featuredImage,
             nearestImage,
-            canBeNearest
-        );
+            canBeNearest,
+            teaser);
         this.updatedAt = updatedAt;
         this.moderatedAt = moderatedAt;
         this.moderator = moderator != null ? moderator.view() : null;

@@ -12,6 +12,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity(name = "Post")
@@ -103,6 +104,9 @@ public class Post implements Serializable {
     @JoinColumn(name = "source_id")
     private Source sourceSite;
 
+    @OneToMany(cascade = CascadeType.DETACH, fetch = FetchType.LAZY, mappedBy = "post")
+    private List<Teaser> teasers;
+
     public Post() {
     }
 
@@ -120,7 +124,8 @@ public class Post implements Serializable {
             this.teaserImage,
             this.featuredImage,
             this.nearestImage,
-            this.canBeNearest == 1
+            this.canBeNearest == 1,
+            this.teasers.isEmpty() ? null : this.teasers.get(this.teasers.size() - 1)
         );
     }
 
@@ -140,6 +145,7 @@ public class Post implements Serializable {
             this.featuredImage,
             this.nearestImage,
             this.canBeNearest == 1,
+            this.teasers.isEmpty() ? null : this.teasers.get(this.teasers.size() - 1),
             this.updatedAt,
             this.moderatedAt,
             this.moderator,
@@ -346,5 +352,13 @@ public class Post implements Serializable {
 
     public void setCategories(Set<Category> categories) {
         this.categories = categories;
+    }
+
+    public List<Teaser> getTeasers() {
+        return teasers;
+    }
+
+    public void setTeasers(List<Teaser> teasers) {
+        this.teasers = teasers;
     }
 }

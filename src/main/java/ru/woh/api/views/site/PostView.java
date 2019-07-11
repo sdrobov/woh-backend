@@ -1,9 +1,6 @@
 package ru.woh.api.views.site;
 
-import ru.woh.api.models.Category;
-import ru.woh.api.models.Source;
-import ru.woh.api.models.Tag;
-import ru.woh.api.models.User;
+import ru.woh.api.models.*;
 
 import java.util.Date;
 import java.util.List;
@@ -11,6 +8,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PostView {
+    public enum PostViewType {
+        TYPE_NORMAL,
+        TYPE_TEASER,
+        TYPE_FEATURE
+    }
+
     protected Long id;
     private String title;
     protected String text;
@@ -28,6 +31,10 @@ public class PostView {
     private String featuredImage;
     private String nearestImage;
     private Boolean canBeNearest;
+    private PostViewType type;
+    private Date teaserFrom;
+    private Date teaserTo;
+    private double weight;
 
     public PostView() {
     }
@@ -43,8 +50,7 @@ public class PostView {
         Set<Category> categories, String announce,
         User proposedBy,
         String teaserImage,
-        String featuredImage, String nearestImage, Boolean canBeNearest
-    ) {
+        String featuredImage, String nearestImage, Boolean canBeNearest, Teaser teaser) {
         this.id = id;
         this.title = title;
         this.text = text;
@@ -65,6 +71,16 @@ public class PostView {
         this.featuredImage = featuredImage;
         this.nearestImage = nearestImage;
         this.canBeNearest = canBeNearest;
+
+        if (teaser != null) {
+            this.type = teaser.getIsTeaser() == 1 ? PostViewType.TYPE_TEASER : PostViewType.TYPE_FEATURE;
+            this.teaserFrom = teaser.getFrom();
+            this.teaserTo = teaser.getTo();
+        } else {
+            this.type = PostViewType.TYPE_NORMAL;
+        }
+
+        this.weight = 1.0;
         this.rating = new RatingView();
     }
 
@@ -202,5 +218,37 @@ public class PostView {
 
     public void setCategories(List<String> categories) {
         this.categories = categories;
+    }
+
+    public PostViewType getType() {
+        return type;
+    }
+
+    public void setType(PostViewType type) {
+        this.type = type;
+    }
+
+    public Date getTeaserFrom() {
+        return teaserFrom;
+    }
+
+    public void setTeaserFrom(Date teaserFrom) {
+        this.teaserFrom = teaserFrom;
+    }
+
+    public Date getTeaserTo() {
+        return teaserTo;
+    }
+
+    public void setTeaserTo(Date teaserTo) {
+        this.teaserTo = teaserTo;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
     }
 }
