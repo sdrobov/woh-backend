@@ -36,15 +36,15 @@ public class AdminTeaserController {
 
     @PostMapping({"/teasers", "/teasers/"})
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
-    public PostView add(TeaserView teaserView) {
-        Post post = this.postRepository.findById(teaserView.getPost().getId())
+    public PostView add(@RequestBody TeaserView teaserView) {
+        Post post = this.postRepository.findById(teaserView.getPost())
             .orElseThrow(() -> new HttpClientErrorException(
-                HttpStatus.NOT_FOUND, String.format("Post #%d not found", teaserView.getPost().getId())));
+                HttpStatus.NOT_FOUND, String.format("Post #%d not found", teaserView.getPost())));
 
         Teaser teaser = new Teaser();
         teaser.setFrom(teaserView.getFrom());
         teaser.setTo(teaserView.getTo());
-        teaser.setIsTeaser(teaserView.getTeaser() ? (short) 1 : 0);
+        teaser.setIsTeaser(teaserView.getIsTeaser() ? (short) 1 : 0);
         teaser.setPost(post);
         teaser.autoCreatePk();
 
@@ -53,12 +53,12 @@ public class AdminTeaserController {
 
     @PostMapping({"/teasers/delete", "/teasers/delete/"})
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
-    public ResponseEntity delete(TeaserView teaserView) {
+    public ResponseEntity delete(@RequestBody TeaserView teaserView) {
         Teaser.TeaserPK teaserPK = new Teaser.TeaserPK(
             teaserView.getFrom(),
             teaserView.getTo(),
-            teaserView.getPost().getId(),
-            teaserView.getTeaser() ? (short) 1 : 0
+            teaserView.getPost(),
+            teaserView.getIsTeaser() ? (short) 1 : 0
         );
 
         Teaser teaser = this.teaserRepository.findById(teaserPK)

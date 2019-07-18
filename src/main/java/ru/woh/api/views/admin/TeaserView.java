@@ -5,10 +5,12 @@ import java.util.Date;
 public class TeaserView {
     private Date from;
     private Date to;
-    private AdminPostView post;
-    private Boolean isTeaser;
+    private long post;
+    private boolean isTeaser;
 
-    public TeaserView(Date from, Date to, AdminPostView post, Boolean isTeaser) {
+    public TeaserView() {}
+
+    public TeaserView(Date from, Date to, long post, boolean isTeaser) {
         this.from = from;
         this.to = to;
         this.post = post;
@@ -31,19 +33,19 @@ public class TeaserView {
         this.to = to;
     }
 
-    public AdminPostView getPost() {
+    public long getPost() {
         return post;
     }
 
-    public void setPost(AdminPostView post) {
+    public void setPost(long post) {
         this.post = post;
     }
 
-    public Boolean getTeaser() {
+    public boolean getIsTeaser() {
         return isTeaser;
     }
 
-    public void setTeaser(Boolean teaser) {
+    public void setIsTeaser(boolean teaser) {
         isTeaser = teaser;
     }
 }
