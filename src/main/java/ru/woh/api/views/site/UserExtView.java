@@ -1,5 +1,7 @@
 package ru.woh.api.views.site;
 
+import java.util.Date;
+
 public class UserExtView extends UserView {
     private String token;
 
@@ -13,9 +15,10 @@ public class UserExtView extends UserView {
         String avatar,
         String role,
         String annotation,
+        Date createdAt,
         String token
     ) {
-        super(id, email, name, avatar, role, annotation);
+        super(id, email, name, avatar, role, annotation, createdAt);
         this.token = token;
     }
 

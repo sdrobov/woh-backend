@@ -1,7 +1,5 @@
 package ru.woh.api.views.admin;
 
-import ru.woh.api.models.Post;
-
 import java.util.Date;
 
 public class TeaserView {
@@ -10,14 +8,12 @@ public class TeaserView {
     private AdminPostView post;
     private Boolean isTeaser;
 
-    public TeaserView(Date from, Date to, Post post, Boolean isTeaser) {
+    public TeaserView(Date from, Date to, AdminPostView post, Boolean isTeaser) {
         this.from = from;
         this.to = to;
-        this.post = post.adminView();
+        this.post = post;
         this.isTeaser = isTeaser;
     }
-
-
 
     public Date getFrom() {
         return from;

@@ -1,5 +1,7 @@
 package ru.woh.api.views.site;
 
+import java.util.Date;
+
 public class UserView {
     protected Long id;
     private String email;
@@ -7,6 +9,7 @@ public class UserView {
     private String avatar;
     protected String role;
     protected String annotation;
+    private Date createdAt;
 
     public UserView(
         Long id,
@@ -14,14 +17,15 @@ public class UserView {
         String name,
         String avatar,
         String role,
-        String annotation
-    ) {
+        String annotation,
+        Date createdAt) {
         this.id = id;
         this.email = email;
         this.name = name;
         this.avatar = avatar;
         this.role = role;
         this.annotation = annotation;
+        this.createdAt = createdAt;
     }
 
     public UserView() {
@@ -73,5 +77,13 @@ public class UserView {
 
     public void setAnnotation(String annotation) {
         this.annotation = annotation;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 }

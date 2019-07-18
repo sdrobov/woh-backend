@@ -98,8 +98,8 @@ public class User implements Serializable {
             this.name,
             this.avatar,
             this.getRoleName(),
-            this.annotation
-        );
+            this.annotation,
+            this.createdAt);
     }
 
     private Boolean isAdmin() {

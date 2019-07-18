@@ -80,6 +80,7 @@ public class UserController {
             user.getAvatar(),
             user.getRoleName(),
             user.getAnnotation(),
+            user.getCreatedAt(),
             user.getToken()
         );
     }
