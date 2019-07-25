@@ -10,11 +10,11 @@ import java.util.Objects;
 public class Teaser implements Serializable {
     @Embeddable
     public static class TeaserPK implements Serializable {
-        @Column(name = "from", nullable = false)
+        @Column(name = "`from`", nullable = false)
         @Temporal(TemporalType.TIMESTAMP)
         private Date from;
 
-        @Column(name = "to", nullable = false)
+        @Column(name = "`to`", nullable = false)
         @Temporal(TemporalType.TIMESTAMP)
         private Date to;
 
@@ -90,10 +90,10 @@ public class Teaser implements Serializable {
     @Column(unique = true)
     private TeaserPK pk;
 
-    @Column(insertable = false, updatable = false)
+    @Column(name = "`from`", insertable = false, updatable = false)
     private Date from;
 
-    @Column(insertable = false, updatable = false)
+    @Column(name = "`to`", insertable = false, updatable = false)
     private Date to;
 
     @ManyToOne

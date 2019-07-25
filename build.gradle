@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.6.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE")
     }
 }
 
@@ -34,22 +34,22 @@ repositories {
 }
 
 dependencies {
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: '2.1.6.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.1.6.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.1.6.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: '2.1.6.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '2.1.6.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.1.6.RELEASE'
-    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.1.6.RELEASE') {
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: '2.1.0.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.1.0.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.1.0.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: '2.1.0.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '2.1.0.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.1.0.RELEASE'
+    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.1.0.RELEASE') {
         exclude module: 'spring-boot-starter-tomcat'
     }
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-jetty'
-    compile group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '2.1.6.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '2.1.6.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '2.1.0.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '2.1.0.RELEASE'
     compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.1'
     compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
     compile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
-    runtime group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.4.2'
-    runtime group: 'org.springframework.boot', name: 'spring-boot-properties-migrator', version: '2.1.6.RELEASE'
+    runtime group: 'mysql', name: 'mysql-connector-java', version: '8.0.13'
+    runtime group: 'org.springframework.boot', name: 'spring-boot-properties-migrator', version: '2.1.0.RELEASE'
     runtime group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '2.3.1'
 }
