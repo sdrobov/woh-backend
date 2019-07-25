@@ -10,7 +10,12 @@ import java.util.Objects;
 public class Teaser implements Serializable {
     @Embeddable
     public static class TeaserPK implements Serializable {
+        @Column(name = "from", nullable = false)
+        @Temporal(TemporalType.TIMESTAMP)
         private Date from;
+
+        @Column(name = "to", nullable = false)
+        @Temporal(TemporalType.TIMESTAMP)
         private Date to;
 
         @Column(name = "post_id", nullable = false)
