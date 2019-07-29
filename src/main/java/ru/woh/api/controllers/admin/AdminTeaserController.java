@@ -1,6 +1,7 @@
 package ru.woh.api.controllers.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,18 +54,25 @@ public class AdminTeaserController {
 
     @PostMapping({"/teasers/delete", "/teasers/delete/"})
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
-    public ResponseEntity delete(@RequestBody TeaserView teaserView) {
+    public ResponseEntity delete(@RequestBody AdminPostView postView) {
+        if (postView.getType() == null || postView.getType() == PostView.PostViewType.TYPE_NORMAL) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        short isTeaser = (short) (postView.getType() == PostView.PostViewType.TYPE_TEASER ? 1 : 0);
+
         Teaser.TeaserPK teaserPK = new Teaser.TeaserPK(
-            teaserView.getFrom(),
-            teaserView.getTo(),
-            teaserView.getPost(),
-            teaserView.getIsTeaser() ? (short) 1 : 0
+            postView.getTeaserFrom(),
+            postView.getTeaserTo(),
+            postView.getId(),
+            isTeaser
         );
 
-        Teaser teaser = this.teaserRepository.findById(teaserPK)
-            .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
-
-        this.teaserRepository.delete(teaser);
+        try {
+            this.teaserRepository.deleteById(teaserPK);
+        } catch (EmptyResultDataAccessException e) {
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Teaser with such criteria not found");
+        }
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }

@@ -14,6 +14,9 @@ public class AdminPostView extends PostView {
     private Boolean isAllowed;
     private Boolean isModerated;
 
+    public AdminPostView() {
+    }
+
     public AdminPostView(Long id,
                          String title,
                          String text,
