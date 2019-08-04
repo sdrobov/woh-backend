@@ -92,10 +92,9 @@ public class CommentController {
     public void delete(@PathVariable("id") Long id) {
         Comment comment = this.commentService.one(id);
 
-        if (!this.userService.getCurrenttUser().isModer()) {
-            if (!Objects.equals(comment.getUser().getId(), this.userService.getCurrenttUser().getId())) {
-                throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "you can delete only your own comments!");
-            }
+        if (!this.userService.getCurrenttUser().isModer()
+            && !Objects.equals(comment.getUser().getId(), this.userService.getCurrenttUser().getId())) {
+            throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "you can delete only your own comments!");
         }
 
         this.commentService.delete(comment);

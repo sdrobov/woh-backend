@@ -1,7 +1,6 @@
 package ru.woh.api.models;
 
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -14,7 +13,6 @@ import java.util.Set;
 
 @Entity(name = "Comment")
 @Table(name = "comment")
-@Where(clause = "deleted_at IS NULL")
 public class Comment implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,7 +67,7 @@ public class Comment implements Serializable {
     }
 
     public String getText() {
-        return this.text;
+        return this.deletedAt == null ? this.text : "Сообщение удалено";
     }
 
     public Date getCreatedAt() {

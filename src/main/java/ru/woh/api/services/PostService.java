@@ -156,7 +156,7 @@ public class PostService {
 
     private PostView makeViewWithRating(Post post) {
         User user = this.userService.getCurrenttUser();
-        Boolean isModer = user != null && user.isModer();
+        boolean isModer = user != null && user.isModer();
         PostView view = isModer ? post.adminView() : post.view();
         RatingView rating = new RatingView();
 
