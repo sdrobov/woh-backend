@@ -15,7 +15,7 @@ public interface CommentRepository extends PagingAndSortingRepository<Comment, L
     @Query("SELECT c FROM Comment c WHERE post = ?1 AND deletedAt IS NULL")
     Page<Comment> findAllByPost(Post post, Pageable pageable);
 
-    @Query("SELECT COUNT(c) FROM Comment c WHERE deletedAt IS NULL")
+    @Query("SELECT COUNT(c) FROM Comment c WHERE post = ?1 AND deletedAt IS NULL")
     Long countByPost(Post post);
 
     default void delete(Comment comment) {
