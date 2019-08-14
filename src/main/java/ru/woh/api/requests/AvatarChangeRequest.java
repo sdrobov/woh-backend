@@ -1,15 +1,12 @@
 package ru.woh.api.requests;
 
-import org.springframework.web.multipart.MultipartFile;
+import ru.woh.api.services.ImageStorageService;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 
 public class AvatarChangeRequest {
-    private MultipartFile file;
+    private String avatar;
     private Integer x1;
     private Integer y1;
     private Integer x2;
@@ -21,7 +18,7 @@ public class AvatarChangeRequest {
     }
 
     public Boolean isValid() {
-        return !this.file.isEmpty()
+        return !this.avatar.isEmpty()
             && this.x1 != null && this.x1 > 0
             && this.y1 != null && this.y1 > 0
             && this.x2 != null && this.x2 > 0
@@ -30,8 +27,12 @@ public class AvatarChangeRequest {
             && this.w != null && this.w > 0;
     }
 
-    public BufferedImage getBufferedImage() throws IOException {
-        BufferedImage originalAvatar = ImageIO.read(new ByteArrayInputStream(this.file.getBytes()));
+    public BufferedImage getBufferedImage() {
+        BufferedImage originalAvatar = ImageStorageService.fromBase64(this.avatar);
+        if (originalAvatar == null) {
+            return null;
+        }
+
         int newWidth, newHeight;
         newWidth = newHeight = Math.max(this.w, this.h);
 
@@ -50,10 +51,6 @@ public class AvatarChangeRequest {
         }
 
         return crop2 != null ? crop2 : crop1;
-    }
-
-    public MultipartFile getFile() {
-        return this.file;
     }
 
     public Integer getX1() {
@@ -80,10 +77,6 @@ public class AvatarChangeRequest {
         return this.w;
     }
 
-    public void setFile(MultipartFile file) {
-        this.file = file;
-    }
-
     public void setX1(Integer x1) {
         this.x1 = x1;
     }
@@ -106,5 +99,13 @@ public class AvatarChangeRequest {
 
     public void setW(Integer w) {
         this.w = w;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

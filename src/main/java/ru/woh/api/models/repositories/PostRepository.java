@@ -19,12 +19,12 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
     Page<Post> findAllByIsAllowedAndPublishedAtLessThanEqual(Short isAllowed, Date publishedAt, Pageable pageable);
 
     @Query("SELECT p FROM Post p " +
-        "LEFT JOIN Teaser t ON t.post = p AND t.from >= ?1 AND t.to <= ?2 " +
+        "LEFT JOIN Teaser t ON t.post = p AND CURRENT_TIMESTAMP BETWEEN t.from AND t.to " +
         "WHERE t.post IS NULL " +
         "AND p.isAllowed = 1 " +
         "AND p.publishedAt <= CURRENT_TIMESTAMP " +
         "ORDER BY p.publishedAt DESC")
-    Page<Post> findAllNotTeasers(Date from, Date to, Pageable pageable);
+    Page<Post> findAllExceptTodayTeasers(Pageable pageable);
 
     Page<Post> findAllByTags_Name(Set<String> tags, Pageable pageable);
 
@@ -78,14 +78,6 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
             id,
             (short) 1,
             PageRequest.of(0, 3)
-        );
-    }
-
-    default Page<Post> findAllExceptTodayTeasers(Pageable pageable) {
-        return this.findAllNotTeasers(
-            DateTimeService.beginOfTheDay(new Date()),
-            DateTimeService.endOfTheDay(new Date()),
-            pageable
         );
     }
 

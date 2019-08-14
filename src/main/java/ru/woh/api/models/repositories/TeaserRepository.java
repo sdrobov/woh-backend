@@ -11,11 +11,19 @@ import java.util.List;
 
 @Repository
 public interface TeaserRepository extends PagingAndSortingRepository<Teaser, Teaser.TeaserPK> {
-    @Query("SELECT t FROM Teaser t WHERE ?1 BETWEEN t.from AND t.to AND t.isTeaser = 1")
-    List<Teaser> findActualTeasers(Date now);
+    @Query("SELECT t FROM Teaser t " +
+        "INNER JOIN Post p ON t.post = p " +
+        "WHERE CURRENT_TIMESTAMP BETWEEN t.from AND t.to " +
+        "AND t.isTeaser = 1 " +
+        "AND p.isAllowed = 1")
+    List<Teaser> findActualTeasers();
 
-    @Query("SELECT t FROM Teaser t WHERE ?1 BETWEEN t.from AND t.to AND t.isTeaser = 0")
-    List<Teaser> findActualFeatured(Date now);
+    @Query("SELECT t FROM Teaser t " +
+        "INNER JOIN Post p ON t.post = p " +
+        "WHERE CURRENT_TIMESTAMP BETWEEN t.from AND t.to " +
+        "AND t.isTeaser = 0 " +
+        "AND p.isAllowed = 1")
+    List<Teaser> findActualFeatured();
 
     List<Teaser> findAllByPost(Post post);
 

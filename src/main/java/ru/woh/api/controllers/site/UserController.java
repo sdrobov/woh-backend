@@ -163,7 +163,7 @@ public class UserController {
 
     @PostMapping({"/user/avatar", "/user/avatar/"})
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public ResponseEntity<Void> avatar(@ModelAttribute AvatarChangeRequest avatarChangeRequest) throws IOException {
+    public ResponseEntity<Void> avatar(@RequestBody AvatarChangeRequest avatarChangeRequest) {
         if (!avatarChangeRequest.isValid()) {
             return ResponseEntity.badRequest().build();
         }
@@ -177,15 +177,15 @@ public class UserController {
 
         HashMap<String, String> meta = new HashMap<>();
         meta.put("userId", currentUser.getId().toString());
-        meta.put(HttpHeaders.CONTENT_TYPE, avatarChangeRequest.getFile().getContentType());
+        meta.put(HttpHeaders.CONTENT_TYPE, "image/jpeg");
 
         this.gridFsService.findByKeyValue("userId", currentUser.getId().toString())
             .forEach((Consumer<? super GridFSFile>) this.gridFsService::delete);
 
         String avatarId = this.imageStorageService.storeBufferedImage(
             avatar,
-            avatarChangeRequest.getFile().getName(),
-            avatarChangeRequest.getFile().getContentType(),
+            String.format("user%d-avatar", currentUser.getId()),
+            "image/jpeg",
             meta
         );
         if (avatarId == null) {

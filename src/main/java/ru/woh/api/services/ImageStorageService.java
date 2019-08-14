@@ -89,7 +89,7 @@ public class ImageStorageService {
         }
     }
 
-    static BufferedImage fromBase64(String base64Encoded) {
+    public static BufferedImage fromBase64(String base64Encoded) {
         var encoded = base64Encoded.indexOf(',') > 0 ? base64Encoded.split(",")[1] : base64Encoded;
 
         var bytes = DatatypeConverter.parseBase64Binary(encoded);

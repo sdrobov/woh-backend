@@ -10,7 +10,6 @@ import ru.woh.api.models.repositories.TeaserRepository;
 import ru.woh.api.views.site.PostView;
 
 import javax.annotation.security.RolesAllowed;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,18 +28,18 @@ public class TeaserController {
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public List<PostView> teasers() {
         return this.teaserRepository
-            .findActualTeasers(new Date())
+            .findActualTeasers()
             .stream()
             .map(Teaser::getPost)
             .map(Post::view)
             .collect(Collectors.toList());
     }
 
-    @GetMapping({ "/featured", "/featuerd/" })
+    @GetMapping({ "/featured", "/featured/" })
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public List<PostView> featured() {
         return this.teaserRepository
-            .findActualFeatured(new Date())
+            .findActualFeatured()
             .stream()
             .map(Teaser::getPost)
             .map(Post::view)
