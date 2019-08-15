@@ -163,7 +163,7 @@ public class UserController {
 
     @PostMapping({"/user/avatar", "/user/avatar/"})
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public ResponseEntity<Void> avatar(@RequestBody AvatarChangeRequest avatarChangeRequest) {
+    public ResponseEntity<String> avatar(@RequestBody AvatarChangeRequest avatarChangeRequest) {
         if (!avatarChangeRequest.isValid()) {
             return ResponseEntity.badRequest().build();
         }
@@ -195,7 +195,10 @@ public class UserController {
         currentUser.setAvatar(String.format("/image/%s", avatarId));
         this.userRepository.save(currentUser);
 
-        return ResponseEntity.created(URI.create(String.format("/image/%s", avatarId))).build();
+        var avatarUrl = String.format("/image/%s", avatarId);
+        return ResponseEntity
+            .created(URI.create(avatarUrl))
+            .body(avatarUrl);
     }
 
     @PostMapping({"/user/avatar/drop", "/user/avatar/drop/"})
