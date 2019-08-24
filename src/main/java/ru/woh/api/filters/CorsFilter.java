@@ -7,6 +7,11 @@ import java.io.IOException;
 
 public class CorsFilter implements Filter {
     @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+
+    }
+
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws
         IOException,
         ServletException {
@@ -20,5 +25,10 @@ public class CorsFilter implements Filter {
         httpServletResponse.setHeader("Access-Control-Max-Age", "3600");
 
         chain.doFilter(request, response);
+    }
+
+    @Override
+    public void destroy() {
+
     }
 }
