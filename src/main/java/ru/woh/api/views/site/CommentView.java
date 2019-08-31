@@ -5,6 +5,7 @@ import ru.woh.api.models.User;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Date;
+import java.util.List;
 
 public class CommentView {
     private Long id;
@@ -14,6 +15,7 @@ public class CommentView {
     private UserView user;
     private ReplyTo replyTo;
     private RatingView rating;
+    private List<MediaView> media;
 
     public CommentView() {
     }
@@ -74,7 +76,15 @@ public class CommentView {
         this.rating = rating;
     }
 
-    public class ReplyTo {
+    public List<MediaView> getMedia() {
+        return media;
+    }
+
+    public void setMedia(List<MediaView> media) {
+        this.media = media;
+    }
+
+    public static class ReplyTo {
         private Long id;
         private String text;
         private UserView user;
@@ -131,7 +141,10 @@ public class CommentView {
         this.user = user.view();
         try {
             if (replyTo != null) {
-                this.replyTo = new ReplyTo(replyTo.getId(), replyTo.getText(), replyTo.getUser().view(), replyTo.getCreatedAt());
+                this.replyTo = new ReplyTo(replyTo.getId(),
+                    replyTo.getText(),
+                    replyTo.getUser().view(),
+                    replyTo.getCreatedAt());
             }
         } catch (EntityNotFoundException e) {
             this.replyTo = new ReplyTo(null, "[deleted]", null, null);

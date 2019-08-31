@@ -40,7 +40,7 @@ public class YoutubeService {
 
         List request;
         try {
-            request = youtube.videos().list("snippet,id");
+            request = youtube.videos().list("snippet,id,player,contentDetails");
         } catch (IOException e) {
             e.printStackTrace();
 

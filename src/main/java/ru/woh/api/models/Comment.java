@@ -9,6 +9,7 @@ import ru.woh.api.views.site.CommentView;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity(name = "Comment")
@@ -54,6 +55,12 @@ public class Comment implements Serializable {
 
     @OneToMany(mappedBy = "comment")
     private Set<CommentLikes> likes;
+
+    @ManyToMany
+    @JoinTable(name = "comment_ref_media",
+        joinColumns = {@JoinColumn(name = "comment_id")},
+        inverseJoinColumns = {@JoinColumn(name = "media_id")})
+    private Set<Media> media = new HashSet<>();
 
     public Comment() {
     }
@@ -152,5 +159,13 @@ public class Comment implements Serializable {
 
     public void setLikes(Set<CommentLikes> likes) {
         this.likes = likes;
+    }
+
+    public Set<Media> getMedia() {
+        return media;
+    }
+
+    public void setMedia(Set<Media> media) {
+        this.media = media;
     }
 }

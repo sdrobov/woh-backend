@@ -5,15 +5,19 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import ru.woh.api.models.*;
 import ru.woh.api.models.repositories.CommentLikesRepository;
+import ru.woh.api.models.repositories.MediaRepository;
 import ru.woh.api.services.CommentService;
+import ru.woh.api.services.ImageStorageService;
 import ru.woh.api.services.PostService;
 import ru.woh.api.services.UserService;
 import ru.woh.api.views.site.CommentView;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
 public class CommentController {
@@ -22,17 +26,21 @@ public class CommentController {
     private final UserService userService;
     private final CommentService commentService;
     private final CommentLikesRepository commentLikesRepository;
+    private final ImageStorageService imageStorageService;
+    private final MediaRepository mediaRepository;
 
     public CommentController(
         PostService postService,
         UserService userService,
         CommentService commentService,
-        CommentLikesRepository commentLikesRepository
-    ) {
+        CommentLikesRepository commentLikesRepository,
+        ImageStorageService imageStorageService, MediaRepository mediaRepository) {
         this.postService = postService;
         this.userService = userService;
         this.commentService = commentService;
         this.commentLikesRepository = commentLikesRepository;
+        this.imageStorageService = imageStorageService;
+        this.mediaRepository = mediaRepository;
     }
 
     @GetMapping({ "/{id:[0-9]*}/comments", "/{id:[0-9]*}/comments/" })
@@ -62,11 +70,43 @@ public class CommentController {
             newComment.setReplyTo(replyToComment);
         }
 
+        processUserMedia(comment, newComment);
+
         this.commentService.save(newComment);
 
         return this.commentService.list(post, 0, MAX_COMMENTS);
     }
 
+    private void processUserMedia(CommentView comment, Comment newComment) {
+        if (comment.getMedia() != null && !comment.getMedia().isEmpty()) {
+            var mediaList = comment.getMedia().stream().map(mediaView -> {
+                var media = new Media();
+                media.setUrl(mediaView.getUrl());
+                media.setEmbedCode(mediaView.getEmbedCode());
+                media.setTitle(mediaView.getTitle());
+                media.setId(mediaView.getId());
+
+                if (mediaView.getThumbnail() != null) {
+                    var image = ImageStorageService.fromBase64(mediaView.getThumbnail());
+                    if (image != null) {
+                        var imageId = this.imageStorageService.storeBufferedImage(image,
+                            String.format("comment_%d_user_%d_date_%s",
+                                comment.getId(),
+                                this.userService.getCurrenttUser().getId(),
+                                (new Date()).toString()),
+                            "image/jpeg",
+                            new HashMap<>());
+
+                        media.setThumbnail(imageId);
+                    }
+                }
+
+                return this.mediaRepository.save(media);
+            }).collect(Collectors.toSet());
+
+            newComment.setMedia(mediaList);
+        }
+    }
 
     @PostMapping({ "/{id:[0-9]*}/comments/edit", "/{id:[0-9]*}/comments/edit/" })
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
@@ -81,6 +121,8 @@ public class CommentController {
 
         commentModel.setText(comment.getText());
         commentModel.setUpdatedAt(new Date());
+
+        this.processUserMedia(comment, commentModel);
 
         commentModel = this.commentService.save(commentModel);
 

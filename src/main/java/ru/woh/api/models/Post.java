@@ -85,14 +85,14 @@ public class Post implements Serializable {
 
     @ManyToMany
     @JoinTable(name = "tags_ref_posts",
-        joinColumns = { @JoinColumn(name = "post_id") },
-        inverseJoinColumns = { @JoinColumn(name = "tag_id") })
+        joinColumns = {@JoinColumn(name = "post_id")},
+        inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private Set<Tag> tags = new HashSet<>();
 
     @ManyToMany
     @JoinTable(name = "categories_ref_posts",
-        joinColumns = { @JoinColumn(name = "post_id") },
-        inverseJoinColumns = { @JoinColumn(name = "category_id") })
+        joinColumns = {@JoinColumn(name = "post_id")},
+        inverseJoinColumns = {@JoinColumn(name = "category_id")})
     private Set<Category> categories = new HashSet<>();
 
     @OneToMany(mappedBy = "post")
@@ -106,6 +106,12 @@ public class Post implements Serializable {
 
     @OneToMany(mappedBy = "post")
     private List<Teaser> teasers;
+
+    @ManyToMany
+    @JoinTable(name = "post_ref_media",
+        joinColumns = {@JoinColumn(name = "post_id")},
+        inverseJoinColumns = {@JoinColumn(name = "media_id")})
+    private Set<Media> media = new HashSet<>();
 
     public Post() {
     }
@@ -360,5 +366,13 @@ public class Post implements Serializable {
 
     public void setTeasers(List<Teaser> teasers) {
         this.teasers = teasers;
+    }
+
+    public Set<Media> getMedia() {
+        return media;
+    }
+
+    public void setMedia(Set<Media> media) {
+        this.media = media;
     }
 }

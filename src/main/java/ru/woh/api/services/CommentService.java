@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import ru.woh.api.models.Comment;
 import ru.woh.api.models.CommentLikes;
+import ru.woh.api.models.Media;
 import ru.woh.api.models.Post;
 import ru.woh.api.models.repositories.CommentLikesRepository;
 import ru.woh.api.models.repositories.CommentRepository;
@@ -15,6 +16,7 @@ import ru.woh.api.views.site.CommentView;
 import ru.woh.api.views.site.RatingView;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentService {
@@ -61,6 +63,10 @@ public class CommentService {
 
     public CommentView makeCommentViewWithRating(Comment comment) {
         CommentView view = comment.view();
+        if (comment.getMedia() != null && !comment.getMedia().isEmpty()) {
+            view.setMedia(comment.getMedia().stream().map(Media::view).collect(Collectors.toList()));
+        }
+
         RatingView rating = new RatingView();
 
         rating.setCount(comment.getRating());
