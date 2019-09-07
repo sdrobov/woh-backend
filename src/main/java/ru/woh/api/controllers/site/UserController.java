@@ -23,7 +23,6 @@ import ru.woh.api.views.site.UserView;
 
 import javax.annotation.security.RolesAllowed;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
@@ -185,7 +184,6 @@ public class UserController {
         String avatarId = this.imageStorageService.storeBufferedImage(
             avatar,
             String.format("user%d-avatar", currentUser.getId()),
-            "image/jpeg",
             meta
         );
         if (avatarId == null) {

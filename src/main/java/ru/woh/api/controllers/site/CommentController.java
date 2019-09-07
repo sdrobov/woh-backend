@@ -86,16 +86,15 @@ public class CommentController {
                 media.setTitle(mediaView.getTitle());
                 media.setId(mediaView.getId());
 
-                if (mediaView.getThumbnail() != null) {
-                    var image = ImageStorageService.fromBase64(mediaView.getThumbnail());
+                if (mediaView.getThumbnail() != null && mediaView.getThumbnail().getContent() != null) {
+                    var image = ImageStorageService.fromBase64(mediaView.getThumbnail().getContent());
                     if (image != null) {
                         var imageId = this.imageStorageService.storeBufferedImage(image,
                             String.format("comment_%d_user_%d_date_%s",
                                 comment.getId(),
                                 this.userService.getCurrenttUser().getId(),
                                 (new Date()).toString()),
-                            "image/jpeg",
-                            new HashMap<>());
+                            null);
 
                         media.setThumbnail(imageId);
                     }

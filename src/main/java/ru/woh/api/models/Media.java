@@ -1,6 +1,7 @@
 package ru.woh.api.models;
 
 import org.hibernate.annotations.Type;
+import ru.woh.api.views.site.ImageView;
 import ru.woh.api.views.site.MediaView;
 
 import javax.persistence.*;
@@ -42,7 +43,10 @@ public class Media {
     }
 
     public MediaView view() {
-        return new MediaView(this.id, this.title, this.url, this.embedCode, this.thumbnail);
+        var image = new ImageView();
+        image.setUrl(this.thumbnail);
+
+        return new MediaView(this.id, this.title, this.url, this.embedCode, image);
     }
 
     public Long getId() {

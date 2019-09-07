@@ -23,16 +23,18 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentLikesRepository commentLikesRepository;
     private final UserService userService;
+    private final GridFsService gridFsService;
 
     @Autowired
     public CommentService(
         CommentRepository commentRepository,
         CommentLikesRepository commentLikesRepository,
-        UserService userService
-    ) {
+        UserService userService,
+        GridFsService gridFsService) {
         this.commentRepository = commentRepository;
         this.commentLikesRepository = commentLikesRepository;
         this.userService = userService;
+        this.gridFsService = gridFsService;
     }
 
 
@@ -64,7 +66,36 @@ public class CommentService {
     public CommentView makeCommentViewWithRating(Comment comment) {
         CommentView view = comment.view();
         if (comment.getMedia() != null && !comment.getMedia().isEmpty()) {
-            view.setMedia(comment.getMedia().stream().map(Media::view).collect(Collectors.toList()));
+            view.setMedia(
+                comment.getMedia()
+                    .stream()
+                    .map(Media::view)
+                    .peek(mediaView -> {
+                        if (mediaView.getThumbnail() != null
+                            && mediaView.getThumbnail().getUrl() != null) {
+                            var image = this.gridFsService.findById(mediaView.getThumbnail().getUrl());
+
+                            if (image != null) {
+                                var meta = image.getMetadata();
+
+                                if (meta != null) {
+                                    try {
+                                        Integer width = Integer.valueOf(meta.getString("width"));
+                                        Integer height = Integer.valueOf(meta.getString("height"));
+
+                                        mediaView.getThumbnail().setWidth(width);
+                                        mediaView.getThumbnail().setHeight(height);
+                                    } catch (NumberFormatException ignored) {}
+                                }
+
+                                mediaView.getThumbnail().setUrl("/image/" + mediaView.getThumbnail().getUrl());
+                            } else {
+                                mediaView.setUrl(null);
+                            }
+                        }
+                    })
+                    .collect(Collectors.toList())
+            );
         }
 
         RatingView rating = new RatingView();

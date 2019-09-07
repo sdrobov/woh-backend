@@ -236,7 +236,6 @@ public class PostService {
             if (teaserImage != null) {
                 var teaserImageId = this.imageStorageService.storeBufferedImage(teaserImage,
                     "post-teaser-" + post.getId(),
-                    "jpeg",
                     new HashMap<>());
 
                 post.setTeaserImage(String.format("/image/%s", teaserImageId));
@@ -248,7 +247,6 @@ public class PostService {
             if (featuredImage != null) {
                 var featuredImageId = this.imageStorageService.storeBufferedImage(featuredImage,
                     "post-featured-" + post.getId(),
-                    "jpeg",
                     new HashMap<>());
 
                 post.setFeaturedImage(String.format("/image/%s", featuredImageId));
@@ -260,7 +258,6 @@ public class PostService {
             if (nearestImage != null) {
                 var nearestImageId = this.imageStorageService.storeBufferedImage(nearestImage,
                     "post-nearest-" + post.getId(),
-                    "jpeg",
                     new HashMap<>());
 
                 post.setNearestImage(String.format("/image/%s", nearestImageId));

@@ -11,10 +11,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Period;
-import java.time.temporal.TemporalAmount;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -32,11 +30,22 @@ public class ImageStorageService {
     public String storeBufferedImage(
         BufferedImage bufferedImage,
         String name,
-        String contentType,
         HashMap<String, String> meta
     ) {
-        if (bufferedImage == null || name == null || contentType == null || meta == null) {
+        if (bufferedImage == null || name == null) {
             return null;
+        }
+
+        if (meta == null) {
+            meta = new HashMap<>();
+        }
+
+        if (!meta.containsKey("width") || !meta.containsKey("height")) {
+            var width = bufferedImage.getWidth();
+            var height = bufferedImage.getHeight();
+
+            meta.put("width", Integer.toString(width));
+            meta.put("height", Integer.toString(height));
         }
 
         var byteArrayOutputStream = new ByteArrayOutputStream();
@@ -52,7 +61,7 @@ public class ImageStorageService {
         return this.gridFsService.store(
             inputStream,
             name,
-            contentType,
+            "image/jpeg",
             meta
         );
     }

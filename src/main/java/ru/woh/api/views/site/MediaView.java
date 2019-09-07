@@ -5,19 +5,17 @@ public class MediaView {
     private String title;
     private String url;
     private String embedCode;
-    private String thumbnail;
+    private ImageView thumbnail;
 
     public MediaView() {
     }
 
-    public MediaView(Long id, String title, String url, String embedCode, String thumbnail) {
+    public MediaView(Long id, String title, String url, String embedCode, ImageView thumbnail) {
         this.id = id;
         this.title = title;
         this.url = url;
         this.embedCode = embedCode;
-        if (thumbnail != null) {
-            this.thumbnail = String.format("/image/%s", thumbnail);
-        }
+        this.thumbnail = thumbnail;
     }
 
     public Long getId() {
@@ -52,11 +50,11 @@ public class MediaView {
         this.embedCode = embedCode;
     }
 
-    public String getThumbnail() {
+    public ImageView getThumbnail() {
         return thumbnail;
     }
 
-    public void setThumbnail(String thumbnail) {
+    public void setThumbnail(ImageView thumbnail) {
         this.thumbnail = thumbnail;
     }
 }
