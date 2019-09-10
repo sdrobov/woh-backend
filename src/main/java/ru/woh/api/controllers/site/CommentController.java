@@ -79,29 +79,37 @@ public class CommentController {
 
     private void processUserMedia(CommentView comment, Comment newComment) {
         if (comment.getMedia() != null && !comment.getMedia().isEmpty()) {
-            var mediaList = comment.getMedia().stream().map(mediaView -> {
-                var media = new Media();
-                media.setUrl(mediaView.getUrl());
-                media.setEmbedCode(mediaView.getEmbedCode());
-                media.setTitle(mediaView.getTitle());
-                media.setId(mediaView.getId());
-
-                if (mediaView.getThumbnail() != null && mediaView.getThumbnail().getContent() != null) {
-                    var image = ImageStorageService.fromBase64(mediaView.getThumbnail().getContent());
-                    if (image != null) {
-                        var imageId = this.imageStorageService.storeBufferedImage(image,
-                            String.format("comment_%d_user_%d_date_%s",
-                                comment.getId(),
-                                this.userService.getCurrenttUser().getId(),
-                                (new Date()).toString()),
-                            null);
-
-                        media.setThumbnail(imageId);
+            var mediaList = comment.getMedia()
+                .stream()
+                .map(mediaView -> {
+                    var media = new Media();
+                    if (mediaView.getId() != null) {
+                        media = this.mediaRepository.findById(mediaView.getId()).orElse(new Media());
+                    } else {
+                        media.setId(mediaView.getId());
                     }
-                }
 
-                return this.mediaRepository.save(media);
-            }).collect(Collectors.toSet());
+                    media.setUrl(mediaView.getUrl());
+                    media.setEmbedCode(mediaView.getEmbedCode());
+                    media.setTitle(mediaView.getTitle());
+
+                    if (mediaView.getThumbnail() != null && mediaView.getThumbnail().getContent() != null) {
+                        var image = ImageStorageService.fromBase64(mediaView.getThumbnail().getContent());
+                        if (image != null) {
+                            var imageId = this.imageStorageService.storeBufferedImage(image,
+                                String.format("comment_%d_user_%d_date_%s",
+                                    comment.getId(),
+                                    this.userService.getCurrenttUser().getId(),
+                                    (new Date()).toString()),
+                                null);
+
+                            media.setThumbnail(imageId);
+                        }
+                    }
+
+                    return this.mediaRepository.save(media);
+                })
+                .collect(Collectors.toSet());
 
             newComment.setMedia(mediaList);
         }

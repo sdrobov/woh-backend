@@ -13,8 +13,10 @@ import ru.woh.api.models.Post;
 import ru.woh.api.models.repositories.CommentLikesRepository;
 import ru.woh.api.models.repositories.CommentRepository;
 import ru.woh.api.views.site.CommentView;
+import ru.woh.api.views.site.MediaView;
 import ru.woh.api.views.site.RatingView;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -94,6 +96,7 @@ public class CommentService {
                             }
                         }
                     })
+                    .sorted(Comparator.comparingLong(MediaView::getId))
                     .collect(Collectors.toList())
             );
         }
