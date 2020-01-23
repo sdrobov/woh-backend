@@ -1,9 +1,7 @@
 package ru.woh.api.controllers.site;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 import ru.woh.api.models.Post;
 import ru.woh.api.models.PostLikes;
 import ru.woh.api.models.Role;

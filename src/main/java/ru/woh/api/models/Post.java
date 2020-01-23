@@ -80,16 +80,16 @@ public class Post implements Serializable {
     @JoinColumn(name = "proposed_by")
     private User proposedBy;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private Set<Comment> comments = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "tags_ref_posts",
         joinColumns = {@JoinColumn(name = "post_id")},
         inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private Set<Tag> tags = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "categories_ref_posts",
         joinColumns = {@JoinColumn(name = "post_id")},
         inverseJoinColumns = {@JoinColumn(name = "category_id")})

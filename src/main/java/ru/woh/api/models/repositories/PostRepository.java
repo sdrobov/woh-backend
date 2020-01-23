@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 import ru.woh.api.models.Post;
-import ru.woh.api.services.DateTimeService;
 
 import java.util.Date;
 import java.util.List;

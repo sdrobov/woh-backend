@@ -5,12 +5,14 @@ import ru.woh.api.views.site.ImageView;
 import ru.woh.api.views.site.MediaView;
 
 import javax.persistence.*;
+
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity(name = "Media")
 @Table(name = "media")
-public class Media {
+public class Media implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, unique = true)
