@@ -2,15 +2,10 @@ package ru.woh.api.views.admin;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ru.woh.api.models.Post;
 import ru.woh.api.models.Source;
-import ru.woh.api.views.site.PostView;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class SourceView {
     public Long getId() {
@@ -41,10 +36,6 @@ public class SourceView {
         return this.isLocked;
     }
 
-    public List<PostView> getPosts() {
-        return this.posts;
-    }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -71,10 +62,6 @@ public class SourceView {
 
     public void setIsLocked(Boolean isLocked) {
         this.isLocked = isLocked;
-    }
-
-    public void setPosts(List<PostView> posts) {
-        this.posts = posts;
     }
 
     public static class SourceSettings {
@@ -230,7 +217,6 @@ public class SourceView {
     private Date createdAt;
     private Date lastPostDate;
     private Boolean isLocked;
-    private List<PostView> posts;
 
     public SourceView(
         Long id,
@@ -239,8 +225,7 @@ public class SourceView {
         String settings,
         Date createdAt,
         Date lastPostDate,
-        Boolean isLocked,
-        Set<Post> posts
+        Boolean isLocked
     ) {
         this.id = id;
         this.name = name;
@@ -249,9 +234,6 @@ public class SourceView {
         this.createdAt = createdAt;
         this.lastPostDate = lastPostDate;
         this.isLocked = isLocked;
-        this.posts = posts != null
-            ? posts.stream().map(Post::view).collect(Collectors.toList())
-            : null;
     }
 
     public Source model() {

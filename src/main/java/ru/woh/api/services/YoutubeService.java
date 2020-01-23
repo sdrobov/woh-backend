@@ -13,7 +13,6 @@ import java.security.GeneralSecurityException;
 
 @Service
 public class YoutubeService {
-    private final String API_KEY = "AIzaSyDUJnAMzTk9A0M2jo33ORgDR3pwGSIrXkI";
 
     public YouTube getYoutube() {
         final NetHttpTransport httpTransport;
@@ -47,7 +46,8 @@ public class YoutubeService {
 
         VideoListResponse response;
         try {
-            response = request.setKey(this.API_KEY).setId(id).execute();
+            String API_KEY = "AIzaSyDUJnAMzTk9A0M2jo33ORgDR3pwGSIrXkI";
+            response = request.setKey(API_KEY).setId(id).execute();
         } catch (IOException e) {
             e.printStackTrace();
 

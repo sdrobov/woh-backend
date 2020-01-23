@@ -95,16 +95,16 @@ public class Post implements Serializable {
         inverseJoinColumns = {@JoinColumn(name = "category_id")})
     private Set<Category> categories = new HashSet<>();
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private Set<PostLikes> likes;
 
     private Long rating;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "source_id")
     private Source sourceSite;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private List<Teaser> teasers;
 
     @ManyToMany
@@ -131,7 +131,7 @@ public class Post implements Serializable {
             this.featuredImage,
             this.nearestImage,
             this.canBeNearest == 1,
-            this.teasers.isEmpty() ? null : this.teasers.get(this.teasers.size() - 1)
+            this.teasers != null && !this.teasers.isEmpty() ? this.teasers.get(this.teasers.size() - 1) : null
         );
     }
 
@@ -151,7 +151,7 @@ public class Post implements Serializable {
             this.featuredImage,
             this.nearestImage,
             this.canBeNearest == 1,
-            this.teasers.isEmpty() ? null : this.teasers.get(this.teasers.size() - 1),
+            this.teasers != null && !this.teasers.isEmpty() ? this.teasers.get(this.teasers.size() - 1) : null,
             this.updatedAt,
             this.moderatedAt,
             this.moderator,

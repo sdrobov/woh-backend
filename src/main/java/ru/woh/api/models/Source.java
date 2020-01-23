@@ -51,8 +51,7 @@ public class Source implements Serializable {
             this.settings,
             this.createdAt,
             this.lastPostDate,
-            this.isLocked == 1,
-            this.posts
+            this.isLocked == 1
         );
     }
 

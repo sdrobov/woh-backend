@@ -81,7 +81,7 @@ public class ImageStorageService {
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
         var expires = Date.from(new Date().toInstant().plus(Period.ofDays(365 * 10)));
-        var lastModified = gridfsFile.getUploadDate() != null ? gridfsFile.getUploadDate() : new Date();
+        var lastModified = gridfsFile.getUploadDate();
 
         return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_TYPE, contentType)

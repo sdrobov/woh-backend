@@ -71,7 +71,6 @@ public class PostController {
         return this.likeOrDislike(id, false);
     }
 
-    @SuppressWarnings("Duplicates")
     private PostView likeOrDislike(Long id, Boolean like) {
         Post post = this.postService.one(id);
         User user = this.userService.getCurrenttUser();
