@@ -8,60 +8,103 @@ import java.io.IOException;
 import java.util.Date;
 
 public class SourceView {
+    private Long id;
+    private String name;
+    private String url;
+    private SourceSettings settings;
+    private Date createdAt;
+    private Date lastPostDate;
+    private Boolean isLocked;
+
+    public SourceView() {
+    }
+
+    public SourceView(
+        Long id,
+        String name,
+        String url,
+        String settings,
+        Date createdAt,
+        Date lastPostDate,
+        Boolean isLocked
+    ) {
+        this.id = id;
+        this.name = name;
+        this.url = url;
+        this.settings = SourceSettings.fromJson(settings);
+        this.createdAt = createdAt;
+        this.lastPostDate = lastPostDate;
+        this.isLocked = isLocked;
+    }
+
     public Long getId() {
         return this.id;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public String getUrl() {
-        return this.url;
-    }
-
-    public SourceSettings getSettings() {
-        return this.settings;
-    }
-
-    public Date getCreatedAt() {
-        return this.createdAt;
-    }
-
-    public Date getLastPostDate() {
-        return this.lastPostDate;
-    }
-
-    public Boolean getIsLocked() {
-        return this.isLocked;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUrl() {
+        return this.url;
     }
 
     public void setUrl(String url) {
         this.url = url;
     }
 
+    public SourceSettings getSettings() {
+        return this.settings;
+    }
+
     public void setSettings(SourceSettings settings) {
         this.settings = settings;
+    }
+
+    public Date getCreatedAt() {
+        return this.createdAt;
     }
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
+    public Date getLastPostDate() {
+        return this.lastPostDate;
+    }
+
     public void setLastPostDate(Date lastPostDate) {
         this.lastPostDate = lastPostDate;
     }
 
+    public Boolean getIsLocked() {
+        return this.isLocked;
+    }
+
     public void setIsLocked(Boolean isLocked) {
         this.isLocked = isLocked;
+    }
+
+    public Source model() {
+        Source source = new Source();
+
+        source.setId(this.id);
+        source.setName(this.name);
+        source.setUrl(this.url);
+        source.setCreatedAt(this.createdAt);
+        source.setLastPostDate(this.lastPostDate);
+        source.setIsLocked((this.isLocked == null || this.isLocked) ? 1 : 0);
+        source.setSettings(this.settings != null ? this.settings.toString() : "");
+
+        return source;
     }
 
     public static class SourceSettings {
@@ -109,144 +152,104 @@ public class SourceView {
             return this.url;
         }
 
-        public String getLinksSelector() {
-            return this.linksSelector;
-        }
-
-        public String getDescriptionSelector() {
-            return this.descriptionSelector;
-        }
-
-        public String getTitlesSelector() {
-            return this.titlesSelector;
-        }
-
-        public String getTitleSelector() {
-            return this.titleSelector;
-        }
-
-        public String getDatesSelector() {
-            return this.datesSelector;
-        }
-
-        public String getDateFormat() {
-            return this.dateFormat;
-        }
-
-        public String getNextSelector() {
-            return this.nextSelector;
-        }
-
-        public String getContentSelector() {
-            return this.contentSelector;
-        }
-
-        public String getNextContentSelector() {
-            return this.nextContentSelector;
-        }
-
-        public String getPreviewSelector() {
-            return this.previewSelector;
-        }
-
-        public Boolean getIsApproved() {
-            return this.isApproved;
-        }
-
-        public Integer getType() {
-            return this.type;
-        }
-
         public void setUrl(String url) {
             this.url = url;
+        }
+
+        public String getLinksSelector() {
+            return this.linksSelector;
         }
 
         public void setLinksSelector(String linksSelector) {
             this.linksSelector = linksSelector;
         }
 
+        public String getDescriptionSelector() {
+            return this.descriptionSelector;
+        }
+
         public void setDescriptionSelector(String descriptionSelector) {
             this.descriptionSelector = descriptionSelector;
+        }
+
+        public String getTitlesSelector() {
+            return this.titlesSelector;
         }
 
         public void setTitlesSelector(String titlesSelector) {
             this.titlesSelector = titlesSelector;
         }
 
+        public String getTitleSelector() {
+            return this.titleSelector;
+        }
+
         public void setTitleSelector(String titleSelector) {
             this.titleSelector = titleSelector;
+        }
+
+        public String getDatesSelector() {
+            return this.datesSelector;
         }
 
         public void setDatesSelector(String datesSelector) {
             this.datesSelector = datesSelector;
         }
 
+        public String getDateFormat() {
+            return this.dateFormat;
+        }
+
         public void setDateFormat(String dateFormat) {
             this.dateFormat = dateFormat;
+        }
+
+        public String getNextSelector() {
+            return this.nextSelector;
         }
 
         public void setNextSelector(String nextSelector) {
             this.nextSelector = nextSelector;
         }
 
+        public String getContentSelector() {
+            return this.contentSelector;
+        }
+
         public void setContentSelector(String contentSelector) {
             this.contentSelector = contentSelector;
+        }
+
+        public String getNextContentSelector() {
+            return this.nextContentSelector;
         }
 
         public void setNextContentSelector(String nextContentSelector) {
             this.nextContentSelector = nextContentSelector;
         }
 
+        public String getPreviewSelector() {
+            return this.previewSelector;
+        }
+
         public void setPreviewSelector(String previewSelector) {
             this.previewSelector = previewSelector;
+        }
+
+        public Boolean getIsApproved() {
+            return this.isApproved;
         }
 
         public void setIsApproved(Boolean isApproved) {
             this.isApproved = isApproved;
         }
 
+        public Integer getType() {
+            return this.type;
+        }
+
         public void setType(Integer type) {
             this.type = type;
         }
-    }
-
-    private Long id;
-    private String name;
-    private String url;
-    private SourceSettings settings;
-    private Date createdAt;
-    private Date lastPostDate;
-    private Boolean isLocked;
-
-    public SourceView(
-        Long id,
-        String name,
-        String url,
-        String settings,
-        Date createdAt,
-        Date lastPostDate,
-        Boolean isLocked
-    ) {
-        this.id = id;
-        this.name = name;
-        this.url = url;
-        this.settings = SourceSettings.fromJson(settings);
-        this.createdAt = createdAt;
-        this.lastPostDate = lastPostDate;
-        this.isLocked = isLocked;
-    }
-
-    public Source model() {
-        Source source = new Source();
-
-        source.setId(this.id);
-        source.setName(this.name);
-        source.setUrl(this.url);
-        source.setCreatedAt(this.createdAt);
-        source.setLastPostDate(this.lastPostDate);
-        source.setIsLocked((this.isLocked == null || this.isLocked) ? 1 : 0);
-        source.setSettings(this.settings != null ? this.settings.toString() : "");
-
-        return source;
     }
 }

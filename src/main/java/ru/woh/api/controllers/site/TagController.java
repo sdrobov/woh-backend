@@ -9,7 +9,8 @@ import ru.woh.api.models.Role;
 import ru.woh.api.models.Tag;
 import ru.woh.api.models.repositories.TagRepository;
 import ru.woh.api.services.PostService;
-import ru.woh.api.views.site.PostListView;
+import ru.woh.api.views.site.ListView;
+import ru.woh.api.views.site.PostView;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.List;
@@ -29,7 +30,7 @@ public class TagController {
 
     @GetMapping({ "/by-tag/{tag:.*}", "/by-tag/{tag:.*}/" })
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public PostListView byTag(
+    public ListView<PostView> byTag(
         @PathVariable("tag") String tag,
         @RequestParam(value = "page", defaultValue = "0") Integer page
     ) {

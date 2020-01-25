@@ -11,7 +11,7 @@ import ru.woh.api.services.DateTimeService;
 import ru.woh.api.services.PostService;
 import ru.woh.api.services.UserService;
 import ru.woh.api.views.admin.AdminPostView;
-import ru.woh.api.views.site.PostListView;
+import ru.woh.api.views.site.ListView;
 import ru.woh.api.views.site.PostView;
 
 import javax.annotation.security.RolesAllowed;
@@ -96,28 +96,28 @@ public class AdminPostController {
 
     @GetMapping({ "/published", "/published/" })
     @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public PostListView published(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public ListView<PostView> published(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         var posts = this.postRepository.findAllAllowed(PageRequest.of(page, AdminPostController.defaultPageSize));
         var views = posts.getContent().stream().map(Post::view).collect(Collectors.toList());
 
-        return new PostListView(posts.getTotalElements(), posts.getTotalPages(), page, views);
+        return new ListView<>(posts.getTotalElements(), posts.getTotalPages(), page, views);
     }
 
     @GetMapping({ "/published-waiting", "/published-waiting/" })
     @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public PostListView waitingForPublish(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public ListView<PostView> waitingForPublish(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         var posts = this.postRepository.findWaitingForPublishing(PageRequest.of(
             page,
             AdminPostController.defaultPageSize
         ));
         var views = posts.getContent().stream().map(Post::view).collect(Collectors.toList());
 
-        return new PostListView(posts.getTotalElements(), posts.getTotalPages(), page, views);
+        return new ListView<>(posts.getTotalElements(), posts.getTotalPages(), page, views);
     }
 
     @GetMapping({ "/published-waiting/{date:.*}", "/published-waiting/{date:.*}/" })
     @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public PostListView waitingForPublish(
+    public ListView<PostView> waitingForPublish(
         @PathVariable("date") Date date,
         @RequestParam(value = "page", defaultValue = "0") Integer page
     ) {
@@ -128,18 +128,18 @@ public class AdminPostController {
         );
         var views = posts.getContent().stream().map(Post::view).collect(Collectors.toList());
 
-        return new PostListView(posts.getTotalElements(), posts.getTotalPages(), page, views);
+        return new ListView<>(posts.getTotalElements(), posts.getTotalPages(), page, views);
     }
 
     @GetMapping({ "/moderation-waiting", "/moderation-waiting/" })
     @RolesAllowed({ Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public PostListView waitingForModeration(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public ListView<PostView> waitingForModeration(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         var posts = this.postRepository.findWaitingForModeration(PageRequest.of(
             page,
             AdminPostController.defaultPageSize
         ));
         var views = posts.getContent().stream().map(Post::view).collect(Collectors.toList());
 
-        return new PostListView(posts.getTotalElements(), posts.getTotalPages(), page, views);
+        return new ListView<>(posts.getTotalElements(), posts.getTotalPages(), page, views);
     }
 }

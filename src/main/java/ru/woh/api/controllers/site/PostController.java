@@ -9,7 +9,7 @@ import ru.woh.api.models.User;
 import ru.woh.api.models.repositories.PostLikesRepository;
 import ru.woh.api.services.PostService;
 import ru.woh.api.services.UserService;
-import ru.woh.api.views.site.PostListView;
+import ru.woh.api.views.site.ListView;
 import ru.woh.api.views.site.PostView;
 
 import javax.annotation.security.RolesAllowed;
@@ -36,7 +36,7 @@ public class PostController {
 
     @GetMapping("/")
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public PostListView list(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public ListView<PostView> list(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         return this.postService.listView(page, PostController.defaultPageSize);
     }
 
