@@ -23,6 +23,10 @@ spring:
       max-file-size: 2MB
       max-request-size: 10MB
 
+springdoc:
+  swagger-ui:
+    path: /apidocs
+
 logging:
   level:
     org:
