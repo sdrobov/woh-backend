@@ -19,4 +19,16 @@ public class CorsFilter implements Filter {
 
         chain.doFilter(request, response);
     }
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void destroy() {
+        // TODO Auto-generated method stub
+
+    }
 }

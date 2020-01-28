@@ -53,7 +53,7 @@ public class PostService {
         return this.postRepository.findAllExceptTodayTeasers(PageRequest.of(
             page,
             limit,
-            new Sort(Sort.Direction.DESC, "createdAt")
+            Sort.by(Sort.Direction.DESC, "createdAt")
         ));
     }
 
@@ -90,10 +90,7 @@ public class PostService {
     }
 
     public ListView<PostView> byTag(Integer page, Integer limit, String tag) {
-        var posts = this.postRepository.findAllByTags_Name(
-            Collections.singleton(tag),
-            PageRequest.of(page, limit, new Sort(Sort.Direction.DESC, "publishedAt"))
-        );
+        var posts = this.postRepository.findAllByTags_Name(tag, PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "publishedAt")));
         var views = posts.getContent().stream().map(this::makeViewWithRating).collect(Collectors.toList());
 
         return new ListView<>(posts.getTotalElements(), posts.getTotalPages(), page, views);
@@ -140,12 +137,12 @@ public class PostService {
 
             posts = this.postRepository.findAllByIdIn(
                 postIds,
-                PageRequest.of(page, limit, new Sort(Sort.Direction.DESC, "publishedAt"))
+                PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "publishedAt"))
             );
         } else {
             posts = this.postRepository.findAllByCategories_NameIn(
                 categories,
-                PageRequest.of(page, limit, new Sort(Sort.Direction.DESC, "publishedAt"))
+                PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "publishedAt"))
             );
         }
 

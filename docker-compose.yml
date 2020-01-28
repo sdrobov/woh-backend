@@ -30,14 +30,10 @@ services:
       - 27017
 
   backend:
-    image: woh-backend:latest
+    image: registry.gitlab.com/woh/backend-spring:latest
     depends_on:
       - mysql
       - mongo
-    build:
-      context: .
-      args:
-        JAR_FILE: ./build/libs/woh-backend-0.0.1-SNAPSHOT.jar
     mem_limit: 1g
     env_file: .env
     ports:

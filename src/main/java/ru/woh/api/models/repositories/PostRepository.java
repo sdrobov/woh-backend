@@ -25,7 +25,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
         "ORDER BY p.publishedAt DESC")
     Page<Post> findAllExceptTodayTeasers(Pageable pageable);
 
-    Page<Post> findAllByTags_Name(Set<String> tags, Pageable pageable);
+    Page<Post> findAllByTags_Name(String tags, Pageable pageable);
 
     Page<Post> findAllByCategories_NameIn(Set<String> categories, Pageable pageable);
 
@@ -84,7 +84,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
         PageRequest pageRequest = PageRequest.of(
             pageable.getPageNumber(),
             pageable.getPageSize(),
-            new Sort(Sort.Direction.ASC, "publishedAt")
+            Sort.by(Sort.Direction.ASC, "publishedAt")
         );
 
         return this.findAllByIsAllowedAndPublishedAtGreaterThanEqual((short) 1, new Date(), pageRequest);
@@ -94,7 +94,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
         PageRequest pageRequest = PageRequest.of(
             pageable.getPageNumber(),
             pageable.getPageSize(),
-            new Sort(Sort.Direction.ASC, "publishedAt")
+            Sort.by(Sort.Direction.ASC, "publishedAt")
         );
 
         return this.findAllByIsAllowedAndPublishedAtBetween((short) 1,
