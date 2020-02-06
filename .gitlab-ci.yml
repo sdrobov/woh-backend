@@ -1,17 +1,51 @@
-image: openjdk:10
-
-variables:
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Djib.to.auth.username=$CI_REGISTRY_USER -Djib.to.auth.password=$CI_REGISTRY_PASSWORD"
-
-before_script:
-  - export GRADLE_USER_HOME=`pwd`/.gradle
+stages:
+  - build
+  - deploy
 
 build:
+  image: openjdk:10
   stage: build
-  script: ./gradlew --build-cache assemble jib
+  script:
+    - export GRADLE_USER_HOME=`pwd`/.gradle
+    - export GRADLE_OPTS="-Dorg.gradle.daemon=false -Djib.to.auth.username=$CI_REGISTRY_USER -Djib.to.auth.password=$CI_REGISTRY_PASSWORD"
+    - ./gradlew --build-cache assemble jib
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
     paths:
       - build
       - .gradle
+
+deploy dev:
+  image: kroniak/ssh-client
+  stage: deploy
+  environment:
+    name: dev
+    url: http://dev.woh.ru
+  script:
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - echo "$DEPLOY_SSH_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh deploy@dev.woh.ru 'docker pull registry.gitlab.com/woh/backend-spring'
+    - ssh deploy@dev.woh.ru 'docker container restart woh-backend || (docker container rm woh-backend; docker run --name woh-backend --env-file /home/deploy/.env --add-host db.localhost:172.17.0.1 --add-host mongo.localhost:172.17.0.1 --add-host parser.localhost:172.17.0.1 -d -p 8080:8080 registry.gitlab.com/woh/backend-spring)'
+  only:
+    - develop
+
+deploy beta:
+  image: kroniak/ssh-client
+  stage: deploy
+  environment:
+    name: beta
+    url: https://beta.woh.ru
+  script:
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - echo "$DEPLOY_SSH_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh deploy@beta.woh.ru 'docker pull registry.gitlab.com/woh/backend-spring'
+    - ssh deploy@beta.woh.ru 'docker container restart woh-backend || (docker container rm woh-backend; docker run --name woh-backend --env-file /home/deploy/.env --add-host parser.localhost:172.17.0.1 -d -p 8080:8080 registry.gitlab.com/woh/backend-spring)'
+  only:
+    - master
