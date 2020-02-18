@@ -11,7 +11,6 @@ buildscript {
 plugins {
     id 'org.springframework.boot' version '2.2.4.RELEASE'
     id 'com.google.cloud.tools.jib' version '1.8.0'
-    // id 'war'
 }
 
 apply plugin: 'java'
@@ -48,7 +47,7 @@ jib {
         image = 'openjdk:10-jre-slim'
     }
     container {
-        jvmFlags = ['-Xms512m', '-Xmx4g', '-XX:+UseG1GC', '-XX:+UseStringDeduplication']
+        jvmFlags = ['-Xms128m', '-Xmx2g', '-XX:+UseG1GC', '-XX:+UseStringDeduplication']
         ports = ['8080']
     }
 }
@@ -73,7 +72,6 @@ dependencies {
     compile group: 'com.google.api-client', name: 'google-api-client', version: '1.23.0'
     compile group: 'com.google.oauth-client', name: 'google-oauth-client-jetty', version: '1.23.0'
     compile group: 'com.google.apis', name: 'google-api-services-youtube', version: 'v3-rev212-1.25.0'
-    compile group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.2.29'
     compile group: 'io.sentry', name: 'sentry-log4j2', version: '1.7.27'
 
     runtime group: 'org.springframework.boot', name: 'spring-boot-properties-migrator'
