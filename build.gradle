@@ -3,8 +3,14 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE")
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.2.4.RELEASE'
+        classpath 'com.google.cloud.tools.jib:com.google.cloud.tools.jib.gradle.plugin:1.8.0'
     }
+}
+
+plugins {
+    id 'org.springframework.boot' version '2.2.4.RELEASE'
+    id 'com.google.cloud.tools.jib' version '1.8.0'
 }
 
 apply plugin: 'java'
@@ -33,24 +39,43 @@ repositories {
     mavenCentral()
 }
 
+jib {
+    to {
+        image = 'registry.gitlab.com/woh/backend-spring'
+    }
+    from {
+        image = 'openjdk:10-jre-slim'
+    }
+    container {
+        jvmFlags = ['-Xms128m', '-Xmx2g', '-XX:+UseG1GC', '-XX:+UseStringDeduplication']
+        ports = ['8080']
+    }
+}
+
+configurations {
+    all*.exclude group: '', module: 'servlet-api'
+    all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+}
+
 dependencies {
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: '2.1.0.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.1.0.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.1.0.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: '2.1.0.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '2.1.0.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.1.0.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.1.0.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '2.1.0.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '2.1.0.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
+    compile group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
+    compile group: 'org.springframework.boot', name: 'spring-boot-devtools'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2'
     compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.1'
-    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
-    compile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
-    compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.4.3'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.18'
     compile group: 'com.google.api-client', name: 'google-api-client', version: '1.23.0'
     compile group: 'com.google.oauth-client', name: 'google-oauth-client-jetty', version: '1.23.0'
     compile group: 'com.google.apis', name: 'google-api-services-youtube', version: 'v3-rev212-1.25.0'
+    compile group: 'io.sentry', name: 'sentry-log4j2', version: '1.7.27'
 
-    runtime group: 'org.springframework.boot', name: 'spring-boot-properties-migrator', version: '2.1.0.RELEASE'
-    runtime group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '2.3.1'
+    runtime group: 'org.springframework.boot', name: 'spring-boot-properties-migrator'
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 }

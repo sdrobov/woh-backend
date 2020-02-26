@@ -46,17 +46,17 @@ public class Comment implements Serializable {
 
     private Long rating;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reply_comment_id")
     private Comment replyTo;
 
-    @OneToMany(mappedBy = "replyTo")
+    @OneToMany(mappedBy = "replyTo", fetch = FetchType.LAZY)
     private Set<Comment> replies;
 
-    @OneToMany(mappedBy = "comment")
+    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY)
     private Set<CommentLikes> likes;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "comment_ref_media",
         joinColumns = {@JoinColumn(name = "comment_id")},
         inverseJoinColumns = {@JoinColumn(name = "media_id")})

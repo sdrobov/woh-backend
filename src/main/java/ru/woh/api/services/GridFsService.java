@@ -1,29 +1,30 @@
 package ru.woh.api.services;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSFindIterable;
 import com.mongodb.client.gridfs.model.GridFSFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class GridFsService {
-    private final GridFsTemplate gridFsTemplate;
-    private final GridFSBucket gridFSBucket;
+    private final GridFsOperations gridFsOperations;
+    private final Logger logger = LoggerFactory.getLogger(GridFsService.class);
 
     @Autowired
-    public GridFsService(GridFsTemplate gridFsTemplate, GridFSBucket gridFSBucket) {
-        this.gridFsTemplate = gridFsTemplate;
-        this.gridFSBucket = gridFSBucket;
+    public GridFsService(GridFsOperations gridFsOperations) {
+        this.gridFsOperations = gridFsOperations;
     }
 
     public String store(InputStream inputStream, String name, String mime, HashMap<String, String> meta) {
@@ -32,25 +33,33 @@ public class GridFsService {
             dbObject.put(entry.getKey(), entry.getValue());
         }
 
-        return this.gridFsTemplate.store(inputStream, name, mime, dbObject).toHexString();
+        return this.gridFsOperations.store(inputStream, name, mime, dbObject).toHexString();
     }
 
     public GridFSFile findById(String id) {
-        return this.gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
+        return this.gridFsOperations.findOne(new Query(Criteria.where("_id").is(id)));
     }
 
     public GridFSFindIterable findByKeyValue(String key, String value) {
-        return this.gridFsTemplate.find(new Query(Criteria.where(String.format("metadata.%s", key)).is(value)));
+        return this.gridFsOperations.find(new Query(Criteria.where(String.format("metadata.%s", key)).is(value)));
     }
 
     public byte[] getFile(GridFSFile gridFSFile) {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        this.gridFSBucket.downloadToStream(gridFSFile.getId(), os);
+        byte[] data;
+        var file = this.gridFsOperations.getResource(gridFSFile);
 
-        return os.toByteArray();
+        try (var is = file.getInputStream()) {
+            data = StreamUtils.copyToByteArray(is);
+        } catch (IOException e) {
+            this.logger.error("Cant read file" + gridFSFile.getFilename(), e);
+
+            return null;
+        }
+
+        return data;
     }
 
     public void delete(GridFSFile gridFSFile) {
-        this.gridFsTemplate.delete(new Query(Criteria.where("_id").is(gridFSFile.getId())));
+        this.gridFsOperations.delete(new Query(Criteria.where("_id").is(gridFSFile.getId())));
     }
 }

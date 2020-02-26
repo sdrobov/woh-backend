@@ -14,7 +14,6 @@ import ru.woh.api.views.site.CommentView;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;

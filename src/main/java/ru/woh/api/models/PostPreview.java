@@ -6,12 +6,14 @@ import org.springframework.data.annotation.CreatedDate;
 import ru.woh.api.views.admin.PostPreviewView;
 
 import javax.persistence.*;
+
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity(name = "PostPreviewView")
 @Table(name = "source_post_preview")
 @Where(clause = "deleted_at IS NULL")
-public class PostPreview {
+public class PostPreview implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, unique = true)

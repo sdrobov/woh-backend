@@ -1,0 +1,47 @@
+version: "2.4"
+services:
+  mysql:
+    image: mysql:8.0.19
+    restart: unless-stopped
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: woh
+      MYSQL_USER: woh
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password
+    mem_limit: 512m
+    env_file: .env
+    networks:
+      woh:
+        aliases:
+          - mysql.localhost
+    expose:
+      - 3306
+
+  mongo:
+    image: mongo:4.2.2-bionic
+    restart: unless-stopped
+    mem_limit: 512m
+    networks:
+      woh:
+        aliases:
+          - mongo.localhost
+    expose:
+      - 27017
+
+  backend:
+    image: registry.gitlab.com/woh/backend-spring:latest
+    depends_on:
+      - mysql
+      - mongo
+    mem_limit: 1g
+    env_file: .env
+    ports:
+      - 8080:8080
+    networks:
+      woh:
+        aliases:
+          - woh-api.localhost
+
+networks:
+  woh:

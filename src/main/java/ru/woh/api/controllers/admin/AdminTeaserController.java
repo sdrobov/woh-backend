@@ -14,7 +14,7 @@ import ru.woh.api.models.repositories.PostRepository;
 import ru.woh.api.models.repositories.TeaserRepository;
 import ru.woh.api.views.admin.AdminPostView;
 import ru.woh.api.views.admin.TeaserView;
-import ru.woh.api.views.site.PostListView;
+import ru.woh.api.views.site.ListView;
 import ru.woh.api.views.site.PostView;
 
 import javax.annotation.security.RolesAllowed;
@@ -79,12 +79,12 @@ public class AdminTeaserController {
 
     @GetMapping({"/teasers/all", "/teasers/all/"})
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
-    public PostListView all(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public ListView<PostView> all(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         var result = this.teaserRepository.findAll(PageRequest.of(page, 20));
 
-        var postListView = new PostListView();
+        var postListView = new ListView<PostView>();
         postListView.setCurrentPage(page);
-        postListView.setPosts(
+        postListView.setItems(
             result.get()
                 .map(Teaser::getPost)
                 .map(Post::adminView)

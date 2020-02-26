@@ -16,7 +16,7 @@ public class Category implements Serializable {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "categories_ref_posts",
         joinColumns = {@JoinColumn(name = "category_id")},
         inverseJoinColumns = {@JoinColumn(name = "post_id")})

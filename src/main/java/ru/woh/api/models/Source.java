@@ -37,7 +37,7 @@ public class Source implements Serializable {
     @Column(name = "is_locked")
     private Integer isLocked;
 
-    @OneToMany(mappedBy = "sourceSite")
+    @OneToMany(mappedBy = "sourceSite", fetch = FetchType.LAZY)
     private Set<Post> posts;
 
     public Source() {
@@ -51,8 +51,7 @@ public class Source implements Serializable {
             this.settings,
             this.createdAt,
             this.lastPostDate,
-            this.isLocked == 1,
-            this.posts
+            this.isLocked == 1
         );
     }
 

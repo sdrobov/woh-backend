@@ -7,10 +7,12 @@ spring:
     open-in-view: true
     show-sql: ${SHOW_SQL}
   datasource:
-    url: jdbc:mariadb://${DATABASE_HOST}/${DATABASE_NAME}?useMysqlMetadata=true
+    url: jdbc:mysql://${DATABASE_HOST}/${DATABASE_NAME}?useMysqlMetadata=true&serverTimezone=UTC&useUnicode=yes&characterEncoding=UTF-8
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
     initialization-mode: never
+    hikari:
+      connection-init-sql: 'SET NAMES "utf8mb4"'
   session:
     store-type: mongodb
   data:
@@ -18,6 +20,8 @@ spring:
       host: ${MONGO_HOST}
       database: ${MONGO_DB}
       grid-fs-database: ${MONGO_DB}
+      username: ${MONGO_USER}
+      password: ${MONGO_PASSWORD}
   servlet:
     multipart:
       max-file-size: 2MB

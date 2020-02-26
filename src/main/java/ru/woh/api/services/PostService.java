@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import ru.woh.api.models.*;
 import ru.woh.api.models.repositories.*;
-import ru.woh.api.views.site.PostListView;
+import ru.woh.api.views.site.ListView;
 import ru.woh.api.views.site.PostView;
 import ru.woh.api.views.site.RatingView;
 
@@ -53,7 +53,7 @@ public class PostService {
         return this.postRepository.findAllExceptTodayTeasers(PageRequest.of(
             page,
             limit,
-            new Sort(Sort.Direction.DESC, "createdAt")
+            Sort.by(Sort.Direction.DESC, "createdAt")
         ));
     }
 
@@ -79,27 +79,24 @@ public class PostService {
             Collectors.toList());
     }
 
-    public PostListView listView(Integer page, Integer limit) {
+    public ListView<PostView> listView(Integer page, Integer limit) {
         var postPage = this.list(page, limit);
         var views = postPage.getContent()
             .stream()
             .map(this::makeViewWithRating)
             .collect(Collectors.toList());
 
-        return new PostListView(postPage.getTotalElements(), postPage.getTotalPages(), page, views);
+        return new ListView<>(postPage.getTotalElements(), postPage.getTotalPages(), page, views);
     }
 
-    public PostListView byTag(Integer page, Integer limit, String tag) {
-        var posts = this.postRepository.findAllByTags_Name(
-            Collections.singleton(tag),
-            PageRequest.of(page, limit, new Sort(Sort.Direction.DESC, "publishedAt"))
-        );
+    public ListView<PostView> byTag(Integer page, Integer limit, String tag) {
+        var posts = this.postRepository.findAllByTags_Name(tag, PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "publishedAt")));
         var views = posts.getContent().stream().map(this::makeViewWithRating).collect(Collectors.toList());
 
-        return new PostListView(posts.getTotalElements(), posts.getTotalPages(), page, views);
+        return new ListView<>(posts.getTotalElements(), posts.getTotalPages(), page, views);
     }
 
-    public PostListView byCategory(Integer page, Integer limit, String category) {
+    public ListView<PostView> byCategory(Integer page, Integer limit, String category) {
         var categories = Set.of(category.split(","));
         Page<Post> posts;
 
@@ -140,18 +137,18 @@ public class PostService {
 
             posts = this.postRepository.findAllByIdIn(
                 postIds,
-                PageRequest.of(page, limit, new Sort(Sort.Direction.DESC, "publishedAt"))
+                PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "publishedAt"))
             );
         } else {
             posts = this.postRepository.findAllByCategories_NameIn(
                 categories,
-                PageRequest.of(page, limit, new Sort(Sort.Direction.DESC, "publishedAt"))
+                PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "publishedAt"))
             );
         }
 
         var views = posts.getContent().stream().map(this::makeViewWithRating).collect(Collectors.toList());
 
-        return new PostListView(posts.getTotalElements(), posts.getTotalPages(), page, views);
+        return new ListView<>(posts.getTotalElements(), posts.getTotalPages(), page, views);
     }
 
     private PostView makeViewWithRating(Post post) {

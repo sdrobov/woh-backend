@@ -1,0 +1,78 @@
+stages:
+  - build
+  - deploy
+
+.environment_dev_template:
+  environment: &environment_dev
+    name: dev
+    url: http://dev.woh.ru
+
+.variables_dev_template:
+  variables: &variables_dev
+    TAG: latest
+    HOST: dev.woh.ru
+
+.variables_beta_template:
+  variables: &variables_beta
+    TAG: stable
+    HOST: beta.woh.ru
+
+.environment_beta_template:
+  environment: &environment_beta
+    name: beta
+    url: https://beta.woh.ru
+
+.build_template: &common_build
+  image: openjdk:10
+  stage: build
+  script:
+    - export GRADLE_USER_HOME=`pwd`/.gradle
+    - export GRADLE_OPTS="-Dorg.gradle.daemon=false -Djib.to.auth.username=$CI_REGISTRY_USER -Djib.to.auth.password=$CI_REGISTRY_PASSWORD -Djib.to.image=registry.gitlab.com/woh/backend-spring:$TAG"
+    - ./gradlew --build-cache assemble jib
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - build
+      - .gradle
+
+.deploy_template: &common_deploy
+  image: kroniak/ssh-client
+  stage: deploy
+  script:
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - echo "$DEPLOY_SSH_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh deploy@$HOST "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD registry.gitlab.com"
+    - ssh deploy@$HOST "docker pull registry.gitlab.com/woh/backend-spring:$TAG"
+    - ssh deploy@dev.woh.ru "docker container stop woh-backend; docker run --name woh-backend --rm --env-file /home/deploy/.env --add-host db.localhost:172.17.0.1 --add-host mongo.localhost:172.17.0.1 --add-host parser.localhost:172.17.0.1 -d -p 8080:8080 registry.gitlab.com/woh/backend-spring:$TAG"
+
+build dev:
+  <<: *common_build
+  environment: *environment_dev
+  variables: *variables_dev
+  only:
+    - develop
+
+build beta:
+  <<: *common_build
+  environment: *environment_beta
+  variables: *variables_beta
+  only:
+    - master
+
+deploy dev:
+  <<: *common_deploy
+  variables: *variables_dev
+  environment: *environment_dev
+  only:
+    - develop
+
+deploy beta:
+  <<: *common_deploy
+  variables: *variables_beta
+  environment: *environment_beta
+  only:
+    - master

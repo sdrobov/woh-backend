@@ -2,51 +2,51 @@ package ru.woh.api.views.site;
 
 import java.util.List;
 
-public class PostListView {
+public class ListView<T> {
     protected Long totalCount;
     protected Integer totalPages;
     protected Integer currentPage;
-    protected List<PostView> posts;
+    protected List<T> items;
 
-    public PostListView(Long totalCount, Integer totalPages, Integer currentPage, List<PostView> posts) {
+    public ListView() {
+    }
+
+    public ListView(Long totalCount, Integer totalPages, Integer currentPage, List<T> items) {
         this.totalCount = totalCount;
         this.totalPages = totalPages;
         this.currentPage = currentPage;
-        this.posts = posts;
-    }
-
-    public PostListView() {
+        this.items = items;
     }
 
     public Long getTotalCount() {
-        return this.totalCount;
-    }
-
-    public Integer getTotalPages() {
-        return this.totalPages;
-    }
-
-    public Integer getCurrentPage() {
-        return this.currentPage;
-    }
-
-    public List<PostView> getPosts() {
-        return this.posts;
+        return totalCount;
     }
 
     public void setTotalCount(Long totalCount) {
         this.totalCount = totalCount;
     }
 
+    public Integer getTotalPages() {
+        return totalPages;
+    }
+
     public void setTotalPages(Integer totalPages) {
         this.totalPages = totalPages;
+    }
+
+    public Integer getCurrentPage() {
+        return currentPage;
     }
 
     public void setCurrentPage(Integer currentPage) {
         this.currentPage = currentPage;
     }
 
-    public void setPosts(List<PostView> posts) {
-        this.posts = posts;
+    public List<T> getItems() {
+        return items;
+    }
+
+    public void setItems(List<T> items) {
+        this.items = items;
     }
 }

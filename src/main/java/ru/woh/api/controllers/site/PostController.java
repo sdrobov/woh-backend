@@ -1,9 +1,7 @@
 package ru.woh.api.controllers.site;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 import ru.woh.api.models.Post;
 import ru.woh.api.models.PostLikes;
 import ru.woh.api.models.Role;
@@ -11,7 +9,7 @@ import ru.woh.api.models.User;
 import ru.woh.api.models.repositories.PostLikesRepository;
 import ru.woh.api.services.PostService;
 import ru.woh.api.services.UserService;
-import ru.woh.api.views.site.PostListView;
+import ru.woh.api.views.site.ListView;
 import ru.woh.api.views.site.PostView;
 
 import javax.annotation.security.RolesAllowed;
@@ -38,7 +36,7 @@ public class PostController {
 
     @GetMapping("/")
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public PostListView list(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public ListView<PostView> list(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         return this.postService.listView(page, PostController.defaultPageSize);
     }
 
@@ -73,7 +71,6 @@ public class PostController {
         return this.likeOrDislike(id, false);
     }
 
-    @SuppressWarnings("Duplicates")
     private PostView likeOrDislike(Long id, Boolean like) {
         Post post = this.postService.one(id);
         User user = this.userService.getCurrenttUser();

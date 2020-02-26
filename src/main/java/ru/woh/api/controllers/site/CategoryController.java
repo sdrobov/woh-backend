@@ -9,7 +9,8 @@ import ru.woh.api.models.Category;
 import ru.woh.api.models.Role;
 import ru.woh.api.models.repositories.CategoryRepository;
 import ru.woh.api.services.PostService;
-import ru.woh.api.views.site.PostListView;
+import ru.woh.api.views.site.ListView;
+import ru.woh.api.views.site.PostView;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.List;
@@ -32,7 +33,7 @@ public class CategoryController {
 
     @GetMapping({ "/by-category/{category:.*}", "/by-category/{category:.*}/" })
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public PostListView byCategory(
+    public ListView<PostView> byCategory(
         @PathVariable("category") String category,
         @RequestParam(value = "page", defaultValue = "0") Integer page
     ) {

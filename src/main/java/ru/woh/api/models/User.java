@@ -65,16 +65,16 @@ public class User implements Serializable {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @OneToMany(mappedBy = "moderator")
+    @OneToMany(mappedBy = "moderator", fetch = FetchType.LAZY)
     private Set<Post> moderatedPosts = new HashSet<>();
 
-    @OneToMany(mappedBy = "proposedBy")
+    @OneToMany(mappedBy = "proposedBy", fetch = FetchType.LAZY)
     private Set<Post> proposedPosts = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private Set<Comment> comments = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "tags_ref_users",
         joinColumns = { @JoinColumn(name = "user_id") },
         inverseJoinColumns = { @JoinColumn(name = "tag_id") })
