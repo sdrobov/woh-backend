@@ -52,13 +52,13 @@ public class UserController {
         this.imageStorageService = imageStorageService;
     }
 
-    @GetMapping({"/user", "/user/"})
+    @GetMapping("/user")
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public UserView status() {
         return this.userService.getCurrenttUser().view();
     }
 
-    @GetMapping({"/user/{id:[0-9]*}", "/user/{id:[0-9]*}/"})
+    @GetMapping("/user/{id:[0-9]*}")
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public UserView byId(@PathVariable("id") Long id) {
         return this.userRepository.findById(id).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, String.format(
@@ -67,7 +67,7 @@ public class UserController {
         ))).view();
     }
 
-    @PostMapping({"/user/login", "/user/login/"})
+    @PostMapping("/user/login")
     @RolesAllowed({ Role.ROLE_ANONYMOUS })
     public UserExtView login(@RequestBody LoginRequest loginRequest) {
         User user = this.userService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
@@ -84,7 +84,7 @@ public class UserController {
         );
     }
 
-    @PostMapping({"/user/register", "/user/register/"})
+    @PostMapping("/user/register")
     @RolesAllowed({ Role.ROLE_ANONYMOUS })
     public ResponseEntity<UserView> register(@RequestBody RegistrationRequest registrationRequest) {
         User user = this.userService.getCurrenttUser();
@@ -116,7 +116,7 @@ public class UserController {
         return ResponseEntity.created(URI.create("/user/")).body(user.view());
     }
 
-    @PostMapping({"/user/save", "/user/save/"})
+    @PostMapping("/user/save")
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public UserView edit(@RequestBody UserView userView) {
         if (userView.getId() == null) {
@@ -145,7 +145,7 @@ public class UserController {
         return user.view();
     }
 
-    @PostMapping({"/user/password", "/user/password/"})
+    @PostMapping("/user/password")
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public ResponseEntity<Void> password(@RequestBody ChangePasswordRequest changePasswordRequest) {
         if (!changePasswordRequest.isValid()) {
@@ -160,7 +160,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping({"/user/avatar", "/user/avatar/"})
+    @PostMapping("/user/avatar")
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public ResponseEntity<String> avatar(@RequestBody AvatarChangeRequest avatarChangeRequest) {
         if (!avatarChangeRequest.isValid()) {
@@ -199,7 +199,7 @@ public class UserController {
             .body(avatarUrl);
     }
 
-    @PostMapping({"/user/avatar/drop", "/user/avatar/drop/"})
+    @PostMapping("/user/avatar/drop")
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public ResponseEntity<Void> dropAvatar() {
         User currentUser = this.userService.getCurrenttUser();

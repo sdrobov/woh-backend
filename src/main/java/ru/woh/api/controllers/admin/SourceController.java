@@ -26,7 +26,7 @@ public class SourceController {
         this.parserService = parserService;
     }
 
-    @GetMapping("/source/")
+    @GetMapping("/source")
     @RolesAllowed({Role.ROLE_ADMIN})
     public List<SourceView> list() {
         return this.sourceRepository.findAll()
@@ -35,7 +35,7 @@ public class SourceController {
             .collect(Collectors.toList());
     }
 
-    @GetMapping("/source/{id:[0-9]*}/")
+    @GetMapping("/source/{id:[0-9]*}")
     @RolesAllowed({Role.ROLE_ADMIN})
     public SourceView byId(@PathVariable("id") Long id) {
         return this.sourceRepository.findById(id).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, String.format(
@@ -44,7 +44,7 @@ public class SourceController {
         ))).view();
     }
 
-    @GetMapping("/source/run/{id:[0-9]*}/")
+    @GetMapping("/source/run/{id:[0-9]*}")
     @RolesAllowed({Role.ROLE_ADMIN})
     public ResponseEntity run(@PathVariable("id") Long id) {
         Source source = this.sourceRepository.findById(id).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, String.format(
@@ -59,7 +59,7 @@ public class SourceController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/source/add/")
+    @PostMapping("/source/add")
     @RolesAllowed({Role.ROLE_ADMIN})
     public SourceView add(@RequestBody SourceView sourceView) {
         Source source = sourceView.model();
@@ -68,7 +68,7 @@ public class SourceController {
         return this.sourceRepository.save(source).view();
     }
 
-    @PostMapping("/source/edit/")
+    @PostMapping("/source/edit")
     @RolesAllowed({Role.ROLE_ADMIN})
     public SourceView edit(@RequestBody SourceView sourceView) {
         if (sourceView.getId() == null || !this.sourceRepository.existsById(sourceView.getId())) {
@@ -78,7 +78,7 @@ public class SourceController {
         return this.sourceRepository.save(sourceView.model()).view();
     }
 
-    @PostMapping("/source/delete/{id:[0-9]*}/")
+    @PostMapping("/source/delete/{id:[0-9]*}")
     @RolesAllowed({Role.ROLE_ADMIN})
     public ResponseEntity delete(@PathVariable("id") Long id) {
         if (!this.sourceRepository.existsById(id)) {

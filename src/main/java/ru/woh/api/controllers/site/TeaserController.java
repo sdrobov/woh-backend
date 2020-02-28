@@ -24,7 +24,7 @@ public class TeaserController {
         this.teaserRepository = teaserRepository;
     }
 
-    @GetMapping({ "/teasers", "/teasers/" })
+    @GetMapping("/teasers")
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public List<PostView> teasers() {
         return this.teaserRepository
@@ -35,7 +35,7 @@ public class TeaserController {
             .collect(Collectors.toList());
     }
 
-    @GetMapping({ "/featured", "/featured/" })
+    @GetMapping("/featured")
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public List<PostView> featured() {
         return this.teaserRepository

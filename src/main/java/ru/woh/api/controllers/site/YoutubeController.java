@@ -19,7 +19,7 @@ public class YoutubeController {
         this.youtubeService = youtubeService;
     }
 
-    @GetMapping({ "/youtube/{id:.*}", "/youtube/{id:.*}/" })
+    @GetMapping("/youtube/{id:.*}")
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public VideoListResponse byId(@PathVariable String id) {
         return this.youtubeService.getListById(id);

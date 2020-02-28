@@ -28,7 +28,7 @@ public class TagController {
         this.tagRepository = tagRepository;
     }
 
-    @GetMapping({ "/by-tag/{tag:.*}", "/by-tag/{tag:.*}/" })
+    @GetMapping("/by-tag/{tag:.*}")
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public ListView<PostView> byTag(
         @PathVariable("tag") String tag,
@@ -37,7 +37,7 @@ public class TagController {
         return this.postService.byTag(page, TagController.defaultPageSize, tag);
     }
 
-    @GetMapping({ "/tags", "/tags/" })
+    @GetMapping("/tags")
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public List<String> list() {
         return this.tagRepository.findAll()

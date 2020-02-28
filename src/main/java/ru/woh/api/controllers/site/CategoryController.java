@@ -31,7 +31,7 @@ public class CategoryController {
         this.categoryRepository = categoryRepository;
     }
 
-    @GetMapping({ "/by-category/{category:.*}", "/by-category/{category:.*}/" })
+    @GetMapping("/by-category/{category:.*}")
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public ListView<PostView> byCategory(
         @PathVariable("category") String category,
@@ -40,7 +40,7 @@ public class CategoryController {
         return this.postService.byCategory(page, CategoryController.defaultPageSize, category);
     }
 
-    @GetMapping({ "/categories", "/categories/" })
+    @GetMapping("/categories")
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public List<String> list() {
         return this.categoryRepository.findAll()
