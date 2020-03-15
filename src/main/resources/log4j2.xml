@@ -10,7 +10,7 @@
     <Loggers>
         <Root level="info">
             <AppenderRef ref="Console"/>
-            <AppenderRef ref="Sentry" level="warn"/>
+            <AppenderRef ref="Sentry" level="error"/>
         </Root>
     </Loggers>
 </Configuration>

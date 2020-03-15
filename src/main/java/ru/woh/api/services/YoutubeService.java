@@ -14,46 +14,23 @@ import java.security.GeneralSecurityException;
 @Service
 public class YoutubeService {
 
-    public YouTube getYoutube() {
-        final NetHttpTransport httpTransport;
-        try {
-            httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-        } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
-
-            return null;
-        }
+    public YouTube getYoutube() throws GeneralSecurityException, IOException {
+        final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
 
         return new YouTube.Builder(httpTransport, JacksonFactory.getDefaultInstance(), null)
             .setApplicationName("woh.ru backend")
             .build();
     }
 
-    public VideoListResponse getListById(String id) {
+    public VideoListResponse getListById(String id) throws GeneralSecurityException, IOException {
         var youtube = this.getYoutube();
         if (youtube == null) {
             return null;
         }
 
-        List request;
-        try {
-            request = youtube.videos().list("snippet,id,player,contentDetails");
-        } catch (IOException e) {
-            e.printStackTrace();
+        String API_KEY = "AIzaSyDUJnAMzTk9A0M2jo33ORgDR3pwGSIrXkI";
+        List request = youtube.videos().list("snippet,id,player,contentDetails");
 
-            return null;
-        }
-
-        VideoListResponse response;
-        try {
-            String API_KEY = "AIzaSyDUJnAMzTk9A0M2jo33ORgDR3pwGSIrXkI";
-            response = request.setKey(API_KEY).setId(id).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-
-            return null;
-        }
-
-        return response;
+        return request.setKey(API_KEY).setId(id).execute();
     }
 }

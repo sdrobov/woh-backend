@@ -9,6 +9,8 @@ import ru.woh.api.models.Role;
 import ru.woh.api.services.YoutubeService;
 
 import javax.annotation.security.RolesAllowed;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 @RestController
 public class YoutubeController {
@@ -19,9 +21,9 @@ public class YoutubeController {
         this.youtubeService = youtubeService;
     }
 
-    @GetMapping({ "/youtube/{id:.*}", "/youtube/{id:.*}/" })
+    @GetMapping("/youtube/{id:.*}")
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
-    public VideoListResponse byId(@PathVariable String id) {
+    public VideoListResponse byId(@PathVariable String id) throws GeneralSecurityException, IOException {
         return this.youtubeService.getListById(id);
     }
 }

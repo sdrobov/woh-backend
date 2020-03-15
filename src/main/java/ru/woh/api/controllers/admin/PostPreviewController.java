@@ -33,7 +33,7 @@ public class PostPreviewController {
         this.sourceRepository = sourceRepository;
     }
 
-    @GetMapping({"/post-preview", "/post-preview/"})
+    @GetMapping("/post-preview")
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public ListView<PostPreviewView> list(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         var postPreviewsPage = this.postPreviewRepository.findAll(PageRequest.of(page,
@@ -48,7 +48,7 @@ public class PostPreviewController {
             postPreviews);
     }
 
-    @GetMapping({"/post-preview/{id:[0-9]+}", "/post-preview/{id:[0-9]+}/"})
+    @GetMapping("/post-preview/{id:[0-9]+}")
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public PostPreviewView byId(@PathVariable("id") Long id) {
         return this.postPreviewRepository.findById(id)
@@ -59,7 +59,7 @@ public class PostPreviewController {
             .view();
     }
 
-    @GetMapping({"/post-preview/by-source/{id:[0-9]+}", "/post-preview/by-source/{id:[0-9]+}/"})
+    @GetMapping("/post-preview/by-source/{id:[0-9]+}")
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public ListView<PostPreviewView> bySource(@PathVariable("id") Long id,
                                               @RequestParam(value = "page", defaultValue = "0") Integer page) {

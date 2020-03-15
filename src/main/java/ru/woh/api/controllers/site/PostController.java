@@ -40,13 +40,13 @@ public class PostController {
         return this.postService.listView(page, PostController.defaultPageSize);
     }
 
-    @GetMapping({ "/{id:[0-9]*}", "/{id:[0-9]*}/" })
+    @GetMapping("/{id:[0-9]*}")
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public PostView one(@PathVariable("id") Long id) {
         return this.postService.view(id);
     }
 
-    @GetMapping({ "/{id:[0-9]*}/nearest", "/{id:[0-9]*}/nearest/" })
+    @GetMapping("/{id:[0-9]*}/nearest")
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public List<PostView> nearest(@PathVariable("id") Long id) {
         var post = this.postService.view(id);
@@ -58,14 +58,14 @@ public class PostController {
         return posts;
     }
 
-    @PostMapping({ "/{id:[0-9]*}/like", "/{id:[0-9]*}/like/" })
+    @PostMapping("/{id:[0-9]*}/like")
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public PostView like(@PathVariable("id") Long id) {
         return this.likeOrDislike(id, true);
     }
 
 
-    @PostMapping({ "/{id:[0-9]*}/dislike", "/{id:[0-9]*}/dislike/" })
+    @PostMapping("/{id:[0-9]*}/dislike")
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public PostView dislike(@PathVariable("id") Long id) {
         return this.likeOrDislike(id, false);

@@ -35,7 +35,7 @@ public class AdminTeaserController {
         this.postRepository = postRepository;
     }
 
-    @PostMapping({"/teasers", "/teasers/"})
+    @PostMapping("/teasers")
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public PostView add(@RequestBody TeaserView teaserView) {
         Post post = this.postRepository.findById(teaserView.getPost())
@@ -52,7 +52,7 @@ public class AdminTeaserController {
         return this.teaserRepository.save(teaser).getPost().adminView();
     }
 
-    @PostMapping({"/teasers/delete", "/teasers/delete/"})
+    @PostMapping("/teasers/delete")
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public ResponseEntity delete(@RequestBody AdminPostView postView) {
         if (postView.getType() == null || postView.getType() == PostView.PostViewType.TYPE_NORMAL) {
@@ -77,7 +77,7 @@ public class AdminTeaserController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @GetMapping({"/teasers/all", "/teasers/all/"})
+    @GetMapping("/teasers/all")
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public ListView<PostView> all(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         var result = this.teaserRepository.findAll(PageRequest.of(page, 20));
@@ -96,7 +96,7 @@ public class AdminTeaserController {
         return postListView;
     }
 
-    @GetMapping({"/teasers/{id:[0-9]*}", "/teasers/{id:[0-9]*}/"})
+    @GetMapping("/teasers/{id:[0-9]*}")
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public List<AdminPostView> byPostId(@PathVariable("id") Long id) {
         var post = this.postRepository.findById(id)
@@ -110,7 +110,7 @@ public class AdminTeaserController {
             .collect(Collectors.toList());
     }
 
-    @GetMapping({"/teasers/future", "/teasers/future/"})
+    @GetMapping("/teasers/future")
     @RolesAllowed({Role.ROLE_MODER, Role.ROLE_ADMIN})
     public List<AdminPostView> future() {
         return this.teaserRepository.findFromFuture()

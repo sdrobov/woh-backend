@@ -42,7 +42,7 @@ public class CommentController {
         this.mediaRepository = mediaRepository;
     }
 
-    @GetMapping({ "/{id:[0-9]*}/comments", "/{id:[0-9]*}/comments/" })
+    @GetMapping("/{id:[0-9]*}/comments")
     @RolesAllowed({ Role.ROLE_ANONYMOUS, Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public List<CommentView> list(
         @PathVariable("id") Long postId,
@@ -53,7 +53,7 @@ public class CommentController {
         return this.commentService.list(post, page, MAX_COMMENTS);
     }
 
-    @PostMapping({ "/{id:[0-9]*}/comments", "/{id:[0-9]*}/comments/" })
+    @PostMapping("/{id:[0-9]*}/comments")
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public List<CommentView> add(
         @PathVariable("id") Long postId,
@@ -114,7 +114,7 @@ public class CommentController {
         }
     }
 
-    @PostMapping({ "/{id:[0-9]*}/comments/edit", "/{id:[0-9]*}/comments/edit/" })
+    @PostMapping("/{id:[0-9]*}/comments/edit")
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public CommentView edit(@RequestBody CommentView comment) {
         Comment commentModel = this.commentService.one(comment.getId());
@@ -135,7 +135,7 @@ public class CommentController {
         return this.commentService.makeCommentViewWithRating(commentModel);
     }
 
-    @PostMapping({ "/{postId:[0-9]*}/comments/delete/{id:[0-9]*}", "/{postId:[0-9]*}/comments/delete/{id:[0-9]*}/" })
+    @PostMapping("/{postId:[0-9]*}/comments/delete/{id:[0-9]*}")
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public void delete(@PathVariable("id") Long id) {
         Comment comment = this.commentService.one(id);
@@ -148,13 +148,13 @@ public class CommentController {
         this.commentService.delete(comment);
     }
 
-    @PostMapping({ "/{postId:[0-9]*}/comments/like/{id:[0-9]*}", "/{postId:[0-9]*}/comments/like/{id:[0-9]*}/" })
+    @PostMapping("/{postId:[0-9]*}/comments/like/{id:[0-9]*}")
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public CommentView like(@PathVariable("id") Long id) {
         return this.likeOrDislike(id, true);
     }
 
-    @PostMapping({ "/{postId:[0-9]*}/comments/dislike/{id:[0-9]*}", "/{postId:[0-9]*}/comments/dislike/{id:[0-9]*}/" })
+    @PostMapping("/{postId:[0-9]*}/comments/dislike/{id:[0-9]*}")
     @RolesAllowed({ Role.ROLE_USER, Role.ROLE_MODER, Role.ROLE_ADMIN })
     public CommentView dislike(@PathVariable("id") Long id) {
         return this.likeOrDislike(id, false);

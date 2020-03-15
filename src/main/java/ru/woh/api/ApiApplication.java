@@ -19,7 +19,7 @@ public class ApiApplication {
         return new WebMvcConfigurer() {
             @Override
             public void configurePathMatch(PathMatchConfigurer configurer) {
-                configurer.setUseTrailingSlashMatch(false);
+                configurer.setUseTrailingSlashMatch(true);
             }
         };
     }

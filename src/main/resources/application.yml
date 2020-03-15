@@ -7,7 +7,7 @@ spring:
     open-in-view: true
     show-sql: ${SHOW_SQL}
   datasource:
-    url: jdbc:mysql://${DATABASE_HOST}/${DATABASE_NAME}?useMysqlMetadata=true&serverTimezone=UTC&useUnicode=yes&characterEncoding=UTF-8
+    url: jdbc:mariadb://${DATABASE_HOST}/${DATABASE_NAME}?useMysqlMetadata=true&serverTimezone=UTC&useUnicode=yes&characterEncoding=UTF-8
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
     initialization-mode: never
