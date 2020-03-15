@@ -15,6 +15,10 @@ public class SourceView {
     private Date createdAt;
     private Date lastPostDate;
     private Boolean isLocked;
+    private Date lastSuccessAt;
+    private Date lastErrorAt;
+    private Integer lastSuccessCount;
+    private Integer lastErrorsCount;
 
     public SourceView() {
     }
@@ -26,8 +30,8 @@ public class SourceView {
         String settings,
         Date createdAt,
         Date lastPostDate,
-        Boolean isLocked
-    ) {
+        Boolean isLocked,
+        Date lastSuccessAt, Date lastErrorAt, Integer lastSuccessCount, Integer lastErrorsCount) {
         this.id = id;
         this.name = name;
         this.url = url;
@@ -35,6 +39,10 @@ public class SourceView {
         this.createdAt = createdAt;
         this.lastPostDate = lastPostDate;
         this.isLocked = isLocked;
+        this.lastSuccessAt = lastSuccessAt;
+        this.lastErrorAt = lastErrorAt;
+        this.lastSuccessCount = lastSuccessCount;
+        this.lastErrorsCount = lastErrorsCount;
     }
 
     public Long getId() {
@@ -93,6 +101,46 @@ public class SourceView {
         this.isLocked = isLocked;
     }
 
+    public Boolean getLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(Boolean locked) {
+        isLocked = locked;
+    }
+
+    public Date getLastSuccessAt() {
+        return lastSuccessAt;
+    }
+
+    public void setLastSuccessAt(Date lastSuccessAt) {
+        this.lastSuccessAt = lastSuccessAt;
+    }
+
+    public Date getLastErrorAt() {
+        return lastErrorAt;
+    }
+
+    public void setLastErrorAt(Date lastErrorAt) {
+        this.lastErrorAt = lastErrorAt;
+    }
+
+    public Integer getLastSuccessCount() {
+        return lastSuccessCount;
+    }
+
+    public void setLastSuccessCount(Integer lastSuccessCount) {
+        this.lastSuccessCount = lastSuccessCount;
+    }
+
+    public Integer getLastErrorsCount() {
+        return lastErrorsCount;
+    }
+
+    public void setLastErrorsCount(Integer lastErrorsCount) {
+        this.lastErrorsCount = lastErrorsCount;
+    }
+
     public Source model() {
         Source source = new Source();
 
@@ -103,6 +151,10 @@ public class SourceView {
         source.setLastPostDate(this.lastPostDate);
         source.setIsLocked(0);
         source.setSettings(this.settings != null ? this.settings.toString() : "");
+        source.setLastSuccessAt(this.lastSuccessAt);
+        source.setLastErrorAt(this.lastErrorAt);
+        source.setLastSuccessCount(this.lastSuccessCount);
+        source.setLastErrorsCount(this.lastErrorsCount);
 
         return source;
     }
