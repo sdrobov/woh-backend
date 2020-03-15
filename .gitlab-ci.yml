@@ -47,7 +47,7 @@ stages:
     - chmod 600 ~/.ssh/id_rsa
     - ssh deploy@$HOST "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD registry.gitlab.com"
     - ssh deploy@$HOST "docker pull registry.gitlab.com/woh/backend-spring:$TAG"
-    - ssh deploy@$HOST "docker container stop woh-backend; docker run --name woh-backend --rm --env-file /home/deploy/.env --add-host db.localhost:172.17.0.1 --add-host mongo.localhost:172.17.0.1 --add-host parser.localhost:172.17.0.1 -d -p 8080:8080 registry.gitlab.com/woh/backend-spring:$TAG"
+    - ssh deploy@$HOST "docker container stop woh-backend; sleep 1; docker run --name woh-backend --rm --env-file /home/deploy/.env --add-host db.localhost:172.17.0.1 --add-host mongo.localhost:172.17.0.1 --add-host parser.localhost:172.17.0.1 -d -p 8080:8080 registry.gitlab.com/woh/backend-spring:$TAG"
 
 build dev:
   <<: *common_build
