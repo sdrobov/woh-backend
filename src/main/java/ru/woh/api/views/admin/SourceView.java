@@ -19,6 +19,7 @@ public class SourceView {
     private Date lastErrorAt;
     private Integer lastSuccessCount;
     private Integer lastErrorsCount;
+    private Boolean isEnabled;
 
     public SourceView() {
     }
@@ -31,7 +32,11 @@ public class SourceView {
         Date createdAt,
         Date lastPostDate,
         Boolean isLocked,
-        Date lastSuccessAt, Date lastErrorAt, Integer lastSuccessCount, Integer lastErrorsCount) {
+        Date lastSuccessAt,
+        Date lastErrorAt,
+        Integer lastSuccessCount,
+        Integer lastErrorsCount,
+        Boolean isEnabled) {
         this.id = id;
         this.name = name;
         this.url = url;
@@ -43,6 +48,7 @@ public class SourceView {
         this.lastErrorAt = lastErrorAt;
         this.lastSuccessCount = lastSuccessCount;
         this.lastErrorsCount = lastErrorsCount;
+        this.isEnabled = isEnabled;
     }
 
     public Long getId() {
@@ -155,8 +161,17 @@ public class SourceView {
         source.setLastErrorAt(this.lastErrorAt);
         source.setLastSuccessCount(this.lastSuccessCount);
         source.setLastErrorsCount(this.lastErrorsCount);
+        source.setIsEnabled(this.isEnabled ? 1 : 0);
 
         return source;
+    }
+
+    public Boolean getIsEnabled() {
+        return isEnabled;
+    }
+
+    public void setIsEnabled(Boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 
     public static class SourceSettings {

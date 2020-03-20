@@ -49,6 +49,9 @@ public class Source implements Serializable {
     @Column(name = "last_errors_count")
     private Integer lastErrorsCount;
 
+    @Column(name = "is_enabled")
+    private Integer isEnabled;
+
     @OneToMany(mappedBy = "sourceSite", fetch = FetchType.LAZY)
     private Set<Post> posts;
 
@@ -67,8 +70,8 @@ public class Source implements Serializable {
             this.lastSuccessAt,
             this.lastErrorAt,
             this.lastSuccessCount,
-            this.lastErrorsCount
-        );
+            this.lastErrorsCount,
+            this.isEnabled == 1);
     }
 
     public Long getId() {
@@ -165,5 +168,13 @@ public class Source implements Serializable {
 
     public void setPosts(Set<Post> posts) {
         this.posts = posts;
+    }
+
+    public Integer getIsEnabled() {
+        return isEnabled;
+    }
+
+    public void setIsEnabled(Integer isEnabled) {
+        this.isEnabled = isEnabled;
     }
 }
