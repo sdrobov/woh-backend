@@ -28,7 +28,7 @@ public class YoutubeService {
             return null;
         }
 
-        String API_KEY = "AIzaSyDUJnAMzTk9A0M2jo33ORgDR3pwGSIrXkI";
+        String API_KEY = "";
         List request = youtube.videos().list("snippet,id,player,contentDetails");
 
         return request.setKey(API_KEY).setId(id).execute();

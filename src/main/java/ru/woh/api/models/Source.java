@@ -37,18 +37,6 @@ public class Source implements Serializable {
     @Column(name = "is_locked")
     private Integer isLocked;
 
-    @Column(name = "last_success_at")
-    private Date lastSuccessAt;
-
-    @Column(name = "last_error_at")
-    private Date lastErrorAt;
-
-    @Column(name = "last_success_count")
-    private Integer lastSuccessCount;
-
-    @Column(name = "last_errors_count")
-    private Integer lastErrorsCount;
-
     @Column(name = "is_enabled")
     private Integer isEnabled;
 
@@ -67,10 +55,6 @@ public class Source implements Serializable {
             this.createdAt,
             this.lastPostDate,
             this.isLocked == 1,
-            this.lastSuccessAt,
-            this.lastErrorAt,
-            this.lastSuccessCount,
-            this.lastErrorsCount,
             this.isEnabled == 1);
     }
 
@@ -132,38 +116,6 @@ public class Source implements Serializable {
 
     public void setIsLocked(Integer isLocked) {
         this.isLocked = isLocked;
-    }
-
-    public Date getLastSuccessAt() {
-        return lastSuccessAt;
-    }
-
-    public void setLastSuccessAt(Date lastSuccessAt) {
-        this.lastSuccessAt = lastSuccessAt;
-    }
-
-    public Date getLastErrorAt() {
-        return lastErrorAt;
-    }
-
-    public void setLastErrorAt(Date lastErrorAt) {
-        this.lastErrorAt = lastErrorAt;
-    }
-
-    public Integer getLastSuccessCount() {
-        return lastSuccessCount;
-    }
-
-    public void setLastSuccessCount(Integer lastSuccessCount) {
-        this.lastSuccessCount = lastSuccessCount;
-    }
-
-    public Integer getLastErrorsCount() {
-        return lastErrorsCount;
-    }
-
-    public void setLastErrorsCount(Integer lastErrorsCount) {
-        this.lastErrorsCount = lastErrorsCount;
     }
 
     public void setPosts(Set<Post> posts) {
